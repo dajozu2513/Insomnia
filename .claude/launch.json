@@ -6,6 +6,21 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5173
+    },
+    {
+      "name": "insomnia-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4173", "--strictPort"],
+      "port": 4173
+    },
+    {
+      "name": "legacy-black-and-white",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "const p=require('path').resolve('_reference/black-and-white/.claude/server.js');new Function('require','__dirname',require('fs').readFileSync(p,'utf8'))(require,require('path').dirname(p));"
+      ],
+      "port": 8081
     }
   ]
 }

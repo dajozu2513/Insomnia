@@ -1,0 +1,31 @@
+/*
+ * 3D CHAIN STAGE, ported from the legacy css/styles.css.
+ * One fixed canvas behind the whole page. With `has-3d` on <html>, the hero and
+ * the bands drop their photos and backgrounds and become windows onto it; every
+ * other section keeps its own opaque background and covers it.
+ */
+.chain-stage {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+}
+
+.has-3d .chain-stage {
+  display: block;
+}
+
+.chain-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.chain-stage.is-ready canvas {
+  opacity: 1;
+}
+
+/* An opacity fade is allowed under the reduced-motion contract; nothing to change. */

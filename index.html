@@ -6,6 +6,22 @@
     <title>Insomnia by Joel Soto</title>
     <!-- PLACEHOLDER: meta description, Open Graph and Twitter tags are added once the copy and the production URL exist. -->
 
+    <!--
+      3D chain: decided before first paint, as in the legacy site. When WebGL and
+      modules are available (and the page is not opened from disk), `has-3d` hides
+      the hero and band photos from the first frame. ChainStage removes the class
+      again if three.js or the WebGL context fails, and the photos come back.
+    -->
+    <script>
+      if (
+        window.WebGLRenderingContext &&
+        'noModule' in HTMLScriptElement.prototype &&
+        location.protocol !== 'file:'
+      ) {
+        document.documentElement.classList.add('has-3d');
+      }
+    </script>
+
     <!-- Fonts: same families, weights and request as the legacy Black & White site -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

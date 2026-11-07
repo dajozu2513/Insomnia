@@ -26,8 +26,19 @@ export const es = {
     rights: 'Todos los derechos reservados',
   },
   home: {
-    // PLACEHOLDER: the home page sections are ported in later steps.
-    placeholder: '[Contenido de inicio pendiente]',
+    hero: {
+      // Brand name: identical in both languages.
+      title: 'Insomnia',
+      sub: 'by Joel Soto',
+    },
+    // PLACEHOLDER: band phrases pending. Kept about as long as the legacy
+    // phrases so the drapes can be checked against a realistic line.
+    band1: '[Frase de la primera banda]',
+    band2: '[Frase de la segunda banda]',
+    // PLACEHOLDER: temporary opaque sections, designed in step 3.
+    section1: '[Sección pendiente]',
+    section2: '[Sección pendiente]',
+    section3: '[Sección pendiente]',
   },
   notFound: {
     // PLACEHOLDER: 404 copy pending.

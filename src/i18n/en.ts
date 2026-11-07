@@ -27,8 +27,19 @@ export const en: Dictionary = {
     rights: 'All rights reserved',
   },
   home: {
-    // PLACEHOLDER: the home page sections are ported in later steps.
-    placeholder: '[Home content pending]',
+    hero: {
+      // Brand name: identical in both languages.
+      title: 'Insomnia',
+      sub: 'by Joel Soto',
+    },
+    // PLACEHOLDER: band phrases pending. Kept about as long as the legacy
+    // phrases so the drapes can be checked against a realistic line.
+    band1: '[Phrase for the first band]',
+    band2: '[Phrase for the second band]',
+    // PLACEHOLDER: temporary opaque sections, designed in step 3.
+    section1: '[Section pending]',
+    section2: '[Section pending]',
+    section3: '[Section pending]',
   },
   notFound: {
     // PLACEHOLDER: 404 copy pending.
