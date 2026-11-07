@@ -55,8 +55,25 @@ export const es = {
     jewelry: {
       lead: 'Joyería',
       em: 'de acero',
-      // PLACEHOLDER: the jewelry deck arrives in a later step.
-      body: '[Baraja de eslabones pendiente]',
+    },
+    // The jewelry deck and its configurator. Link names and texts live in src/data/links.ts,
+    // forms and sizes in src/data/forms.ts.
+    deck: {
+      listLabel: 'Baraja de eslabones',
+      close: 'Cerrar',
+      form: 'Forma',
+      size: 'Medida',
+      otherPrompt: '¿Qué pieza tienes en mente?',
+      measureLabel: 'Medida en cm (opcional)',
+      measureHelper: 'Si no sabes tu medida, te ayudamos por WhatsApp.',
+      cta: 'Consultar por WhatsApp',
+      newTab: '(se abre en WhatsApp)',
+      whatsapp: {
+        intro: 'Hola, me interesa una pieza de Insomnia:',
+        link: 'Eslabón',
+        form: 'Forma',
+        size: 'Medida',
+      },
     },
     tshirts: {
       lead: 'Camisetas',
@@ -124,6 +141,12 @@ export const es = {
       headerPhoneSize: 'Cabecera, teléfono',
       introSize: 'Tamaño de la intro',
       captions: ['6:00 p. m.', '9:47 p. m.', '12:00 a. m.', '3:47 a. m.', '6:00 a. m.'],
+    },
+    links: {
+      title: 'Eslabones',
+      text: 'Los nueve eslabones en línea fina, como una sola familia, a tamaño de carta y de índice.',
+      cardSize: 'Tamaño de carta',
+      indexSize: 'Tamaño de índice',
     },
     motifs: {
       title: 'Motivos',

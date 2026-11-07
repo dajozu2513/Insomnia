@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { findLink } from '../../data/links';
 import { PocketWatch } from '../clock/PocketWatch';
 import { useI18n } from '../../i18n';
 import '../home/byline.css';
@@ -18,6 +19,8 @@ type Phase = 'hidden' | 'showing' | 'lifting';
 
 function alreadySeen(): boolean {
   try {
+    // A deep link to a card (?link=<valid id>) goes straight to it: no splash
+    if (findLink(new URLSearchParams(window.location.search).get('link'))) return true;
     return window.sessionStorage.getItem(INTRO_SEEN_KEY) !== null;
   } catch {
     return true; // no storage: never risk showing it on every load

@@ -13,7 +13,7 @@ Website for **Insomnia by Joel Soto**, a brand that merges two lines by Joel Sot
 
 The site keeps the Black & White aesthetic (minimalism, black and white palette, a 3D steel chain behind the home page) but is rebuilt in React + TypeScript and deployed on Render as a static site. Repo: `github.com/dajozu2513/Insomnia`.
 
-Current state: foundation, the 3D steel chain, and the first half of the home page in the Insomnia aesthetic: intro splash, hero, pillars, three text-free bands, the analog header clock, the footer line, and section headings for jewelry, T-shirts and readings (their bodies are placeholders). The 3D scene has its night atmosphere (chessboard floor, dust, fog and lighting that follow the night cycle). The jewelry deck, T-shirts and readings are still to come.
+Current state: foundation, the 3D steel chain, and the first half of the home page in the Insomnia aesthetic: intro splash, hero, pillars, three text-free bands, the analog header clock, the footer line, and section headings for jewelry, T-shirts and readings (their bodies are placeholders). The 3D scene has its night atmosphere (chessboard floor, hero red mist, dust, fog and lighting that follow the night cycle). The jewelry deck and its configurator are built; the T-shirts and readings are still to come.
 
 ## Stack
 
@@ -56,16 +56,16 @@ src/
     night/              night cycle: progress store (night.ts, SHOW_SCROLL_CLOCK) and the header ScrollClock (pocket watch)
     motifs/             thin line-art SVG ornaments: Chessboard, FiligreeDivider, Rose, Key, ClockFace, OvalLink (placeholder link)
     clock/              analog clock: <PocketWatch> (line-art pocket watch) and watchGeometry.ts (hand angles)
-    cards/              playing card: CardFront, CardBack, FlipCard (slow flip, instant with reduced motion)
+    cards/              lab sample card: CardFront, CardBack, FlipCard (slow flip, instant with reduced motion)
+    deck/               jewelry deck: Deck, CardFaces, LinkDialog (configurator), linkArt (nine link SVGs) + linkArtMap, whatsapp (message builder)
                         jewelry deck, apparel, articles to come
   i18n/                 LanguageProvider, useI18n, es.ts, en.ts, types
   hooks/                shared hooks: usePrefersReducedMotion, useInView (legacy observe-fade / observe-reveal)
   lib/                  scrollFrame.ts: the single rAF-batched scroll/resize scheduler
   types/                css.d.ts (CSS custom properties in inline styles)
-  data/                 typed product data (empty for now)
+  data/                 links.ts (the nine links), forms.ts (forms and sizes): the deck's single source of truth
   styles/               tokens.css (design tokens), global.css (reset, base type, reduced-motion contract), atmosphere.css (grain, vignette, mist)
 public/images/          photos copied from the legacy site, lowercase .jpg names
-  products/             void, star, monolith, static, together, meridian, heart, echo, snake
   background/           horizontal, vertical (hero/band fallbacks), chain (unused in the legacy site)
   og.jpg                Open Graph image
 docs/brand/             brand documents (committed)
@@ -89,7 +89,7 @@ Component CSS sits next to its component (`Header.tsx` imports `Header.css`) and
 - Atmosphere utilities in `src/styles/atmosphere.css`: `.atmo-grain` (film grain via `--grain-image`, also used by the home bands), `.atmo-vignette`, `.atmo-mist`. All stop moving under reduced motion.
 - Fonts load from Google Fonts in `index.html`: Cormorant Garamond 300/400/600 and italic 300; EB Garamond 400 and italic 400; Montserrat 200/400/500. Montserrat 300 and EB Garamond 500 were dropped once body text moved to EB Garamond. Add a weight there before using it.
 - Ornaments are thin line art: use the motifs in `src/features/motifs/` (stroke `MOTIF_STROKE`, 1.3 px at any size, as the legacy pillar icons). One motif per section at most; objects and patterns only, never characters (see the IP rules in the design direction).
-- Image paths are lowercase (`/images/products/void.jpg`). Render's file serving is case-sensitive.
+- Image paths are lowercase (`/images/background/horizontal.jpg`). Render's file serving is case-sensitive. There are no product photos on the site: the links are drawn (`features/deck/linkArt.tsx`).
 
 ## Internationalization rules
 
@@ -113,6 +113,14 @@ Section map and look come from `docs/brand/design-direction.md`; behaviour is po
 - **Pillars** (`home/Pillars.tsx`): Steel / Words / Vigil on bone, icons from `PillarIcons.tsx` (link, open quotation mark, crescent moon) that draw themselves: a ref measures every stroked shape into `--len` and adds `.draw`; shapes with `stroke="none"` get `.fill` and fade in after. A filigree divider sits above, in `--text-on-light-muted`.
 - **Window mist** (`.atmo-mist`, hero and bands): positioned inside its window and never moved by scroll; its only motion is a slow, time-based horizontal drift (`mist-drift`), off with reduced motion.
 - **Bands** (`home/Band.tsx`): three of them (after the pillars, after the jewelry, after the T-shirts); pure, text-free windows onto the chain (`aria-hidden`), 460 px tall (300 px on phones): mist, a soft edge vignette and grain, nothing else. The chain drapes across the centre of each (see DRAPE_STYLE). Photo fallback drifts and eases out of a 1.1x zoom (static with reduced motion; never `background-attachment: fixed`).
+- **Jewelry deck** (`features/deck/`), inside the jewelry section (opaque bone, so the chain layering rule holds):
+  - **Data:** `src/data/links.ts` (`LINKS`: id, name, rank, chainType, technical, poetic; localized fields are `Record<Lang, string>`, so both languages are required) and `src/data/forms.ts` (`FORMS`, `SIZES`). Link names are never translated and never get an i18n key. UI copy (labels, the WhatsApp template) lives in the dictionaries under `home.deck`.
+  - **Add a link:** an entry in `LINKS` (id, name, rank, texts in both languages), a drawing in `linkArt.tsx` (64-unit box, `MotifSvg`, solids `stroke="none"`), and its id in `linkArtMap.ts`. **Add a form:** an entry in `FORMS` (`OTHER_FORM_ID` reveals the free-text field; `CUSTOM_SIZE_ID` the cm field).
+  - **Deal:** the cards start face down and turn face up one by one (0.14 s apart) the first time the deck is 20% in view; face up from the start with reduced motion.
+  - **Card red rule:** nothing on a card is red at rest; only the suit marks of the hovered (fine pointers), focused (`:focus-visible`) or selected card turn `--accent`; in the dialog, its card's marks are the one red. Hover lifts the card 6 px and dims the others to 0.7 (not lower: their text must stay AA).
+  - **Dialog** (`LinkDialog.tsx`, ported from the legacy product modal): a native `<dialog>` opened with `showModal()` (top layer, `aria-modal`, focus moves in, the page is inert so focus stays inside), labelled by the link name. The card flies in from the grid with a 750 ms FLIP (skipped with reduced motion or when there is no on-screen source); overlay and panel animate only their background colour; closing fades out in 350 ms. Escape and a click on the backdrop close it; focus returns to the card; `html { overflow: hidden }` locks the page (`scrollbar-gutter: stable` keeps the layout from shifting).
+  - **WhatsApp** (`whatsapp.ts`): `buildMessage(link, config, lang, strings)` composes the message (link, form, size; lines without a value are left out; "Otra (text)"; "A la medida (18 cm)" with the number localized), `whatsappUrl()` builds the wa.me link. It updates live and re-renders on language change.
+  - **Deep links:** `?link=<id>` opens that card's dialog on load (and skips the intro); opening and closing keep the parameter in sync with `replaceState`; unknown ids are ignored.
 - **Reality sections** (`home/HomeSection.tsx`): opaque bone, legacy heading (roman lead, italic tail, rising out of its slot at 30%; the header fades in at 12%).
 - **Footer**: the brand, the approved line "Acero y palabras para quienes no duermen." in small italic body type (`--text-on-dark-muted`), and the copyright. No red.
 - **useInView** (`hooks/useInView.ts`): the legacy `.observe-fade` (`FADE_THRESHOLD` 0.12) and `.observe-reveal` (`REVEAL_THRESHOLD` 0.3) observers as a hook returning `[ref, visible]`; one re-render per element, then it disconnects.

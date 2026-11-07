@@ -21,10 +21,13 @@
      quieter text colour on each side. Both pass AA on both backgrounds of
      their side (see /lab). */
   --text-on-light-muted: #4f4a50; /* 6.65:1 on bone, 5.48:1 on bone-deep */
+  /* Cards and other paper raised slightly off a bone section */
+  --bone-raised: #efe9dd;
   --text-on-dark-muted: #8f8a83; /* 5.70:1 on ink, 5.02:1 on ink-raised */
 
   /* Channels for translucent overlays: rgb(var(--ink-rgb) / 0.55) */
   --ink-rgb: 13 12 14;
+  --bone-rgb: 232 225 211;
   --text-on-dark-rgb: 235 230 220;
   --steel-rgb: 184 187 193;
   --accent-rgb: 143 29 34;

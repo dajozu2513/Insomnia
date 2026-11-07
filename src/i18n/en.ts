@@ -56,8 +56,25 @@ export const en: Dictionary = {
     jewelry: {
       lead: 'Steel',
       em: 'jewelry',
-      // PLACEHOLDER: the jewelry deck arrives in a later step.
-      body: '[Link deck pending]',
+    },
+    // The jewelry deck and its configurator. Link names and texts live in src/data/links.ts,
+    // forms and sizes in src/data/forms.ts.
+    deck: {
+      listLabel: 'Link deck',
+      close: 'Close',
+      form: 'Form',
+      size: 'Size',
+      otherPrompt: 'What piece do you have in mind?',
+      measureLabel: 'Measurement in cm (optional)',
+      measureHelper: "Not sure of your size? We'll help you on WhatsApp.",
+      cta: 'Ask on WhatsApp',
+      newTab: '(opens WhatsApp)',
+      whatsapp: {
+        intro: "Hi, I'm interested in an Insomnia piece:",
+        link: 'Link',
+        form: 'Form',
+        size: 'Size',
+      },
     },
     tshirts: {
       lead: 'Printed',
@@ -124,6 +141,12 @@ export const en: Dictionary = {
       headerPhoneSize: 'Header, phone',
       introSize: 'Intro size',
       captions: ['6:00 PM', '9:47 PM', '12:00 AM', '3:47 AM', '6:00 AM'],
+    },
+    links: {
+      title: 'Links',
+      text: 'The nine links in thin line art, as one family, at card size and at corner-index size.',
+      cardSize: 'Card size',
+      indexSize: 'Index size',
     },
     motifs: {
       title: 'Motifs',

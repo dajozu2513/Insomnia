@@ -1,4 +1,5 @@
 import { ChainAnchorsProvider, ChainStage } from '../features/chain';
+import { Deck } from '../features/deck/Deck';
 import { Band } from '../features/home/Band';
 import { Hero } from '../features/home/Hero';
 import { HomeSection } from '../features/home/HomeSection';
@@ -30,7 +31,7 @@ export function HomePage() {
       {/* Band 1 */}
       <Band />
       <HomeSection id="jewelry" lead={jewelry.lead} em={jewelry.em}>
-        <p className="home-section-placeholder">{jewelry.body}</p>
+        <Deck />
       </HomeSection>
       {/* Band 2 */}
       <Band />

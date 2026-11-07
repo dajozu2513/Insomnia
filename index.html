@@ -25,7 +25,11 @@
       // Intro splash: on the first visit to the home page in this tab, keep the page
       // ink until the splash mounts (IntroSplash.tsx uses the same key).
       try {
-        if (location.pathname === '/' && !sessionStorage.getItem('insomnia-intro-seen')) {
+        if (
+          location.pathname === '/' &&
+          !/[?&]link=/.test(location.search) &&
+          !sessionStorage.getItem('insomnia-intro-seen')
+        ) {
           document.documentElement.classList.add('intro-pending');
         }
       } catch (e) {

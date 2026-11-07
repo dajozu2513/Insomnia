@@ -415,3 +415,43 @@
 .lab-specimen--ink .pocket-watch {
   color: var(--steel);
 }
+
+/* ── LINKS ── the nine link drawings, on bone */
+.lab-links-row {
+  padding: 1.6rem 2rem;
+  border: 1px solid var(--bone-deep);
+  background: var(--bone-raised);
+}
+
+.lab-links-row + .lab-links-row {
+  border-top: none;
+}
+
+.lab-links-row .lab-specimen-meta {
+  color: var(--text-on-light-muted);
+  margin-bottom: 1.2rem;
+}
+
+.lab-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.6rem 2.2rem;
+}
+
+.lab-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-on-light);
+}
+
+.lab-link-name {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-on-light-muted);
+}
