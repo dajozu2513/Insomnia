@@ -1,0 +1,21 @@
+/*
+ * Design tokens, ported unchanged from the legacy Black & White site
+ * (_reference/black-and-white/css/styles.css, :root block).
+ * The palette is strictly black, white and warm greys; add new tokens here
+ * rather than hard-coding colours in components.
+ */
+:root {
+  --bg: #f5f4f2;
+  --surface: #ffffff;
+  --ink: #0e0e0d;
+  --ink-mid: #555553;
+  --ink-light: #999997;
+  --border: #e0deda;
+  --radius: 2px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Montserrat', sans-serif;
+
+  /* Shared layout values that the legacy CSS repeated inline */
+  --gutter: clamp(1.5rem, 5vw, 4rem);
+  --header-height: 72px;
+}

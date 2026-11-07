@@ -1,0 +1,28 @@
+# Dependencies and build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+*.log
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Legacy Black & White site, kept locally as a read-only reference
+_reference/
+
+# Agent skills installed locally (npx skills); not part of the site
+.agents/
+.claude/skills/
+.claude/settings.local.json

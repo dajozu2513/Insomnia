@@ -1,0 +1,7 @@
+dist
+node_modules
+_reference
+.agents
+.claude
+package-lock.json
+skills-lock.json

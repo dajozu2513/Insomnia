@@ -1,0 +1,22 @@
+# The "insomnia-js" static site was created manually in the Render dashboard.
+# This file documents its configuration; it is not used as a Blueprint, so
+# changing it does not change the service. Keep it in sync with the dashboard.
+#
+# Live URL: https://insomnia-js.onrender.com
+# Node version: Render reads .nvmrc (24); NODE_VERSION below mirrors it.
+# Pull request previews are off (no `previews` field).
+services:
+  - type: web
+    runtime: static
+    name: insomnia-js
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+    routes:
+      # Client-side routing: every path is served by the SPA entry point.
+      - type: rewrite
+        source: /*
+        destination: /index.html

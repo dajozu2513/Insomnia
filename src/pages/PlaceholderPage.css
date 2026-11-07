@@ -1,0 +1,32 @@
+/* Temporary styles for placeholder pages; delete with them. */
+.placeholder {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: calc(var(--header-height) + 2rem) var(--gutter) 2rem;
+  background: var(--bg);
+}
+
+.placeholder--dark {
+  background: var(--ink);
+}
+
+.placeholder-label {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.placeholder-link {
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}

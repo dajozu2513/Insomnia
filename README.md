@@ -1,0 +1,75 @@
+# Insomnia by Joel Soto
+
+Website for **Insomnia by Joel Soto**, a brand that brings together two lines by the same designer: **Black & White**, handmade steel jewelry, and **Obscure Human Feelings**, T-shirts that each carry a single word for an emotion that language has not named yet.
+
+**Live site:** https://insomnia-js.onrender.com
+
+The site continues the visual language of the earlier Black & White site (a strict black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and rebuilds it as a typed React application.
+
+> Status: foundation. Tooling, design tokens, bilingual infrastructure and the layout shell are in place. The 3D chain, collection, apparel line and articles are being ported in the next steps.
+
+## Highlights
+
+- **React 19 + TypeScript in strict mode**, built with Vite.
+- **Typed bilingual content (ES/EN).** Spanish is the default. The Spanish dictionary defines the schema and the English one is checked against it, so a missing translation fails the build instead of shipping. The choice persists across visits and updates `<html lang>`.
+- **Design tokens in plain CSS.** No UI or CSS framework; colours, fonts and spacing come from CSS custom properties ported from the original site.
+- **Motion with restraint.** Every animation honours `prefers-reduced-motion`: movement is replaced by short fades and the 3D scene stops its render loop.
+- **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
+- **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
+
+## Tech stack
+
+| Area      | Choice                                                   |
+| --------- | -------------------------------------------------------- |
+| Framework | React 19, react-router-dom 7                             |
+| Language  | TypeScript 6 (strict)                                    |
+| Build     | Vite 8                                                   |
+| 3D        | Three.js 0.183.0                                         |
+| Styling   | Plain CSS, custom properties                             |
+| Fonts     | Cormorant Garamond and Montserrat (Google Fonts)         |
+| Quality   | ESLint (typescript-eslint strict type-checked), Prettier |
+| Hosting   | Render static site (`render.yaml`)                       |
+
+## Getting started
+
+Requires Node 22.12 or newer (Node 24 recommended, see `.nvmrc`).
+
+```bash
+npm install
+npm run dev
+```
+
+Then open http://localhost:5173.
+
+| Script              | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| `npm run dev`       | Development server with hot reload        |
+| `npm run build`     | Type-check and produce a build in `dist/` |
+| `npm run preview`   | Serve the production build locally        |
+| `npm run lint`      | Lint with ESLint                          |
+| `npm run format`    | Format with Prettier                      |
+| `npm run typecheck` | Type-check only                           |
+
+## Project structure
+
+```
+src/
+  app/                 App and router
+  components/layout/   Header, Footer, language toggle, page layout
+  pages/               Route-level pages
+  features/            Feature modules (chain, intro, collection, apparel, articles)
+  i18n/                Language provider, hook and ES/EN dictionaries
+  hooks/               Shared hooks
+  data/                Typed product data
+  styles/              Design tokens and global styles
+public/images/         Product and background photography
+docs/brand/            Brand documents
+```
+
+## Deployment
+
+The site is live at https://insomnia-js.onrender.com, served by a Render static site that builds the `main` branch with `npm ci && npm run build`, publishes `dist/`, and rewrites every path to `index.html` so client-side routes work on refresh. The service is configured in the Render dashboard; `render.yaml` documents that configuration and Node 24 comes from `.nvmrc`.
+
+## Author
+
+Designed and developed by **Joel Soto**, Costa Rica.

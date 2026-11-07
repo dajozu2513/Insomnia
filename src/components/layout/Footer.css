@@ -1,0 +1,26 @@
+/* Ported from the FOOTER block of the legacy css/styles.css */
+.site-footer {
+  background: var(--ink);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 3rem var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.footer-copy {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}

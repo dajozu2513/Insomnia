@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "skills": {
+    "3d-web-experience": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/3d-web-experience/SKILL.md",
+      "computedHash": "9ce624c615599a2b1b8c513565e772d4555682b82a739bae928e76cc1ab4d5f0"
+    },
+    "threejs-animation": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-animation/SKILL.md",
+      "computedHash": "dffb21891a4efe216fd41d80d38aef4d8125f92b88c5b3ff7a30f294b3235f49"
+    },
+    "threejs-fundamentals": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-fundamentals/SKILL.md",
+      "computedHash": "3312f65074934fd37f18ebe68fce4dc35096d25e4778ff1d1449e6e7d456d078"
+    },
+    "threejs-geometry": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-geometry/SKILL.md",
+      "computedHash": "fca930f05e0712842dde5c6e05926a4d97a2d10b5ae21a7a079ba52104e86372"
+    },
+    "threejs-interaction": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-interaction/SKILL.md",
+      "computedHash": "dc8a4b1154e4adfd13c07842e2c06ca91565984de77589e913faf00707334b20"
+    },
+    "threejs-lighting": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-lighting/SKILL.md",
+      "computedHash": "c46bb0f826bb73a8b8650ca92c0363575df8c784c5d17ea1ff91065a0d39c424"
+    },
+    "threejs-loaders": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-loaders/SKILL.md",
+      "computedHash": "108af9ec752b39fd15c95e59d7656613890414d941f4a83e7e14cd39a8f8545e"
+    },
+    "threejs-materials": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-materials/SKILL.md",
+      "computedHash": "ee2067f87520a84dd97041d0261ac25bdc12f2ec94f8409872c3e729833e8175"
+    },
+    "threejs-postprocessing": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-postprocessing/SKILL.md",
+      "computedHash": "e89b401b8d984912b34f966496be2f1309db4eaa45ada2e78e3acdb174efdc5d"
+    },
+    "threejs-shaders": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-shaders/SKILL.md",
+      "computedHash": "9974eb544a776bba1e8ecdd165e8e1a6611081ef85492be49fe921f4a298079a"
+    },
+    "threejs-skills": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-skills/SKILL.md",
+      "computedHash": "99f92cba6c54f75cb73f1db969ef2de28c144a388b182519b4e11276a6ab240d"
+    },
+    "threejs-textures": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-textures/SKILL.md",
+      "computedHash": "3f5b46b537d1c147490511884a536cc832283b2161b3490bdfd2bbef4f7ccb01"
+    }
+  }
+}

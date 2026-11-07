@@ -1,0 +1,172 @@
+/* Ported from the HEADER block of the legacy css/styles.css. Transparent with
+   white type over the dark hero; solid after 60px of scroll (.scrolled). */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--gutter);
+  height: var(--header-height);
+  transition:
+    background 0.4s,
+    border-color 0.4s,
+    box-shadow 0.4s;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.site-header.scrolled {
+  background: var(--surface);
+  border-bottom-color: var(--border);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.brand {
+  display: block;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 0.4s;
+}
+
+.brand:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 6px;
+}
+
+.brand-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  transition: color 0.4s;
+}
+
+.site-header.scrolled .brand-name {
+  color: var(--ink);
+}
+
+/* 1px reading-progress hairline along the header's bottom edge (driven by Header.tsx) */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: background 0.4s;
+}
+
+.site-header.scrolled .scroll-progress {
+  background: var(--ink);
+}
+
+.brand-sub {
+  font-family: var(--font-body);
+  font-weight: 200;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  margin-top: 3px;
+  display: block;
+  transition: color 0.4s;
+}
+
+.site-header.scrolled .brand-sub {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.header-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  transition: color 0.4s;
+}
+
+.site-header.scrolled .header-tag {
+  color: var(--ink-mid);
+  text-shadow: none;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.9rem, 2vw, 1.6rem);
+}
+
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  transition: border-color 0.4s;
+}
+
+.site-header.scrolled .lang-toggle {
+  border-color: var(--border);
+}
+
+.lang-opt {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+
+.lang-opt:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+.site-header.scrolled .lang-opt {
+  color: var(--ink-light);
+  text-shadow: none;
+}
+
+.lang-opt.active {
+  background: #fff;
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.site-header.scrolled .lang-opt.active {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+@media (max-width: 600px) {
+  /* Keep the brand on one line: drop the tagline, the language toggle stays */
+  .header-tag {
+    display: none;
+  }
+
+  .brand-name {
+    white-space: nowrap;
+  }
+}
