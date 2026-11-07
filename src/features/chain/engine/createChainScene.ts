@@ -14,7 +14,7 @@ import {
   WebGLRenderer,
 } from 'three';
 
-import type { ChainScene, ChainSceneOptions } from '../types';
+import type { ChainAnchors, ChainScene, ChainSceneOptions } from '../types';
 import { buildPath, cameraYFor, type ChainPath } from './buildPath';
 import {
   CAMERA_FAR,
@@ -53,6 +53,7 @@ import { installDebugHook } from './debug';
 import { createFloor } from './floor';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
 import { createGlow } from './glow';
+import { createHeroMist } from './heroMist';
 import { createNightState, sampleNight } from './nightCycle';
 import { createParticles } from './particles';
 import { createStudioEnvironment } from './studioEnvironment';
@@ -125,6 +126,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   scene.add(particles.points);
   const glow = createGlow();
   scene.add(glow.mesh);
+  const heroMist = createHeroMist();
+  scene.add(heroMist.mesh);
   /** Debug switch (bench): draw the atmosphere layers or not. */
   let atmosphereOn = true;
 
@@ -139,6 +142,28 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   let path: ChainPath | null = null;
   const pxToWorld = () => path?.pxToWorld ?? 1;
+  /** Hero-only layers as of the last draw (also read by the debug hook). */
+  let floorPresence = 0;
+  let mistPresence = 0;
+  /** The windows, as of the last rebuild. */
+  let anchors: ChainAnchors = { hero: null, bands: [] };
+
+  /**
+   * How present the hero window is, from its real position on the page (not the
+   * eased camera): 1 while it fills the top of the viewport, 0 once it is gone.
+   * The floor and the hero's red mist belong to the hero alone, so both are also
+   * forced off whenever any band is on screen, at any scroll speed.
+   */
+  function heroPresence(): { hero: number; bandOnScreen: boolean } {
+    const vh = window.innerHeight;
+    const rect = anchors.hero?.getBoundingClientRect();
+    const hero = rect ? MathUtils.clamp(rect.bottom / vh, 0, 1) : 0;
+    const bandOnScreen = anchors.bands.some((band) => {
+      const r = band.getBoundingClientRect();
+      return r.bottom > 0 && r.top < vh;
+    });
+    return { hero, bandOnScreen };
+  }
 
   // Links slide along the path by `flow`. Offsetting the first link by a multiple of
   // two pitches keeps each link's orientation (flat / upright) as it travels.
@@ -217,8 +242,15 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     const camY = cameraYFor(smoothScroll, pxToWorld(), parallax);
     camera.position.set(0, camY, DIST);
     if (path) {
-      // The floor belongs to the hero: hidden once the camera sinks towards it.
-      floor.mesh.visible = atmosphereOn && camY > floor.y + 0.5;
+      // Floor and red mist belong to the hero window: they fade as it leaves and
+      // never show while a band is on screen.
+      const { hero, bandOnScreen } = heroPresence();
+      const inHero = atmosphereOn && !bandOnScreen;
+      floorPresence = inHero && camY > floor.y + 0.5 ? MathUtils.smoothstep(hero, 0.55, 0.9) : 0;
+      mistPresence = inHero ? MathUtils.smoothstep(hero, 0.3, 0.85) : 0;
+      floor.setPresence(floorPresence);
+      heroMist.setPresence(mistPresence);
+      heroMist.follow(camY, path.halfWidth, path.viewHeight);
       particles.points.visible = atmosphereOn;
       glow.mesh.visible = atmosphereOn && night.glow > 0.002;
       glow.follow(camY, path.halfWidth, path.viewHeight);
@@ -307,7 +339,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     const height = container.clientHeight;
     if (width === 0 || height === 0) return;
 
-    const { hero, bands } = options.getAnchors();
+    anchors = options.getAnchors();
+    const { hero, bands } = anchors;
     syncObserved(hero ? [hero, ...bands] : bands);
 
     renderer.setSize(width, height, false);
@@ -374,6 +407,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           appliedNight = -1;
           applyNight(progress);
         },
+        presence: () => ({ floor: floorPresence, mist: mistPresence }),
         restoreNight: () => {
           appliedNight = -1;
           applyNight(options.night.get());
@@ -413,6 +447,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       linkGeometry.dispose();
       steel.dispose();
       floor.dispose();
+      heroMist.dispose();
       particles.dispose();
       glow.dispose();
       key.dispose();

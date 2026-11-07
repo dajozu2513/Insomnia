@@ -59,8 +59,8 @@
 /*
  * RED MIST: the threshold into the night, and the one large use of red in the
  * design (docs/brand/design-direction.md). Soft blood-red haze built from
- * --accent and --accent-glow, deepest along the bottom and the edges and kept
- * away from the centre, where the name sits. Two layers drift slowly in
+ * --accent and --accent-glow, gathered in the bottom and the lower corners so
+ * the upper half and the centre, where the name sits, stay clean ink. Two layers drift slowly in
  * opposite directions; static with reduced motion. A glow, never a fill.
  */
 .intro-red-mist {
@@ -82,7 +82,7 @@
 .intro-red-mist::before {
   background:
     radial-gradient(
-      ellipse 90% 50% at 50% 104%,
+      ellipse 78% 34% at 50% 110%,
       rgb(var(--accent-glow-rgb) / 0.42) 0%,
       rgb(var(--accent-glow-rgb) / 0.294) 30%,
       rgb(var(--accent-glow-rgb) / 0.151) 55%,
@@ -90,7 +90,7 @@
       rgb(var(--accent-glow-rgb) / 0) 100%
     ),
     radial-gradient(
-      ellipse 42% 75% at 0% 60%,
+      ellipse 34% 46% at 0% 96%,
       rgb(var(--accent-rgb) / 0.48) 0%,
       rgb(var(--accent-rgb) / 0.336) 30%,
       rgb(var(--accent-rgb) / 0.173) 55%,
@@ -98,7 +98,7 @@
       rgb(var(--accent-rgb) / 0) 100%
     ),
     radial-gradient(
-      ellipse 42% 75% at 100% 42%,
+      ellipse 34% 46% at 100% 92%,
       rgb(var(--accent-rgb) / 0.46) 0%,
       rgb(var(--accent-rgb) / 0.322) 30%,
       rgb(var(--accent-rgb) / 0.166) 55%,
@@ -111,7 +111,7 @@
 .intro-red-mist::after {
   background:
     radial-gradient(
-      ellipse 65% 40% at 30% 100%,
+      ellipse 52% 28% at 28% 108%,
       rgb(var(--accent-rgb) / 0.4) 0%,
       rgb(var(--accent-rgb) / 0.28) 30%,
       rgb(var(--accent-rgb) / 0.144) 55%,
@@ -119,7 +119,7 @@
       rgb(var(--accent-rgb) / 0) 100%
     ),
     radial-gradient(
-      ellipse 60% 36% at 75% 102%,
+      ellipse 48% 26% at 74% 110%,
       rgb(var(--accent-glow-rgb) / 0.3) 0%,
       rgb(var(--accent-glow-rgb) / 0.21) 30%,
       rgb(var(--accent-glow-rgb) / 0.108) 55%,
@@ -127,7 +127,7 @@
       rgb(var(--accent-glow-rgb) / 0) 100%
     ),
     radial-gradient(
-      ellipse 36% 52% at 96% 96%,
+      ellipse 30% 38% at 98% 102%,
       rgb(var(--accent-rgb) / 0.33) 0%,
       rgb(var(--accent-rgb) / 0.231) 30%,
       rgb(var(--accent-rgb) / 0.119) 55%,
@@ -166,8 +166,10 @@
   width: auto;
   height: clamp(64px, 18vw, 88px);
   margin-top: 0.4rem;
-  color: var(--steel); /* line art on dark */
-  animation: introFade 1.4s 0.85s ease both;
+  /* Line art on dark: steel, dimmed to the hairline's quiet level */
+  color: rgb(var(--steel-rgb) / 0.62);
+  /* Fully in by 1.6 s, well before the curtain lifts at 2 s */
+  animation: introFade 0.9s 0.7s ease both;
 }
 
 @keyframes introRise {

@@ -38,7 +38,7 @@ Derived tokens (added after the lab review, both AA on their side):
 - `--text-on-light-muted`: `#4f4a50` (6.65:1 on bone, 5.48:1 on bone-deep)
 - `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the intro's red mist: a soft blood-red haze on ink (from `--accent` and `--accent-glow`), deepest at the bottom and edges and kept away from the name, as the threshold into the night. It is a glow, never a fill or text. All text must meet WCAG AA.
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's red mist, a soft blood-red haze on ink (from `--accent` and `--accent-glow`) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by a subtler red haze inside the 3D scene, low and towards the edges, behind the chain only. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
 
 ## Typography
 
@@ -60,7 +60,7 @@ Rules: all ornaments are thin line art in the same stroke weight as the pillar i
 
 Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles (dust or ash). In the 3D scene: depth fog and the chessboard floor. Everything subtle; the steel chain must always read as silver steel.
 
-As built (step 4): the chessboard floor lies under the hero necklace only, in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes of dust (60 on small screens) rise slowly through all three windows. A faint blood-red glow (`--accent-glow`) lives far behind the chain around midnight, as light in the mist, never on the steel. The bands are pure windows, so both drapes now hang as gentle catenaries centred in their band.
+As built (steps 4 and 5): the chessboard floor belongs to the hero window alone: it fades out as the hero leaves the viewport and never shows while a band is on screen. It lies under the hero necklace in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes of dust (60 on small screens) rise slowly through all three windows. A faint blood-red glow (`--accent-glow`) lives far behind the chain around midnight, as light in the mist, never on the steel. The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
 
 ## The night cycle
 

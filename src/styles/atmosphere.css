@@ -50,7 +50,8 @@
   );
 }
 
-/* ── MIST ── two soft layers drifting very slowly in opposite directions */
+/* ── MIST ── two soft layers drifting very slowly, sideways only, in opposite
+   directions. Time-based, never scroll-linked: the mist stays put in its window. */
 .atmo-mist {
   position: absolute;
   inset: 0;
@@ -96,7 +97,7 @@
     translate: -6% 0;
   }
   to {
-    translate: 6% -2%;
+    translate: 6% 0;
   }
 }
 

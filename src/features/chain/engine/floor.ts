@@ -1,5 +1,8 @@
 import {
   CanvasTexture,
+  CustomBlending,
+  OneMinusSrcAlphaFactor,
+  SrcAlphaFactor,
   FrontSide,
   Mesh,
   MeshBasicMaterial,
@@ -14,6 +17,8 @@ export interface Floor {
   mesh: Mesh;
   /** Height of the floor plane (world y), set from the layout. */
   y: number;
+  /** 0..1: how much of the floor shows (0 hides it). Tied to the hero window. */
+  setPresence: (presence: number) => void;
   dispose: () => void;
 }
 
@@ -43,9 +48,10 @@ function chessboardTexture(maxAnisotropy: number): CanvasTexture {
 /**
  * The hero's chessboard floor: a large horizontal plane below the necklace,
  * receding into the fog so its far edge dissolves. Unlit and fogged; drawn
- * before the chain without writing depth, so it never hides a link. Its top
- * face only (FrontSide): once the camera sinks below it on the way to the
- * bands, it is culled and never shows there.
+ * before the chain without writing depth, so it never hides a link. It belongs
+ * to the hero window: the engine fades it out as the hero leaves the viewport
+ * and hides it whenever a band is on screen (setPresence), and FrontSide culls
+ * it once the camera sinks below it.
  */
 export function createFloor(maxAnisotropy: number): Floor {
   const geometry = new PlaneGeometry(FLOOR_WIDTH, FLOOR_DEPTH);
@@ -58,6 +64,12 @@ export function createFloor(maxAnisotropy: number): Floor {
     // Not tone-mapped: the canvas clears to the raw fog colour, so a fully fogged
     // floor must output exactly that colour or its far edge shows as a line.
     toneMapped: false,
+    // Fades with the hero window. Still drawn in the opaque pass (before the
+    // chain, so it never hides a link): custom blending keeps the alpha.
+    transparent: false,
+    blending: CustomBlending,
+    blendSrc: SrcAlphaFactor,
+    blendDst: OneMinusSrcAlphaFactor,
   });
   const mesh = new Mesh(geometry, material);
   mesh.rotation.x = -Math.PI / 2;
@@ -69,6 +81,10 @@ export function createFloor(maxAnisotropy: number): Floor {
   return {
     mesh,
     y: 0,
+    setPresence(presence) {
+      material.opacity = presence;
+      mesh.visible = presence > 0.002;
+    },
     dispose: () => {
       geometry.dispose();
       material.dispose();

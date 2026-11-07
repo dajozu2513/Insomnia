@@ -8,6 +8,8 @@ import { WebGLRenderTarget, type InstancedMesh, type WebGLRenderer } from 'three
  *                                      view on screen (renders twice: with and
  *                                      without the chain; the chain's pixels are
  *                                      where the two frames differ)
+ *   __insomniaChain.presence()         floor opacity and hero red-mist strength
+ *                                      as of the last frame
  *   __insomniaChain.bench(frames)      CPU+GPU time per frame with and without
  *                                      the atmosphere layers, rendered into an
  *                                      offscreen target of the canvas's size so
@@ -23,6 +25,8 @@ interface DebugTargets {
   setAtmosphere: (on: boolean) => void;
   setNight: (progress: number) => void;
   restoreNight: () => void;
+  /** Hero-only layers as of the last draw: floor opacity and red-mist strength. */
+  presence: () => { floor: number; mist: number };
 }
 
 export interface ChainColour {
@@ -52,9 +56,11 @@ function linear(c: number): number {
 }
 
 export function installDebugHook(targets: DebugTargets): () => void {
-  const { renderer, render, chain, setAtmosphere, setNight, restoreNight } = targets;
+  const { renderer, render, chain, setAtmosphere, setNight, restoreNight, presence } = targets;
 
   const api = {
+    presence,
+
     measure(progress: number): ChainColour {
       setNight(progress);
       render();
