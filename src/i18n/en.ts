@@ -60,12 +60,6 @@ export const en: Dictionary = {
       body: '[Link deck pending]',
     },
     tshirts: {
-      // Opens the section, before the heading. The word is not translated.
-      sonder: {
-        word: 'Sonder',
-        meaning:
-          'The realization that every stranger is living a life as vivid and complex as your own.',
-      },
       lead: 'Printed',
       em: 'T-shirts',
       // PLACEHOLDER: the T-shirt section arrives in a later step.
@@ -126,7 +120,8 @@ export const en: Dictionary = {
     clock: {
       title: 'Night clock',
       text: 'A pocket watch in thin line art. At the top of the page it reads 6:00 PM; at the bottom, one full turn later, 6:00 AM. The hands follow the scroll without steps.',
-      headerSize: 'Header size',
+      headerSize: 'Header, desktop',
+      headerPhoneSize: 'Header, phone',
       introSize: 'Intro size',
       captions: ['6:00 PM', '9:47 PM', '12:00 AM', '3:47 AM', '6:00 AM'],
     },

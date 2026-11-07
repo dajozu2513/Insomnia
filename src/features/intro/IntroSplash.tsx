@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { PocketWatch } from '../clock/PocketWatch';
 import { useI18n } from '../../i18n';
+import '../home/byline.css';
 import './IntroSplash.css';
 
 /** sessionStorage key: the splash shows once per tab. */
@@ -32,7 +33,8 @@ function markSeen(): void {
 }
 
 /**
- * Intro splash, ported from the legacy site: the name rises, a hairline draws
+ * Intro splash, ported from the legacy site: the full name "Insomnia by Joel
+ * Soto" rises over a slow red mist, a hairline draws
  * outward, the pocket watch fades in at 6:00 (the start of the night), and after 2 s the splash
  * lifts as a clip-path curtain while the hero entrance plays. Once per tab.
  *
@@ -78,8 +80,13 @@ export function IntroSplash() {
       }
       aria-hidden="true"
     >
+      {/* The threshold into the night: a slow red mist on ink, the one large use of red */}
+      <div className="intro-red-mist" />
       <div className="atmo-vignette" />
-      <div className="intro-logo">{t.home.hero.title}</div>
+      <div className="intro-name">
+        <div className="intro-logo">{t.home.hero.title}</div>
+        <div className="intro-byline name-byline">{t.home.hero.sub}</div>
+      </div>
       <span className="intro-line" />
       {/* The start of the night: the header's watch, larger and static at 6:00 */}
       <PocketWatch className="intro-watch" size={88} progress={0} doubleRim />

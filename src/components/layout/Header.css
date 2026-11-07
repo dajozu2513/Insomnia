@@ -103,9 +103,16 @@
   text-shadow: none;
 }
 
-/* Night clock beside the tagline: a pocket watch (features/night/ScrollClock.tsx)
-   drawn in currentColor, so it follows the header's text colour. The shadow
-   mirrors the text-shadow that keeps the tagline legible over the chain. */
+/* The watch and the brand, side by side at the top left */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1.2vw, 0.85rem);
+}
+
+/* Night clock: a pocket watch (features/night/ScrollClock.tsx) drawn in
+   currentColor, so it follows the brand's colour. The shadow mirrors the
+   text-shadow that keeps the header legible over the chain. */
 .scroll-clock {
   display: flex;
   align-items: center;
@@ -115,8 +122,22 @@
 }
 
 .site-header.scrolled .scroll-clock {
-  color: var(--text-on-light-muted);
+  color: var(--text-on-light);
   filter: none;
+}
+
+/* As tall as the two-line brand block at every width: the brand name's size, the
+   by-line's size and the gap between them (see .brand-name and .brand-sub) */
+.scroll-clock .pocket-watch {
+  height: calc(clamp(1.1rem, 2.2vw, 1.5rem) + 0.6rem + 4px);
+  width: auto;
+}
+
+/* The double rim stays clean only near the full size (about 38px) */
+@media (max-width: 900px) {
+  .scroll-clock .pocket-watch-inner-rim {
+    display: none;
+  }
 }
 
 .header-right {
@@ -179,27 +200,12 @@
 }
 
 @media (max-width: 600px) {
-  /* Keep the brand on one line: drop the tagline; the clock and the language toggle stay */
+  /* Keep the header uncrowded: the tagline goes first; the watch, brand and toggle stay */
   .header-tag {
     display: none;
   }
 
   .brand-name {
     white-space: nowrap;
-  }
-}
-
-/* Phones: a slightly smaller watch */
-@media (max-width: 600px) {
-  .scroll-clock .pocket-watch {
-    height: 24px;
-    width: auto;
-  }
-}
-
-/* Very narrow phones: brand, clock and toggle no longer fit on one line; the clock goes */
-@media (max-width: 359px) {
-  .scroll-clock {
-    display: none;
   }
 }

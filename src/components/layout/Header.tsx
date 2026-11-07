@@ -31,13 +31,16 @@ export function Header() {
 
   return (
     <header id="site-header" className={scrolled ? 'site-header scrolled' : 'site-header'}>
-      <Link to="/" className="brand" aria-label={t.a11y.homeLink}>
-        <span className="brand-name">Insomnia</span>
-        <span className="brand-sub">by Joel Soto</span>
-      </Link>
+      {/* The watch is the emblem beside the name: top-left, as tall as the brand block */}
+      <div className="header-left">
+        {SHOW_SCROLL_CLOCK && <ScrollClock />}
+        <Link to="/" className="brand" aria-label={t.a11y.homeLink}>
+          <span className="brand-name">Insomnia</span>
+          <span className="brand-sub">by Joel Soto</span>
+        </Link>
+      </div>
       <div className="header-right">
         <p className="header-tag">{t.header.tagline}</p>
-        {SHOW_SCROLL_CLOCK && <ScrollClock />}
         <LanguageToggle />
       </div>
       <span ref={progressRef} className="scroll-progress" aria-hidden="true" />

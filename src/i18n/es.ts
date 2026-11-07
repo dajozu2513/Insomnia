@@ -59,12 +59,6 @@ export const es = {
       body: '[Baraja de eslabones pendiente]',
     },
     tshirts: {
-      // Opens the section, before the heading. The word is not translated.
-      sonder: {
-        word: 'Sonder',
-        meaning:
-          'Darte cuenta de que cada desconocido vive una vida tan intensa y compleja como la tuya.',
-      },
       lead: 'Camisetas',
       em: 'estampadas',
       // PLACEHOLDER: the T-shirt section arrives in a later step.
@@ -126,7 +120,8 @@ export const es = {
     clock: {
       title: 'Reloj de la noche',
       text: 'Un reloj de bolsillo en línea fina. Arriba de la página marca las 6:00 p. m.; abajo, una vuelta completa después, las 6:00 a. m. Las agujas siguen el scroll sin saltos.',
-      headerSize: 'Tamaño de cabecera',
+      headerSize: 'Cabecera, escritorio',
+      headerPhoneSize: 'Cabecera, teléfono',
       introSize: 'Tamaño de la intro',
       captions: ['6:00 p. m.', '9:47 p. m.', '12:00 a. m.', '3:47 a. m.', '6:00 a. m.'],
     },

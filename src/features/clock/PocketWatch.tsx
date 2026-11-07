@@ -66,7 +66,7 @@ export function PocketWatch({
       <path d="M18.6 11.6 V14.6 M21.4 11.6 V14.6" />
       {/* Case */}
       <circle cx={CX} cy={CY} r={RIM} />
-      {doubleRim && <circle cx={CX} cy={CY} r={RIM - 2.2} />}
+      {doubleRim && <circle className="pocket-watch-inner-rim" cx={CX} cy={CY} r={RIM - 2.2} />}
       {TICKS.map(({ key, ...line }) => (
         <line key={key} {...line} />
       ))}

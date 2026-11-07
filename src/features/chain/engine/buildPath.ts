@@ -72,19 +72,19 @@ export function buildPath(layout: PathLayout): ChainPath {
   for (let deg = 60; deg <= 300; deg += 40) pts.push(ring(deg));
   pts.push(new Vector3(R * 0.95, -V * 0.72, R * 0.35)); // drops out under the hero
 
-  // Bands: the chain hangs across each one like a real chain, clear of the phrase in
-  // the middle. It passes at the same depth as the front of the hero necklace, so the
-  // links read the same size in all three windows. (side) is where it enters,
-  // (edge)/(mid) its height at the band's sides and centre as a fraction of the band.
-  // Offsets are scaled by the depth so the drape fills the band on screen.
-  // On narrow screens the first drape sags deeper so it clears a full-width phrase.
+  // Bands: the chain hangs across each one like a real chain, any number of them, in
+  // document order. It passes at the same depth as the front of the hero necklace, so
+  // the links read the same size in every window. (side) is where it enters, and it
+  // alternates, so each drape enters on the side the previous one left from;
+  // (edge)/(mid) are its height at the band's sides and centre as a fraction of the
+  // band. Offsets are scaled by the depth so the drape fills the band on screen.
   const z = -R * Math.sin(tilt); // depth of the necklace's nearest point
   const crossings =
     DRAPE_STYLE === 'centred'
       ? ([
-          // Text-free bands: both drapes are gentle catenaries centred in the band
+          // Text-free bands: every drape is a gentle catenary centred in its band
           // (edges 0.2 above the centre line, the middle 0.1 below, so the curve
-          // averages out on the band's centre line).
+          // averages out on the band's centre line), entering from alternate sides.
           { side: -1, edge: 0.2, mid: -0.1 },
           { side: 1, edge: 0.2, mid: -0.1 },
         ] as const)
@@ -93,8 +93,8 @@ export function buildPath(layout: PathLayout): ChainPath {
             side: -1,
             edge: MathUtils.lerp(-0.2, 0.1, wide),
             mid: MathUtils.lerp(-0.42, -0.34, wide),
-          }, // sags low
-          { side: 1, edge: 0.5, mid: 0.25 }, // hangs high
+          }, // sags low (odd bands)
+          { side: 1, edge: 0.5, mid: 0.25 }, // hangs high (even bands)
         ] as const);
   bands.forEach((band, i) => {
     const { side, edge, mid } = crossings[i % crossings.length] ?? crossings[0];

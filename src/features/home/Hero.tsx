@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n';
 import { subscribeScrollFrame } from '../../lib/scrollFrame';
 import { has3d } from './has3d';
 import './Hero.css';
+import './byline.css';
 
 /** Photo-fallback parallax: the hero photo moves at 0.35x the scroll (legacy). */
 const HERO_PARALLAX = 0.35;
@@ -49,7 +50,7 @@ export function Hero() {
             </span>
           ))}
         </h1>
-        <p className="hero-sub">{t.home.hero.sub}</p>
+        <p className="hero-sub name-byline">{t.home.hero.sub}</p>
       </div>
     </section>
   );

@@ -38,11 +38,11 @@ Derived tokens (added after the lab review, both AA on their side):
 - `--text-on-light-muted`: `#4f4a50` (6.65:1 on bone, 5.48:1 on bone-deep)
 - `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. All text must meet WCAG AA.
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the intro's red mist: a soft blood-red haze on ink (from `--accent` and `--accent-glow`), deepest at the bottom and edges and kept away from the name, as the threshold into the night. It is a glow, never a fill or text. All text must meet WCAG AA.
 
 ## Typography
 
-- Display: Cormorant Garamond (roman and italic), unchanged.
+- Display: Cormorant Garamond (roman and italic), unchanged. The by-line "by Joel Soto" under INSOMNIA (hero and intro) is Cormorant Garamond italic, large enough to read as part of the name.
 - Labels, UI, clock: Montserrat, small, widely spaced capitals, tabular figures for numbers.
 - Body text: EB Garamond (decided in the lab review). Montserrat is not used for body text.
 
@@ -64,7 +64,7 @@ As built (step 4): the chessboard floor lies under the hero necklace only, in mu
 
 ## The night cycle
 
-The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clock is analog, with no digits: a small pocket watch in thin line art (the pillar-icon stroke, currentColor) with a thin rim (doubled only at sizes where it stays clean), a crown and bow, twelve ticks with longer quarters, no numerals, slender hands with a small open loop near the hour hand's tip, and a centre pin. In the header it sits beside the tagline, up to 28 px tall; its hands follow the scroll continuously (hour hand 180 + 360p degrees, minute hand 360 x 12 x p, for night progress p from 0 to 1), so it reads 6:00 at the top and, one full turn later, 6:00 at the bottom. The intro shows the same watch, larger and static at 6:00. It is decorative and hidden from assistive tech. The 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer. Only cheap parameters change (fog colour and range, exposure between 1.13 and 1.15, a rim light's tint and strength, the glow); the studio reflections never change, so the chain stays neutral silver at every hour.
+The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clock is analog, with no digits: a small pocket watch in thin line art (the pillar-icon stroke, currentColor) with a thin rim (doubled only at sizes where it stays clean), a crown and bow, twelve ticks with longer quarters, no numerals, slender hands with a small open loop near the hour hand's tip, and a centre pin. In the header it sits at the top left, beside the "INSOMNIA / by Joel Soto" brand block and as tall as it (about 38 px with a double rim on desktop, about 31 px with a single rim on phones), as an emblem next to the name; its hands follow the scroll continuously (hour hand 180 + 360p degrees, minute hand 360 x 12 x p, for night progress p from 0 to 1), so it reads 6:00 at the top and, one full turn later, 6:00 at the bottom. The intro shows the full name "Insomnia by Joel Soto", then the hairline, then the same watch, larger and static at 6:00, over the red mist. It is decorative and hidden from assistive tech. The 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer. Only cheap parameters change (fog colour and range, exposure between 1.13 and 1.15, a rim light's tint and strength, the glow); the studio reflections never change, so the chain stays neutral silver at every hour.
 
 ## Motion
 
@@ -72,19 +72,20 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 
 ## Section map (home)
 
-1. Intro (6:00 PM)
+1. Intro (6:00 PM): "Insomnia by Joel Soto", the hairline and the watch over a red mist
 2. Hero, dream window: chain necklace around "Insomnia / by Joel Soto" (no other text), chessboard floor in mist
 3. Pillars, reality (bone)
 4. Band 1, dream: no text, a pure window; the chain drapes across its centre
 5. Jewelry deck, reality
 6. Band 2, dream: no text, a pure window; the chain drapes across its centre
-7. Printed T-shirts, reality, opened by "Sonder" and its meaning
-8. Readings
-9. Footer (6:00 AM, dawn)
+7. Printed T-shirts, reality
+8. Band 3, dream: no text, a pure window; the chain drapes across its centre
+9. Readings
+10. Footer (6:00 AM, dawn)
 
 ## Products (no photos)
 
-- Jewelry is a system, not a fixed list: link type x form x size. Links are the current nine (Void, Star, Monolith, Static, Together, Meridian, Heart, Echo, Snake), each with a line illustration of a single link, its name and its poetic text. Forms: necklace, bracelet, anklet, ring, head piece, waist piece, other. Size: standard or made to measure. The WhatsApp message is composed from the choices.
+- Jewelry is a system, not a fixed list: link type x form x size. Links are the current nine (Void, Star, Monolith, Static, Together, Meridian, Heart, Echo, Snake), each with a line illustration of a single link, its name and its poetic text. Forms: necklace, bracelet, anklet, ring, head piece, waist piece, other. In Spanish the head piece is "Cadena de cabeza" (not "Tocado"). Size: standard or made to measure. The WhatsApp message is composed from the choices.
 - The links are presented as a deck of playing cards: card front with the link illustration, name and a corner index; card back with a chessboard or filigree pattern. Selecting a card flips it and opens the configurator.
 - T-shirts are generated in code: an SVG T-shirt silhouette (black or white) printed with the word and its meaning. Meanings are our own paraphrases, never the original definitions; credit John Koenig's The Dictionary of Obscure Sorrows in the T-shirt section.
 - Phase 2: a 3D preview that repeats the chosen link along the silhouette of the chosen form, reusing the chain engine.

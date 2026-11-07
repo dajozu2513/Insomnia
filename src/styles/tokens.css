@@ -27,6 +27,8 @@
   --ink-rgb: 13 12 14;
   --text-on-dark-rgb: 235 230 220;
   --steel-rgb: 184 187 193;
+  --accent-rgb: 143 29 34;
+  --accent-glow-rgb: 196 40 45;
 
   /* Role alias kept from the legacy names */
   --border: var(--bone-deep); /* 1px rules on light */

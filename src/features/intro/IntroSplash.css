@@ -27,7 +27,7 @@
   background: var(--ink);
 }
 
-.intro-logo,
+.intro-name,
 .intro-line,
 .intro-watch {
   position: relative;
@@ -43,6 +43,112 @@
   text-transform: uppercase;
   color: var(--text-on-dark);
   animation: introRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.intro-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* "by Joel Soto": the hero's by-line (byline.css), fading in as the name settles */
+.intro-byline {
+  animation: introFade 1.2s 0.45s ease both;
+}
+
+/*
+ * RED MIST: the threshold into the night, and the one large use of red in the
+ * design (docs/brand/design-direction.md). Soft blood-red haze built from
+ * --accent and --accent-glow, deepest along the bottom and the edges and kept
+ * away from the centre, where the name sits. Two layers drift slowly in
+ * opposite directions; static with reduced motion. A glow, never a fill.
+ */
+.intro-red-mist {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.intro-red-mist::before,
+.intro-red-mist::after {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  filter: blur(18px);
+}
+
+.intro-red-mist::before {
+  background:
+    radial-gradient(
+      ellipse 90% 50% at 50% 104%,
+      rgb(var(--accent-glow-rgb) / 0.42) 0%,
+      rgb(var(--accent-glow-rgb) / 0.294) 30%,
+      rgb(var(--accent-glow-rgb) / 0.151) 55%,
+      rgb(var(--accent-glow-rgb) / 0.042) 78%,
+      rgb(var(--accent-glow-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 42% 75% at 0% 60%,
+      rgb(var(--accent-rgb) / 0.48) 0%,
+      rgb(var(--accent-rgb) / 0.336) 30%,
+      rgb(var(--accent-rgb) / 0.173) 55%,
+      rgb(var(--accent-rgb) / 0.048) 78%,
+      rgb(var(--accent-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 42% 75% at 100% 42%,
+      rgb(var(--accent-rgb) / 0.46) 0%,
+      rgb(var(--accent-rgb) / 0.322) 30%,
+      rgb(var(--accent-rgb) / 0.166) 55%,
+      rgb(var(--accent-rgb) / 0.046) 78%,
+      rgb(var(--accent-rgb) / 0) 100%
+    );
+  animation: red-mist-drift 38s ease-in-out infinite alternate;
+}
+
+.intro-red-mist::after {
+  background:
+    radial-gradient(
+      ellipse 65% 40% at 30% 100%,
+      rgb(var(--accent-rgb) / 0.4) 0%,
+      rgb(var(--accent-rgb) / 0.28) 30%,
+      rgb(var(--accent-rgb) / 0.144) 55%,
+      rgb(var(--accent-rgb) / 0.04) 78%,
+      rgb(var(--accent-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 60% 36% at 75% 102%,
+      rgb(var(--accent-glow-rgb) / 0.3) 0%,
+      rgb(var(--accent-glow-rgb) / 0.21) 30%,
+      rgb(var(--accent-glow-rgb) / 0.108) 55%,
+      rgb(var(--accent-glow-rgb) / 0.03) 78%,
+      rgb(var(--accent-glow-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 36% 52% at 96% 96%,
+      rgb(var(--accent-rgb) / 0.33) 0%,
+      rgb(var(--accent-rgb) / 0.231) 30%,
+      rgb(var(--accent-rgb) / 0.119) 55%,
+      rgb(var(--accent-rgb) / 0.033) 78%,
+      rgb(var(--accent-rgb) / 0) 100%
+    );
+  animation: red-mist-drift 52s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes red-mist-drift {
+  from {
+    translate: -4% 1%;
+  }
+  to {
+    translate: 4% -2%;
+  }
+}
+
+/* A lighter vignette than elsewhere, so the red still reaches the edges */
+.intro-screen .atmo-vignette {
+  opacity: 0.55;
 }
 
 /* Hairline drawn outward from the centre */
@@ -93,8 +199,14 @@
 @media (prefers-reduced-motion: reduce) {
   /* As the legacy site: fades only, and the splash fades out instead of lifting */
   .intro-logo,
+  .intro-byline,
   .intro-watch {
     animation: introFade 0.8s ease both;
+  }
+
+  .intro-red-mist::before,
+  .intro-red-mist::after {
+    animation: none;
   }
 
   .intro-line {

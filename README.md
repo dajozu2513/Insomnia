@@ -6,7 +6,7 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: in progress. The 3D chain, intro, hero, pillars, the text-free bands and the analog scroll clock are built; the jewelry deck, the T-shirt line and the readings come next.
+> Status: in progress. The 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands and the analog scroll clock are built; the jewelry deck, the T-shirt line and the readings come next.
 
 ## Highlights
 
@@ -17,7 +17,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
 - **A 3D steel chain behind the page.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page falls back to photography.
 - **A night atmosphere in 3D.** A procedural chessboard floor dissolves into the fog under the hero, faint dust drifts through every window, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
-- **A night that follows the scroll.** A line-art pocket watch in the header turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React.
+- **A night that follows the scroll.** A line-art pocket watch, the emblem beside the name in the header, turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React. The intro opens on the full name over a slow red mist.
 - **One scroll frame.** Every scroll-driven effect (progress hairline, watch hands, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, a flipping playing card and the atmosphere layers.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.

@@ -4,8 +4,8 @@ import { PocketWatch } from '../clock/PocketWatch';
 import { handTransform, watchAngles } from '../clock/watchGeometry';
 import { subscribeNightProgress } from './night';
 
-/** Header watch height in px; phones use a smaller size through CSS. */
-const HEADER_WATCH_SIZE = 28;
+/** Header watch height in px (about the two-line brand block); phones use a smaller size through CSS. */
+const HEADER_WATCH_SIZE = 38;
 
 /**
  * The header's night clock: a pocket watch whose hands follow the page, 6:00
@@ -29,7 +29,7 @@ export function ScrollClock() {
 
   return (
     <span className="scroll-clock" aria-hidden="true">
-      <PocketWatch size={HEADER_WATCH_SIZE} hourRef={hourRef} minuteRef={minuteRef} />
+      <PocketWatch size={HEADER_WATCH_SIZE} hourRef={hourRef} minuteRef={minuteRef} doubleRim />
     </span>
   );
 }

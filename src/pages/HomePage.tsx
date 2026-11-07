@@ -3,15 +3,15 @@ import { Band } from '../features/home/Band';
 import { Hero } from '../features/home/Hero';
 import { HomeSection } from '../features/home/HomeSection';
 import { Pillars } from '../features/home/Pillars';
-import { Sonder } from '../features/home/Sonder';
 import { IntroSplash } from '../features/intro/IntroSplash';
 import { useI18n } from '../i18n';
 
 /*
  * Home: one night (docs/brand/design-direction.md, "Section map").
  * Intro > Hero (dream) > Pillars (reality) > Band 1 (dream) > Jewelry (reality)
- * > Band 2 (dream) > T-shirts, opened by Sonder (reality) > Readings > Footer.
- * The hero carries only the name; the bands carry no text at all.
+ * > Band 2 (dream) > T-shirts (reality) > Band 3 (dream) > Readings > Footer.
+ * The hero carries only the name; the bands carry no text at all. The engine
+ * drapes the chain across however many bands are registered, in document order.
  *
  * LAYERING RULE: the hero and the bands are windows onto the chain (transparent
  * under `has-3d`). Every other section must have an opaque background, and no
@@ -27,16 +27,18 @@ export function HomePage() {
       <ChainStage />
       <Hero />
       <Pillars />
-      {/* Band 1: the chain sags across it */}
+      {/* Band 1 */}
       <Band />
       <HomeSection id="jewelry" lead={jewelry.lead} em={jewelry.em}>
         <p className="home-section-placeholder">{jewelry.body}</p>
       </HomeSection>
-      {/* Band 2: the chain hangs high across it */}
+      {/* Band 2 */}
       <Band />
-      <HomeSection id="tshirts" lead={tshirts.lead} em={tshirts.em} prelude={<Sonder />}>
+      <HomeSection id="tshirts" lead={tshirts.lead} em={tshirts.em}>
         <p className="home-section-placeholder">{tshirts.body}</p>
       </HomeSection>
+      {/* Band 3: separates the T-shirts from the readings */}
+      <Band />
       <HomeSection id="readings" lead={readings.lead} em={readings.em}>
         <p className="home-section-placeholder">{readings.body}</p>
       </HomeSection>
