@@ -16,6 +16,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Motion with restraint.** Every animation honours `prefers-reduced-motion`: movement is replaced by short fades and the 3D scene stops its render loop.
 - **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
 - **A 3D steel chain behind the page.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page falls back to photography.
+- **A night atmosphere in 3D.** A procedural chessboard floor dissolves into the fog under the hero, faint dust drifts through every window, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
 - **A night that follows the scroll.** A line-art pocket watch in the header turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React.
 - **One scroll frame.** Every scroll-driven effect (progress hairline, watch hands, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, a flipping playing card and the atmosphere layers.

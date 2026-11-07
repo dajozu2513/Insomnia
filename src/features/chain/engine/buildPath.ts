@@ -1,6 +1,6 @@
 import { CatmullRomCurve3, MathUtils, Vector3 } from 'three';
 
-import { DIST, FRAME_SAMPLES } from './constants';
+import { DIST, DRAPE_STYLE, FRAME_SAMPLES } from './constants';
 
 /** A band as the path needs it: its top in document pixels and its height. */
 export interface BandBox {
@@ -26,6 +26,11 @@ export interface ChainPath {
   frames: { tangents: Vector3[]; normals: Vector3[]; binormals: Vector3[] };
   /** World units per CSS pixel at z = 0. */
   pxToWorld: number;
+  /** World height and half-width of the view at z = 0. */
+  viewHeight: number;
+  halfWidth: number;
+  /** 0 on tall (portrait) screens, 1 on wide ones. */
+  wide: number;
 }
 
 /** Camera height (world y) when the page is scrolled to `scroll` CSS pixels. */
@@ -74,10 +79,23 @@ export function buildPath(layout: PathLayout): ChainPath {
   // Offsets are scaled by the depth so the drape fills the band on screen.
   // On narrow screens the first drape sags deeper so it clears a full-width phrase.
   const z = -R * Math.sin(tilt); // depth of the necklace's nearest point
-  const crossings = [
-    { side: -1, edge: MathUtils.lerp(-0.2, 0.1, wide), mid: MathUtils.lerp(-0.42, -0.34, wide) }, // under the phrase
-    { side: 1, edge: 0.5, mid: 0.25 }, // above it
-  ] as const;
+  const crossings =
+    DRAPE_STYLE === 'centred'
+      ? ([
+          // Text-free bands: both drapes are gentle catenaries centred in the band
+          // (edges 0.2 above the centre line, the middle 0.1 below, so the curve
+          // averages out on the band's centre line).
+          { side: -1, edge: 0.2, mid: -0.1 },
+          { side: 1, edge: 0.2, mid: -0.1 },
+        ] as const)
+      : ([
+          {
+            side: -1,
+            edge: MathUtils.lerp(-0.2, 0.1, wide),
+            mid: MathUtils.lerp(-0.42, -0.34, wide),
+          }, // sags low
+          { side: 1, edge: 0.5, mid: 0.25 }, // hangs high
+        ] as const);
   bands.forEach((band, i) => {
     const { side, edge, mid } = crossings[i % crossings.length] ?? crossings[0];
     const y = cameraYFor(band.top + band.height / 2 - vh / 2, pxToWorld, parallax);
@@ -99,5 +117,8 @@ export function buildPath(layout: PathLayout): ChainPath {
     length: curve.getLength(),
     frames: curve.computeFrenetFrames(FRAME_SAMPLES, false),
     pxToWorld,
+    viewHeight: V,
+    halfWidth: W,
+    wide,
   };
 }

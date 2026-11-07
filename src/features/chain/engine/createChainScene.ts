@@ -23,6 +23,9 @@ import {
   DIST,
   DRIFT,
   ENV_BLUR,
+  FLOOR_ANISOTROPY,
+  FLOOR_DROP_PORTRAIT,
+  FLOOR_DROP_WIDE,
   FOG_COLOR,
   FOG_FAR,
   FOG_NEAR,
@@ -34,19 +37,30 @@ import {
   MAX_LINKS,
   MAX_PIXEL_RATIO,
   PARALLAX,
+  PARTICLES_DESKTOP,
+  PARTICLES_SMALL,
   PITCH,
   PULL,
   PULL_COAST,
   PULL_GRIP,
   RESIZE_DEBOUNCE_MS,
+  RIM_LIGHT_POSITION,
   SCROLL_EASE,
+  SMALL_SCREEN_MAX,
   TONE_MAPPING_EXPOSURE,
 } from './constants';
+import { installDebugHook } from './debug';
+import { createFloor } from './floor';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
+import { createGlow } from './glow';
+import { createNightState, sampleNight } from './nightCycle';
+import { createParticles } from './particles';
 import { createStudioEnvironment } from './studioEnvironment';
 
 /**
- * One long steel chain on a fixed, full-viewport canvas behind the page.
+ * One long steel chain on a fixed, full-viewport canvas behind the page, in a
+ * night atmosphere: a chessboard floor in the mist under the hero, slow dust,
+ * fog, and lighting that follows the night cycle.
  *
  * Creates its own <canvas> inside `container` (the fixed stage) and removes it
  * again in dispose(), so mounting twice can never leave two canvases or two
@@ -74,17 +88,19 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let parallax = reducedMotion ? 1 : PARALLAX;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
-  renderer.setClearColor(0x000000, 0);
+  renderer.setClearColor(FOG_COLOR, 1);
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = TONE_MAPPING_EXPOSURE;
   renderer.outputColorSpace = SRGBColorSpace;
 
   const scene = new Scene();
-  scene.fog = new Fog(FOG_COLOR, FOG_NEAR, FOG_FAR);
+  const fog = new Fog(FOG_COLOR, FOG_NEAR, FOG_FAR);
+  scene.fog = fog;
   const camera = new PerspectiveCamera(CAMERA_FOV, 1, CAMERA_NEAR, CAMERA_FAR);
   const tanHalfFov = Math.tan(MathUtils.degToRad(camera.fov / 2));
 
-  // ── REFLECTIONS ── a studio built in code, baked into an environment map.
+  // ── REFLECTIONS ── a studio built in code, baked into an environment map once.
+  // The night cycle never re-bakes it: it is what keeps the steel neutral silver.
   const pmrem = new PMREMGenerator(renderer);
   const studio = createStudioEnvironment();
   const envTarget = pmrem.fromScene(studio.scene, ENV_BLUR);
@@ -95,6 +111,22 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   const key = new DirectionalLight(KEY_LIGHT_COLOR, KEY_LIGHT_INTENSITY);
   key.position.set(...KEY_LIGHT_POSITION);
   scene.add(key);
+
+  // Rim light from behind and above: its tint and strength follow the night.
+  const rim = new DirectionalLight(0xffffff, 0);
+  rim.position.set(...RIM_LIGHT_POSITION);
+  scene.add(rim);
+
+  // ── ATMOSPHERE ──
+  const small = container.clientWidth <= SMALL_SCREEN_MAX;
+  const floor = createFloor(Math.min(renderer.capabilities.getMaxAnisotropy(), FLOOR_ANISOTROPY));
+  scene.add(floor.mesh);
+  const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP);
+  scene.add(particles.points);
+  const glow = createGlow();
+  scene.add(glow.mesh);
+  /** Debug switch (bench): draw the atmosphere layers or not. */
+  let atmosphereOn = true;
 
   // ── LINKS ──
   const linkGeometry = createLinkGeometry();
@@ -149,6 +181,26 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     chain.instanceMatrix.needsUpdate = true;
   }
 
+  // ── NIGHT CYCLE ── cheap parameters only, applied when the progress changes.
+  const night = createNightState();
+  let appliedNight = -1;
+
+  function applyNight(progress: number): boolean {
+    if (Math.abs(progress - appliedNight) < 1e-4) return false;
+    appliedNight = progress;
+    sampleNight(progress, night);
+    fog.color.copy(night.fog);
+    fog.near = night.fogNear;
+    fog.far = night.fogFar;
+    // The canvas clears to the fog colour, so the floor's far edge dissolves into it.
+    renderer.setClearColor(night.fog, 1);
+    renderer.toneMappingExposure = night.exposure;
+    rim.color.copy(night.rimColor);
+    rim.intensity = night.rimIntensity;
+    glow.setStrength(night.glow);
+    return true;
+  }
+
   // ── RENDER ──
   // The chain responds to scrolling only, never to the pointer or device orientation.
   // - The camera follows an eased copy of the scroll position, so the view glides
@@ -160,9 +212,19 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let lastScroll = smoothScroll;
   let pullSpeed = 0;
 
-  function draw(): void {
-    camera.position.set(0, cameraYFor(smoothScroll, pxToWorld(), parallax), DIST);
-    if (path) layoutLinks(path);
+  /** `dt` advances the dust; 0 (reduced motion, redraws on scroll) keeps it still. */
+  function draw(dt = 0): void {
+    const camY = cameraYFor(smoothScroll, pxToWorld(), parallax);
+    camera.position.set(0, camY, DIST);
+    if (path) {
+      // The floor belongs to the hero: hidden once the camera sinks towards it.
+      floor.mesh.visible = atmosphereOn && camY > floor.y + 0.5;
+      particles.points.visible = atmosphereOn;
+      glow.mesh.visible = atmosphereOn && night.glow > 0.002;
+      glow.follow(camY, path.halfWidth, path.viewHeight);
+      particles.update(dt, camY, path.halfWidth, path.viewHeight);
+      layoutLinks(path);
+    }
     renderer.render(scene, camera);
   }
 
@@ -181,7 +243,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     pullSpeed += (target - pullSpeed) * (1 - Math.exp(-dt / tau));
 
     flow += (DRIFT + pullSpeed) * dt;
-    draw();
+    draw(dt);
   }
 
   // Jump straight to the real scroll position (when nothing was animating it).
@@ -237,17 +299,6 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     updateLoop();
   }
 
-  // With reduced motion there is no loop: redraw only when the page scrolls.
-  let drawFrame = 0;
-  function onScroll(): void {
-    if (running || drawFrame || showing.size === 0) return;
-    drawFrame = requestAnimationFrame(() => {
-      drawFrame = 0;
-      syncScroll();
-      draw();
-    });
-  }
-
   const docTop = (el: Element) => el.getBoundingClientRect().top + window.scrollY;
 
   function rebuild(): void {
@@ -269,11 +320,26 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       parallax,
       bands: bands.map((band) => ({ top: docTop(band), height: band.offsetHeight })),
     });
+    // Floor below the necklace: lower on tall screens, so the title and ring stay clear.
+    floor.y = -path.viewHeight * MathUtils.lerp(FLOOR_DROP_PORTRAIT, FLOOR_DROP_WIDE, path.wide);
+    floor.mesh.position.y = floor.y;
     if (!running) {
       syncScroll();
       draw();
     }
   }
+
+  // The night follows the page inside the shared scroll frame. Lighting changes only
+  // when the progress does. Without a running loop (reduced motion, or nothing on
+  // screen), this is also where the scene redraws on scroll.
+  applyNight(options.night.get());
+  const unsubscribeNight = options.night.subscribe((progress) => {
+    const changed = applyNight(progress);
+    if (!running && showing.size > 0 && (changed || window.scrollY !== lastScroll)) {
+      syncScroll();
+      draw();
+    }
+  });
 
   // Band positions move when fonts, images or the viewport change size.
   let resizeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -283,7 +349,6 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   });
   bodyObserver.observe(document.body);
   window.addEventListener('resize', rebuild);
-  window.addEventListener('scroll', onScroll, { passive: true });
   document.addEventListener('visibilitychange', updateLoop);
 
   rebuild();
@@ -292,6 +357,29 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   const readyFrame = requestAnimationFrame(() => {
     options.onReady?.();
   });
+
+  // Development only: chain-colour measurement and frame timing (see debug.ts).
+  const removeDebugHook = import.meta.env.DEV
+    ? installDebugHook({
+        renderer,
+        render: () => {
+          syncScroll();
+          draw();
+        },
+        chain,
+        setAtmosphere: (on) => {
+          atmosphereOn = on;
+        },
+        setNight: (progress) => {
+          appliedNight = -1;
+          applyNight(progress);
+        },
+        restoreNight: () => {
+          appliedNight = -1;
+          applyNight(options.night.get());
+        },
+      })
+    : undefined;
 
   return {
     rebuild,
@@ -310,13 +398,13 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       running = false;
       renderer.setAnimationLoop(null);
       cancelAnimationFrame(readyFrame);
-      cancelAnimationFrame(drawFrame);
       clearTimeout(resizeTimer);
+      removeDebugHook?.();
 
+      unsubscribeNight();
       io.disconnect();
       bodyObserver.disconnect();
       window.removeEventListener('resize', rebuild);
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', updateLoop);
 
       scene.environment = null;
@@ -324,7 +412,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       chain.dispose();
       linkGeometry.dispose();
       steel.dispose();
+      floor.dispose();
+      particles.dispose();
+      glow.dispose();
       key.dispose();
+      rim.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       canvas.remove();

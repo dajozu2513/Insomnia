@@ -62,7 +62,8 @@
 }
 
 /* Mist gathers along the bottom of the window; thin enough that the steel stays silver */
-.hero-mist {
+/* Two classes: beats .atmo-mist's inset: 0 from the global atmosphere styles */
+.atmo-mist.hero-mist {
   inset: auto 0 0 0;
   height: 42%;
   mask-image: linear-gradient(to top, black 0%, black 35%, transparent 100%);

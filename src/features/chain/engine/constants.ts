@@ -85,3 +85,47 @@ export const MAX_FRAME_DT = 0.05;
 // ── LAYOUT ──
 /** Body resizes are coalesced for this long before the path is rebuilt. */
 export const RESIZE_DEBOUNCE_MS = 120;
+
+// ── ATMOSPHERE (step 4) ──
+// docs/brand/design-direction.md, "Atmosphere" and "The night cycle". Every
+// value here is subordinate to one rule: the chain must read as silver steel.
+
+/** Chessboard floor under the hero necklace: plane size (world units). */
+export const FLOOR_WIDTH = 140;
+export const FLOOR_DEPTH = 110;
+/** World size of one chessboard square. */
+export const FLOOR_SQUARE = 1.8;
+/** Floor height as a fraction of the viewport's world height below the centre: tall screens lower. */
+export const FLOOR_DROP_PORTRAIT = 0.66;
+export const FLOOR_DROP_WIDE = 0.54;
+/** Square colours: muted ink and dimmed bone, far below the steel's contrast. */
+export const FLOOR_DARK = '#0f0e11';
+export const FLOOR_LIGHT = '#3e3a35';
+
+/** Floating dust: count on large and small screens. */
+export const PARTICLES_DESKTOP = 120;
+export const PARTICLES_SMALL = 60;
+/** Viewport width (CSS px) at or below which the small-screen budget applies. */
+export const SMALL_SCREEN_MAX = 700;
+/** World units/s the dust rises; plus a slow sideways sway. */
+export const PARTICLE_RISE = 0.09;
+export const PARTICLE_SWAY = 0.05;
+export const PARTICLE_SIZE = 0.2;
+export const PARTICLE_OPACITY = 0.35;
+export const PARTICLE_COLOR = '#e6e0d4';
+
+/** Rim light behind and above the chain, tinted by the night cycle. */
+export const RIM_LIGHT_POSITION = [0, 6, -12] as const;
+
+/**
+ * How the chain crosses the bands. 'legacy': sags low across the first band and
+ * hangs high across the second (cleared the legacy phrases). 'centred': both
+ * drapes centred in their band, for the text-free bands.
+ */
+export const DRAPE_STYLE = 'centred' as 'legacy' | 'centred';
+
+/**
+ * Anisotropic filtering for the floor texture. The far squares sit in the fog,
+ * so a modest level costs less and looks the same.
+ */
+export const FLOOR_ANISOTROPY = 4;

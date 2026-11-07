@@ -17,6 +17,14 @@ export interface ChainSceneOptions {
   getAnchors: () => ChainAnchors;
   /** Initial reduced-motion preference; update it with setReducedMotion(). */
   reducedMotion: boolean;
+  /**
+   * The night cycle (features/night/night.ts), passed in so the engine stays
+   * free of app imports: `subscribe` calls back inside the shared scroll frame.
+   */
+  night: {
+    get: () => number;
+    subscribe: (listener: (progress: number) => void) => () => void;
+  };
   /** Called once, on the frame after the first draw (fades the canvas in). */
   onReady?: () => void;
 }

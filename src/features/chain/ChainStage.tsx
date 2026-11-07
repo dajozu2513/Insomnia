@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { getNightProgress, subscribeNightProgress } from '../night/night';
 import { useChainAnchorRegistry } from './anchors/useChainAnchors';
 import type { ChainScene } from './types';
 import './ChainStage.css';
@@ -56,6 +57,7 @@ export function ChainStage() {
           engine = createChainScene(stage, {
             getAnchors: registry.getAnchors,
             reducedMotion: reducedMotionRef.current,
+            night: { get: getNightProgress, subscribe: subscribeNightProgress },
             onReady: () => {
               setStatus('ready');
             },

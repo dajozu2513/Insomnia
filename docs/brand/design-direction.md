@@ -60,9 +60,11 @@ Rules: all ornaments are thin line art in the same stroke weight as the pillar i
 
 Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles (dust or ash). In the 3D scene: depth fog and the chessboard floor. Everything subtle; the steel chain must always read as silver steel.
 
+As built (step 4): the chessboard floor lies under the hero necklace only, in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes of dust (60 on small screens) rise slowly through all three windows. A faint blood-red glow (`--accent-glow`) lives far behind the chain around midnight, as light in the mist, never on the steel. The bands are pure windows, so both drapes now hang as gentle catenaries centred in their band.
+
 ## The night cycle
 
-The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clock is analog, with no digits: a small pocket watch in thin line art (the pillar-icon stroke, currentColor) with a thin rim (doubled only at sizes where it stays clean), a crown and bow, twelve ticks with longer quarters, no numerals, slender hands with a small open loop near the hour hand's tip, and a centre pin. In the header it sits beside the tagline, up to 28 px tall; its hands follow the scroll continuously (hour hand 180 + 360p degrees, minute hand 360 x 12 x p, for night progress p from 0 to 1), so it reads 6:00 at the top and, one full turn later, 6:00 at the bottom. The intro shows the same watch, larger and static at 6:00. It is decorative and hidden from assistive tech. Later, the 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer.
+The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clock is analog, with no digits: a small pocket watch in thin line art (the pillar-icon stroke, currentColor) with a thin rim (doubled only at sizes where it stays clean), a crown and bow, twelve ticks with longer quarters, no numerals, slender hands with a small open loop near the hour hand's tip, and a centre pin. In the header it sits beside the tagline, up to 28 px tall; its hands follow the scroll continuously (hour hand 180 + 360p degrees, minute hand 360 x 12 x p, for night progress p from 0 to 1), so it reads 6:00 at the top and, one full turn later, 6:00 at the bottom. The intro shows the same watch, larger and static at 6:00. It is decorative and hidden from assistive tech. The 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer. Only cheap parameters change (fog colour and range, exposure between 1.13 and 1.15, a rim light's tint and strength, the glow); the studio reflections never change, so the chain stays neutral silver at every hour.
 
 ## Motion
 
@@ -73,9 +75,9 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 1. Intro (6:00 PM)
 2. Hero, dream window: chain necklace around "Insomnia / by Joel Soto" (no other text), chessboard floor in mist
 3. Pillars, reality (bone)
-4. Band 1, dream: no text, a pure window; the chain sags across it
+4. Band 1, dream: no text, a pure window; the chain drapes across its centre
 5. Jewelry deck, reality
-6. Band 2, dream: no text, a pure window; the chain hangs high across it
+6. Band 2, dream: no text, a pure window; the chain drapes across its centre
 7. Printed T-shirts, reality, opened by "Sonder" and its meaning
 8. Readings
 9. Footer (6:00 AM, dawn)
