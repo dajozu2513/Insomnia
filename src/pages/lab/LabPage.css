@@ -15,8 +15,7 @@
 .lab-eyebrow,
 .lab-specimen-meta,
 .lab-motif-name,
-.lab-swatch-role,
-.lab-clock-width {
+.lab-swatch-role {
   font-family: var(--font-ui);
   font-weight: 400;
   font-size: 0.6rem;
@@ -269,45 +268,47 @@
   --rule: var(--ink-raised);
 }
 
-/* ── CLOCK ── */
-.lab-clock-grid {
+/* ── CLOCK ── pocket watch on ink, at header size and at intro size */
+.lab-watch-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1px;
   background: var(--ink-raised);
   border: 1px solid var(--ink-raised);
 }
 
-.lab-clock-column {
+.lab-watch-row {
   background: var(--ink);
-  color: var(--text-on-dark);
+  color: var(--steel);
   padding: 1.8rem 1.6rem;
 }
 
-.lab-clock-column .lab-specimen-meta {
+.lab-watch-row .lab-specimen-meta {
   color: var(--text-on-dark-muted);
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.4rem;
 }
 
-.lab-clock-row {
+.lab-watches {
+  list-style: none;
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid rgb(var(--steel-rgb) / 0.15);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.6rem 2.6rem;
 }
 
-/* Outline the fixed box so equal widths are visible */
-.lab-clock-row .night-clock {
-  outline: 1px dashed rgb(var(--steel-rgb) / 0.35);
-  outline-offset: 4px;
+.lab-watch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
 }
 
-.lab-clock-width {
-  white-space: nowrap;
+.lab-watch-caption {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
   color: var(--text-on-dark-muted);
-  letter-spacing: 0.1em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ── MOTIFS ── */
@@ -408,4 +409,9 @@
 
 .lab-specimen-ui .lab-specimen-label {
   margin: 0;
+}
+
+/* Line art on dark uses steel */
+.lab-specimen--ink .pocket-watch {
+  color: var(--steel);
 }

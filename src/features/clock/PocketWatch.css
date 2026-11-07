@@ -1,0 +1,4 @@
+/* The watch keeps its viewBox proportions; size comes from the `size` prop. */
+.pocket-watch {
+  flex: none;
+}

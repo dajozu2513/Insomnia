@@ -19,6 +19,16 @@
   color: var(--text-on-dark);
 }
 
+/* The approved line under the brand: small and quiet, no red */
+.footer-tagline {
+  margin-top: 0.45rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--text-on-dark-muted);
+}
+
 .footer-copy {
   font-family: var(--font-ui);
   font-weight: 400;

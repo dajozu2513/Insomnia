@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { clockDateTime, formatClockTime } from '../clock/formatClockTime';
-import '../clock/clock.css';
-import { NIGHT_START_MINUTES } from '../night/night';
+import { PocketWatch } from '../clock/PocketWatch';
 import { useI18n } from '../../i18n';
 import './IntroSplash.css';
 
@@ -35,7 +33,7 @@ function markSeen(): void {
 
 /**
  * Intro splash, ported from the legacy site: the name rises, a hairline draws
- * outward, the start of the night (6:00 PM) appears, and after 2 s the splash
+ * outward, the pocket watch fades in at 6:00 (the start of the night), and after 2 s the splash
  * lifts as a clip-path curtain while the hero entrance plays. Once per tab.
  *
  * StrictMode-safe: whether to show is read in the state initializer (pure, so
@@ -83,10 +81,8 @@ export function IntroSplash() {
       <div className="atmo-vignette" />
       <div className="intro-logo">{t.home.hero.title}</div>
       <span className="intro-line" />
-      {/* Same formatter, type and tabular figures as the clock; static, so no fixed slot */}
-      <time className="night-clock intro-time" dateTime={clockDateTime(NIGHT_START_MINUTES)}>
-        {formatClockTime(NIGHT_START_MINUTES, t.clock).text}
-      </time>
+      {/* The start of the night: the header's watch, larger and static at 6:00 */}
+      <PocketWatch className="intro-watch" size={88} progress={0} doubleRim />
     </div>
   );
 }

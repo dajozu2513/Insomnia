@@ -50,7 +50,6 @@ export function Hero() {
           ))}
         </h1>
         <p className="hero-sub">{t.home.hero.sub}</p>
-        <p className="hero-line">{t.brand.heroTagline}</p>
       </div>
     </section>
   );

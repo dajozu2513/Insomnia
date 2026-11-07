@@ -9,19 +9,23 @@ interface HomeSectionProps {
   lead: string;
   /** Italic tail of the heading (legacy two-part titles); empty for none. */
   em: string;
+  /** Opening content placed before the heading (e.g. Sonder in the T-shirt section). */
+  prelude?: ReactNode;
   children: ReactNode;
 }
 
 /**
  * A reality section (bone, opaque, so it covers the chain): heading in the
- * legacy style (roman lead, italic tail, rising out of its slot) over its content.
+ * legacy style (roman lead, italic tail, rising out of its slot) over its content,
+ * optionally opened by a prelude.
  */
-export function HomeSection({ id, lead, em, children }: HomeSectionProps) {
+export function HomeSection({ id, lead, em, prelude, children }: HomeSectionProps) {
   const [headerRef, headerVisible] = useInView<HTMLElement>(FADE_THRESHOLD);
   const [titleRef, titleVisible] = useInView<HTMLHeadingElement>(REVEAL_THRESHOLD);
 
   return (
     <section className="home-section" aria-labelledby={`${id}-title`}>
+      {prelude}
       <header
         ref={headerRef}
         className={headerVisible ? 'section-header visible' : 'section-header'}

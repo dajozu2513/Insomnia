@@ -103,18 +103,20 @@
   text-shadow: none;
 }
 
-/* Night clock beside the tagline (features/night/ScrollClock.tsx). Same type as
-   the tagline; the fixed-width box comes from clock.css. */
+/* Night clock beside the tagline: a pocket watch (features/night/ScrollClock.tsx)
+   drawn in currentColor, so it follows the header's text colour. The shadow
+   mirrors the text-shadow that keeps the tagline legible over the chain. */
 .scroll-clock {
-  font-size: 0.62rem;
+  display: flex;
+  align-items: center;
   color: var(--text-on-dark);
-  text-shadow: 0 1px 6px rgb(var(--ink-rgb) / 0.7);
+  filter: drop-shadow(0 1px 3px rgb(var(--ink-rgb) / 0.7));
   transition: color 0.4s;
 }
 
 .site-header.scrolled .scroll-clock {
   color: var(--text-on-light-muted);
-  text-shadow: none;
+  filter: none;
 }
 
 .header-right {
@@ -184,6 +186,14 @@
 
   .brand-name {
     white-space: nowrap;
+  }
+}
+
+/* Phones: a slightly smaller watch */
+@media (max-width: 600px) {
+  .scroll-clock .pocket-watch {
+    height: 24px;
+    width: auto;
   }
 }
 

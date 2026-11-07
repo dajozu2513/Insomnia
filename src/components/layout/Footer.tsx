@@ -7,7 +7,10 @@ export function Footer() {
 
   return (
     <footer className="site-footer">
-      <p className="footer-brand">{t.meta.siteName}</p>
+      <div className="footer-signature">
+        <p className="footer-brand">{t.meta.siteName}</p>
+        <p className="footer-tagline">{t.footer.tagline}</p>
+      </div>
       <p className="footer-copy">
         &copy; {year} &bull; {t.footer.rights}
       </p>

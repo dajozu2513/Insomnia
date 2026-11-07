@@ -14,7 +14,7 @@ export function AtmosphereSection() {
       <div className="lab-atmosphere atmo-grain">
         <div className="atmo-mist" aria-hidden="true" />
         <div className="atmo-vignette" aria-hidden="true" />
-        <p className="lab-atmosphere-phrase">{t.brand.heroTagline}</p>
+        <p className="lab-atmosphere-phrase">{t.meta.description}</p>
       </div>
     </section>
   );

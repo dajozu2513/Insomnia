@@ -9,6 +9,8 @@
 export const es = {
   meta: {
     siteName: 'Insomnia by Joel Soto',
+    // Approved line (docs/brand/design-direction.md): the meta description.
+    description: 'Todo lo que sientes cuando el mundo duerme.',
   },
   a11y: {
     skipToContent: 'Saltar al contenido',
@@ -22,22 +24,14 @@ export const es = {
   header: {
     tagline: 'Acero • Palabra',
   },
-  // Approved taglines (docs/brand/design-direction.md).
-  brand: {
-    heroTagline: 'Todo lo que sientes cuando el mundo duerme.',
-    metaTagline: 'Acero y palabras para quienes no duermen.',
-  },
-  // 12-hour periods for the night clock: "6:00 p. m."
-  clock: {
-    am: 'a. m.',
-    pm: 'p. m.',
-  },
   footer: {
+    // Approved line (docs/brand/design-direction.md).
+    tagline: 'Acero y palabras para quienes no duermen.',
     rights: 'Todos los derechos reservados',
   },
   home: {
     hero: {
-      // Brand name: identical in both languages. The hero line is brand.heroTagline.
+      // Brand name: identical in both languages. The hero carries no other text.
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
@@ -57,13 +51,6 @@ export const es = {
         text: 'Diseñado en las horas en que todos duermen. Negro y blanco, como la noche y la pantalla.',
       },
     ],
-    band1: 'El acero recuerda lo que la noche olvida.',
-    band2: {
-      // The word is not translated.
-      word: 'Sonder',
-      meaning:
-        'Darte cuenta de que cada desconocido vive una vida tan intensa y compleja como la tuya.',
-    },
     // Section headings: a roman lead and an italic tail, as in the legacy titles.
     jewelry: {
       lead: 'Joyería',
@@ -72,6 +59,12 @@ export const es = {
       body: '[Baraja de eslabones pendiente]',
     },
     tshirts: {
+      // Opens the section, before the heading. The word is not translated.
+      sonder: {
+        word: 'Sonder',
+        meaning:
+          'Darte cuenta de que cada desconocido vive una vida tan intensa y compleja como la tuya.',
+      },
       lead: 'Camisetas',
       em: 'estampadas',
       // PLACEHOLDER: the T-shirt section arrives in a later step.
@@ -132,8 +125,10 @@ export const es = {
     },
     clock: {
       title: 'Reloj de la noche',
-      text: 'De 6:00 p. m. arriba a 6:00 a. m. abajo. Cifras tabulares y ancho fijo: de 9:59 a 10:00 nada se mueve.',
-      measured: 'Ancho medido',
+      text: 'Un reloj de bolsillo en línea fina. Arriba de la página marca las 6:00 p. m.; abajo, una vuelta completa después, las 6:00 a. m. Las agujas siguen el scroll sin saltos.',
+      headerSize: 'Tamaño de cabecera',
+      introSize: 'Tamaño de la intro',
+      captions: ['6:00 p. m.', '9:47 p. m.', '12:00 a. m.', '3:47 a. m.', '6:00 a. m.'],
     },
     motifs: {
       title: 'Motivos',

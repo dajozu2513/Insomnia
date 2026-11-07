@@ -29,7 +29,7 @@
 
 .intro-logo,
 .intro-line,
-.intro-time {
+.intro-watch {
   position: relative;
   z-index: 4;
 }
@@ -55,12 +55,12 @@
   animation: introLine 1.1s 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
-/* The start of the night, in the clock's fixed-width type */
-.intro-screen .intro-time {
+/* The start of the night: the pocket watch at 6:00, static, centred under the hairline */
+.intro-screen .intro-watch {
   width: auto;
-  font-size: 0.68rem;
-  color: var(--text-on-dark-muted);
-  text-align: center;
+  height: clamp(64px, 18vw, 88px);
+  margin-top: 0.4rem;
+  color: var(--steel); /* line art on dark */
   animation: introFade 1.4s 0.85s ease both;
 }
 
@@ -93,7 +93,7 @@
 @media (prefers-reduced-motion: reduce) {
   /* As the legacy site: fades only, and the splash fades out instead of lifting */
   .intro-logo,
-  .intro-time {
+  .intro-watch {
     animation: introFade 0.8s ease both;
   }
 

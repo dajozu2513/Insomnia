@@ -7,8 +7,8 @@ Insomnia is the night between reality and dream. Reality is physical: steel, the
 Taglines:
 
 - Header: "Acero • Palabra / Steel • Words"
-- Hero: "Todo lo que sientes cuando el mundo duerme. / Everything you feel while the world sleeps."
-- Meta and footer: "Acero y palabras para quienes no duermen. / Steel and words for those who don't sleep."
+- Meta description: "Todo lo que sientes cuando el mundo duerme. / Everything you feel while the world sleeps." (It is no longer shown in the hero; the hero carries only the name.)
+- Footer: "Acero y palabras para quienes no duermen. / Steel and words for those who don't sleep.", in small, quiet type.
 
 ## Sources and IP rules
 
@@ -49,7 +49,7 @@ Accent rules: red is rare. Use it for a single focal point per screen at most: a
 ## Motifs
 
 - Chessboard: the direct bridge from Black & White. Used as a pattern, a card back and a perspective floor fading into mist behind the hero.
-- Clocks: the scroll clock is the main one; clock-face linework may appear as ornament.
+- Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament.
 - Playing cards: the format for presenting products (see Products).
 - Wrought-iron filigree: thin ornamental frames and section dividers.
 - Roses with thorns, keys, teacups: occasional small line ornaments.
@@ -62,7 +62,7 @@ Film grain (already present), soft vignette, layered mist in the dream windows, 
 
 ## The night cycle
 
-The page is one night. The header clock runs from 6:00 PM at the top to 6:00 AM at the bottom, in 12-hour format, localized (ES "6:00 p. m.", EN "6:00 PM"). The intro shows the start of the night: "6:00 p. m." / "6:00 PM". Later, the 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer.
+The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clock is analog, with no digits: a small pocket watch in thin line art (the pillar-icon stroke, currentColor) with a thin rim (doubled only at sizes where it stays clean), a crown and bow, twelve ticks with longer quarters, no numerals, slender hands with a small open loop near the hour hand's tip, and a centre pin. In the header it sits beside the tagline, up to 28 px tall; its hands follow the scroll continuously (hour hand 180 + 360p degrees, minute hand 360 x 12 x p, for night progress p from 0 to 1), so it reads 6:00 at the top and, one full turn later, 6:00 at the bottom. The intro shows the same watch, larger and static at 6:00. It is decorative and hidden from assistive tech. Later, the 3D lighting follows the clock: dusk at the top (slightly warm, lighter fog), midnight deepest (red glow at its strongest, still subtle), small hours coldest, pale dawn near the footer.
 
 ## Motion
 
@@ -71,12 +71,12 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 ## Section map (home)
 
 1. Intro (6:00 PM)
-2. Hero, dream window: chain necklace around the title, chessboard floor in mist
+2. Hero, dream window: chain necklace around "Insomnia / by Joel Soto" (no other text), chessboard floor in mist
 3. Pillars, reality (bone)
-4. Band 1, dream: "El acero recuerda lo que la noche olvida."
+4. Band 1, dream: no text, a pure window; the chain sags across it
 5. Jewelry deck, reality
-6. Band 2, dream: "Sonder" and its meaning
-7. Printed T-shirts, reality
+6. Band 2, dream: no text, a pure window; the chain hangs high across it
+7. Printed T-shirts, reality, opened by "Sonder" and its meaning
 8. Readings
 9. Footer (6:00 AM, dawn)
 

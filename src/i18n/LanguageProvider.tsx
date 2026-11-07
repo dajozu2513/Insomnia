@@ -31,6 +31,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    // index.html ships the Spanish description for crawlers; keep it in the visitor's language.
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute('content', dictionaries[lang].meta.description);
   }, [lang]);
 
   const setLang = useCallback((next: Lang) => {

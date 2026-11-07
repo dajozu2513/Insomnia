@@ -1,42 +1,35 @@
 import { useEffect, useRef } from 'react';
 
-import { formatClockTime, NBSP } from '../clock/formatClockTime';
-import '../clock/clock.css';
-import { useI18n } from '../../i18n';
-import { nightMinutesAt, subscribeNightProgress } from './night';
+import { PocketWatch } from '../clock/PocketWatch';
+import { handTransform, watchAngles } from '../clock/watchGeometry';
+import { subscribeNightProgress } from './night';
+
+/** Header watch height in px; phones use a smaller size through CSS. */
+const HEADER_WATCH_SIZE = 28;
 
 /**
- * The header's night clock: 6:00 PM at the top of the page, 6:00 AM at the
- * bottom, in one-minute steps. Same markup and fixed-width formatting as
- * <NightClockTime>, but its text is written through refs inside the shared
- * scroll frame, so scrolling never re-renders React. Decorative: aria-hidden.
+ * The header's night clock: a pocket watch whose hands follow the page, 6:00
+ * at the top and a full turn later 6:00 at the bottom. Hand angles are written
+ * through refs inside the shared scroll frame (no React state), continuously,
+ * so the watch also follows the scroll directly with reduced motion.
  */
 export function ScrollClock() {
-  const { t } = useI18n();
-  const periods = t.clock;
-  const hourRef = useRef<HTMLSpanElement>(null);
-  const restRef = useRef<HTMLSpanElement>(null);
+  const hourRef = useRef<SVGGElement>(null);
+  const minuteRef = useRef<SVGGElement>(null);
 
-  // Re-subscribing on a language change redraws the time at once in the new locale.
-  useEffect(() => {
-    let lastMinutes = -1;
-    return subscribeNightProgress((progress) => {
-      const minutes = nightMinutesAt(progress);
-      if (minutes === lastMinutes) return;
-      lastMinutes = minutes;
-      const time = formatClockTime(minutes, periods);
-      if (hourRef.current) hourRef.current.textContent = time.hour;
-      if (restRef.current) restRef.current.textContent = `:${time.minutes}${NBSP}${time.period}`;
-    });
-  }, [periods]);
+  useEffect(
+    () =>
+      subscribeNightProgress((progress) => {
+        const { hour, minute } = watchAngles(progress);
+        hourRef.current?.setAttribute('transform', handTransform(hour));
+        minuteRef.current?.setAttribute('transform', handTransform(minute));
+      }),
+    [],
+  );
 
   return (
-    <span className="night-clock scroll-clock" aria-hidden="true">
-      <span className="night-clock-hour">
-        <span className="night-clock-sizer">00</span>
-        <span ref={hourRef} />
-      </span>
-      <span ref={restRef} />
+    <span className="scroll-clock" aria-hidden="true">
+      <PocketWatch size={HEADER_WATCH_SIZE} hourRef={hourRef} minuteRef={minuteRef} />
     </span>
   );
 }

@@ -1,4 +1,4 @@
-import { NightClockTime } from '../../features/clock/NightClockTime';
+import { PocketWatch } from '../../features/clock/PocketWatch';
 import { useI18n } from '../../i18n';
 
 const GROUNDS = ['bone', 'ink'] as const;
@@ -22,7 +22,7 @@ export function TypeSection() {
               {' / '}
               {ground === 'bone' ? copy.onBone : copy.onInk}
             </p>
-            <h3 className="lab-specimen-heading">{t.brand.heroTagline}</h3>
+            <h3 className="lab-specimen-heading">{t.meta.description}</h3>
             <p className="lab-specimen-label">{t.header.tagline}</p>
             {t.home.pillars.map((pillar) => (
               <div key={pillar.title} className="lab-specimen-pillar">
@@ -32,7 +32,7 @@ export function TypeSection() {
             ))}
             <div className="lab-specimen-ui">
               <p className="lab-specimen-label lab-specimen-label--link">{copy.label}</p>
-              <NightClockTime minutes={21 * 60 + 47} periods={t.clock} />
+              <PocketWatch size={28} progress={227 / 720} />
             </div>
           </article>
         ))}

@@ -10,6 +10,8 @@ import type { Dictionary } from './types';
 export const en: Dictionary = {
   meta: {
     siteName: 'Insomnia by Joel Soto',
+    // Approved line (docs/brand/design-direction.md): the meta description.
+    description: 'Everything you feel while the world sleeps.',
   },
   a11y: {
     skipToContent: 'Skip to content',
@@ -23,22 +25,14 @@ export const en: Dictionary = {
   header: {
     tagline: 'Steel • Words',
   },
-  // Approved taglines (docs/brand/design-direction.md).
-  brand: {
-    heroTagline: 'Everything you feel while the world sleeps.',
-    metaTagline: "Steel and words for those who don't sleep.",
-  },
-  // 12-hour periods for the night clock: "6:00 PM"
-  clock: {
-    am: 'AM',
-    pm: 'PM',
-  },
   footer: {
+    // Approved line (docs/brand/design-direction.md).
+    tagline: "Steel and words for those who don't sleep.",
     rights: 'All rights reserved',
   },
   home: {
     hero: {
-      // Brand name: identical in both languages. The hero line is brand.heroTagline.
+      // Brand name: identical in both languages. The hero carries no other text.
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
@@ -58,13 +52,6 @@ export const en: Dictionary = {
         text: 'Designed in the hours when everyone else sleeps. Black and white, like the night and the screen.',
       },
     ],
-    band1: 'Steel remembers what the night forgets.',
-    band2: {
-      // The word is not translated.
-      word: 'Sonder',
-      meaning:
-        'The realization that every stranger is living a life as vivid and complex as your own.',
-    },
     // Section headings: a roman lead and an italic tail, as in the legacy titles.
     jewelry: {
       lead: 'Steel',
@@ -73,6 +60,12 @@ export const en: Dictionary = {
       body: '[Link deck pending]',
     },
     tshirts: {
+      // Opens the section, before the heading. The word is not translated.
+      sonder: {
+        word: 'Sonder',
+        meaning:
+          'The realization that every stranger is living a life as vivid and complex as your own.',
+      },
       lead: 'Printed',
       em: 'T-shirts',
       // PLACEHOLDER: the T-shirt section arrives in a later step.
@@ -132,8 +125,10 @@ export const en: Dictionary = {
     },
     clock: {
       title: 'Night clock',
-      text: 'From 6:00 PM at the top to 6:00 AM at the bottom. Tabular figures and a fixed width: nothing moves from 9:59 to 10:00.',
-      measured: 'Measured width',
+      text: 'A pocket watch in thin line art. At the top of the page it reads 6:00 PM; at the bottom, one full turn later, 6:00 AM. The hands follow the scroll without steps.',
+      headerSize: 'Header size',
+      introSize: 'Intro size',
+      captions: ['6:00 PM', '9:47 PM', '12:00 AM', '3:47 AM', '6:00 AM'],
     },
     motifs: {
       title: 'Motifs',

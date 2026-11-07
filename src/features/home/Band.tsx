@@ -1,38 +1,32 @@
-import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useChainBandRef } from '../chain';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { REVEAL_THRESHOLD, useInView } from '../../hooks/useInView';
 import { subscribeScrollFrame } from '../../lib/scrollFrame';
 import { has3d } from './has3d';
 import './Band.css';
 
-interface BandProps {
-  /** `phrase`: one italic line. `word`: a large word and its meaning. */
-  variant: 'phrase' | 'word';
-  children: ReactNode;
-}
-
 /**
- * A band: a dream window onto the chain (transparent under `has-3d`), with a
- * radial shade behind the text, mist and the film grain. In the photo
- * fallback, the photo drifts slower than the page and eases out of a 1.1x zoom
- * as the band crosses the viewport (legacy main.js); static with reduced motion.
- * Never background-attachment: fixed (iOS ignores it).
+ * A band: a pure dream window onto the chain (transparent under `has-3d`),
+ * with mist, a soft vignette and the film grain, and no text. The chain drapes
+ * alternate: it sags across the first band and hangs high across the second.
+ * In the photo fallback, the photo drifts slower than the page and eases out
+ * of a 1.1x zoom as the band crosses the viewport (legacy main.js); static with
+ * reduced motion. Never background-attachment: fixed (iOS ignores it).
+ * Decorative, so hidden from assistive tech.
  */
-export function Band({ variant, children }: BandProps) {
+export function Band() {
   const chainRef = useChainBandRef();
-  const sectionRef = useRef<HTMLElement | null>(null);
+  const bandRef = useRef<HTMLDivElement | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
-  const [revealRef, visible] = useInView<HTMLDivElement>(REVEAL_THRESHOLD);
 
   const ref = useCallback(
-    (el: HTMLElement | null) => {
-      sectionRef.current = el;
+    (el: HTMLDivElement | null) => {
+      bandRef.current = el;
       const cleanup = chainRef(el);
       return () => {
-        sectionRef.current = null;
+        bandRef.current = null;
         if (typeof cleanup === 'function') cleanup();
       };
     },
@@ -47,7 +41,7 @@ export function Band({ variant, children }: BandProps) {
       return;
     }
     return subscribeScrollFrame(({ viewportHeight: vh }) => {
-      const band = sectionRef.current;
+      const band = bandRef.current;
       if (!band || has3d()) return;
       const r = band.getBoundingClientRect();
       if (r.bottom < 0 || r.top > vh) return;
@@ -57,14 +51,10 @@ export function Band({ variant, children }: BandProps) {
   }, [reducedMotion]);
 
   return (
-    <section ref={ref} className={`separator separator--${variant}`}>
-      <div ref={bgRef} className="separator-bg" aria-hidden="true" />
-      <div className="atmo-mist separator-mist" aria-hidden="true" />
-      <div className="separator-overlay">
-        <div ref={revealRef} className={visible ? 'separator-text visible' : 'separator-text'}>
-          {children}
-        </div>
-      </div>
-    </section>
+    <div ref={ref} className="separator" aria-hidden="true">
+      <div ref={bgRef} className="separator-bg" />
+      <div className="atmo-mist separator-mist" />
+      <div className="separator-vignette" />
+    </div>
   );
 }
