@@ -1,0 +1,10 @@
+/* Every motif line stays MOTIF_STROKE px wide at any drawing size.
+   (vector-effect is not inherited, so it is set on each shape.) */
+.motif {
+  display: block;
+  overflow: visible;
+}
+
+.motif * {
+  vector-effect: non-scaling-stroke;
+}

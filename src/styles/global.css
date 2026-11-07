@@ -17,8 +17,8 @@ html {
 }
 
 body {
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--bone);
+  color: var(--text-on-light);
   font-family: var(--font-body);
   font-weight: 300;
   overflow-x: hidden;
@@ -55,7 +55,7 @@ main {
   z-index: 400;
   padding: 0.6rem 1rem;
   background: var(--ink);
-  color: var(--surface);
+  color: var(--text-on-dark);
   font-size: 0.62rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -65,7 +65,7 @@ main {
 
 .skip-link:focus-visible {
   transform: none;
-  outline: 1px solid var(--surface);
+  outline: 1px solid var(--text-on-dark);
   outline-offset: 2px;
 }
 

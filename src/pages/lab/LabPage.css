@@ -1,0 +1,391 @@
+/* Internal visual lab. Plain, functional layout around the specimens. */
+.lab {
+  background: var(--bone);
+  color: var(--text-on-light);
+  padding-bottom: 6rem;
+}
+
+/* Dark strip under the transparent header, so it reads as it does over the hero */
+.lab-hero {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  padding: calc(var(--header-height) + 4rem) var(--gutter) 4rem;
+}
+
+.lab-eyebrow,
+.lab-specimen-meta,
+.lab-motif-name,
+.lab-swatch-role,
+.lab-clock-width {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.lab-eyebrow {
+  color: var(--text-on-dark-muted);
+  margin-bottom: 1rem;
+}
+
+.lab-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+.lab-intro {
+  max-width: 52ch;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--text-on-dark);
+}
+
+.lab-section {
+  padding: 4rem var(--gutter) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lab-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.lab-subheading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 2.5rem 0 0.4rem;
+}
+
+.lab-text {
+  max-width: 64ch;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: var(--text-on-light-muted);
+  margin-bottom: 1.8rem;
+}
+
+/* ── PALETTE ── */
+.lab-swatches {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.2rem;
+}
+
+.lab-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lab-swatch-chip {
+  display: block;
+  height: 72px;
+  border: 1px solid var(--bone-deep);
+  border-radius: var(--radius);
+}
+
+.lab-swatch-token,
+.lab-contrast code {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.lab-swatch-value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-swatch-role {
+  color: var(--text-on-light-muted);
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+}
+
+.lab-table-wrap {
+  overflow-x: auto;
+}
+
+.lab-contrast {
+  border-collapse: collapse;
+  min-width: 640px;
+  width: 100%;
+}
+
+.lab-contrast th,
+.lab-contrast td {
+  padding: 0.8rem;
+  border: 1px solid var(--bone-deep);
+  text-align: left;
+  vertical-align: top;
+}
+
+.lab-contrast thead th:not(:first-child) code {
+  /* header cells sit on their own background: readable label */
+  padding: 0.15rem 0.35rem;
+  background: var(--bone);
+  color: var(--text-on-light);
+}
+
+.lab-cell-ratio {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-cell-verdict {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+
+.lab-cell--notUsed > * {
+  opacity: 0.35;
+}
+
+.lab-cell--fail .lab-cell-verdict {
+  text-decoration: underline;
+}
+
+/* ── TYPOGRAPHY ── */
+.lab-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--bone-deep);
+  border: 1px solid var(--bone-deep);
+}
+
+.lab-specimen {
+  padding: 2.4rem 2rem;
+}
+
+.lab-specimen--bone {
+  background: var(--bone);
+  color: var(--text-on-light);
+  --muted: var(--text-on-light-muted);
+}
+
+.lab-specimen--ink {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  --muted: var(--text-on-dark-muted);
+}
+
+.lab-specimen .lab-specimen-meta {
+  color: var(--muted);
+  margin-bottom: 1.6rem;
+}
+
+.lab-specimen-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.9rem;
+}
+
+.lab-specimen-label {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+}
+
+.lab-specimen-label--link {
+  margin: 1.4rem 0 0;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+}
+
+.lab-specimen-pillar + .lab-specimen-pillar {
+  margin-top: 1.3rem;
+}
+
+.lab-specimen-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.lab-specimen-body {
+  color: var(--muted);
+  max-width: 36ch;
+}
+
+/* The two body candidates, at sizes that read about equally large */
+.lab-specimen--montserrat .lab-specimen-body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  line-height: 1.8;
+}
+
+.lab-specimen--garamond .lab-specimen-body {
+  font-family: var(--font-serif-body);
+  font-weight: 400;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+  line-height: 1.65;
+}
+
+/* ── CLOCK ── */
+.lab-clock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-raised);
+}
+
+.lab-clock-column {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  padding: 1.8rem 1.6rem;
+}
+
+.lab-clock-column .lab-specimen-meta {
+  color: var(--text-on-dark-muted);
+  margin-bottom: 1.2rem;
+}
+
+.lab-clock-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgb(var(--steel-rgb) / 0.15);
+}
+
+/* Outline the fixed box so equal widths are visible */
+.lab-clock-row .night-clock {
+  outline: 1px dashed rgb(var(--steel-rgb) / 0.35);
+  outline-offset: 4px;
+}
+
+.lab-clock-width {
+  white-space: nowrap;
+  color: var(--text-on-dark-muted);
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── MOTIFS ── */
+.lab-motifs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 2.5rem 3rem;
+  padding: 2.5rem 2rem;
+}
+
+.lab-motifs--ink {
+  background: var(--ink);
+  color: var(--steel);
+  --muted: var(--text-on-dark-muted);
+}
+
+.lab-motifs--bone {
+  background: var(--bone);
+  color: var(--text-on-light);
+  border: 1px solid var(--bone-deep);
+  border-top: none;
+  --muted: var(--text-on-light-muted);
+}
+
+.lab-motif {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.lab-motif-name {
+  color: var(--muted);
+}
+
+/* ── CARDS ── */
+.lab-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  padding: 3rem 2rem;
+  background: var(--ink);
+  color: var(--text-on-dark);
+}
+
+.lab-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lab-card figcaption {
+  color: var(--text-on-dark-muted);
+}
+
+/* ── ATMOSPHERE ── */
+.lab-atmosphere {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+}
+
+.lab-atmosphere-phrase {
+  position: relative;
+  z-index: 4;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.4rem, 4vw, 2.6rem);
+  letter-spacing: 0.04em;
+  color: var(--text-on-dark);
+  text-align: center;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 700px) {
+  .lab-type-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lab-specimen {
+    padding: 2rem 1.4rem;
+  }
+
+  .lab-motifs,
+  .lab-cards {
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+}

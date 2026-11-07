@@ -7,7 +7,7 @@
   justify-content: center;
   gap: 2rem;
   padding: calc(var(--header-height) + 2rem) var(--gutter) 2rem;
-  background: var(--bg);
+  background: var(--bone);
 }
 
 .placeholder--dark {
@@ -20,7 +20,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-on-dark-muted);
   text-align: center;
 }
 
@@ -28,5 +28,5 @@
   font-size: 0.62rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-on-dark);
 }

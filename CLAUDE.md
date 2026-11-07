@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+**Before any visual work (styles, layout, motifs, motion, 3D look, copy placement), read `docs/brand/design-direction.md`.** It sets the palette, typography, motifs, IP rules and the night cycle.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project overview
@@ -46,12 +48,17 @@ src/
   app/                  App.tsx (providers) and router.tsx (route table)
   components/layout/    Layout (skip link, Header, <main>, Footer), Header, Footer, LanguageToggle
   pages/                route-level components (HomePage is a temporary chain test layout; NotFoundPage is a placeholder)
+    lab/                /lab: internal visual lab (not linked, noindex, lazy-loaded): palette and measured contrast, type, clock, motifs, card, atmosphere
   features/             one folder per feature
-    chain/              3D steel chain (see "3D chain" below); intro, collection, apparel, articles to come
+    chain/              3D steel chain (see "3D chain" below)
+    motifs/             thin line-art SVG ornaments: Chessboard, FiligreeDivider, Rose, Key, ClockFace, OvalLink (placeholder link)
+    clock/              night clock: formatClockTime() and <NightClockTime> (fixed width, tabular figures)
+    cards/              playing card: CardFront, CardBack, FlipCard (slow flip, instant with reduced motion)
+                        intro, collection, apparel, articles to come
   i18n/                 LanguageProvider, useI18n, es.ts, en.ts, types
   hooks/                shared hooks (usePrefersReducedMotion)
   data/                 typed product data (empty for now)
-  styles/               tokens.css (design tokens), global.css (reset, base type, reduced-motion contract)
+  styles/               tokens.css (design tokens), global.css (reset, base type, reduced-motion contract), atmosphere.css (grain, vignette, mist)
 public/images/          photos copied from the legacy site, lowercase .jpg names
   products/             void, star, monolith, static, together, meridian, heart, echo, snake
   background/           horizontal, vertical (hero/band fallbacks), chain (unused in the legacy site)
@@ -66,8 +73,17 @@ Component CSS sits next to its component (`Header.tsx` imports `Header.css`) and
 
 ## Styling
 
-- Design tokens live on `:root` in `src/styles/tokens.css`: `--bg`, `--surface`, `--ink`, `--ink-mid`, `--ink-light`, `--border`, `--radius`, `--font-display` (Cormorant Garamond), `--font-body` (Montserrat), plus `--gutter` and `--header-height`. Use them instead of hard-coded colours; the only literal colours allowed are the white/black rgba overlays the legacy design already used.
-- Fonts load from Google Fonts in `index.html` with the exact request the legacy site used (Cormorant Garamond 300/400/600 and italic 300; Montserrat 200/300/400/500). Add a weight there before using it.
+- Design tokens live on `:root` in `src/styles/tokens.css`, following `docs/brand/design-direction.md`:
+  - Palette: `--ink`, `--ink-raised`, `--bone`, `--bone-deep`, `--text-on-dark`, `--text-on-light`, `--steel`, `--accent`, `--accent-glow`.
+  - Derived (added, AA-checked): `--text-on-dark-muted`, `--text-on-light-muted` for secondary text; `--border` (alias of `--bone-deep`, 1px rules on light).
+  - Channels for translucent overlays: `--ink-rgb`, `--text-on-dark-rgb`, `--steel-rgb`, used as `rgb(var(--ink-rgb) / 0.55)`.
+  - Type: `--font-display` (Cormorant Garamond), `--font-body` (Montserrat), `--font-serif-body` (EB Garamond, body candidate); layout: `--gutter`, `--header-height`, `--radius`.
+  - The legacy `--bg`, `--surface`, `--ink-mid` and `--ink-light` are gone (`--bone` and the muted text tokens replace them).
+- Never hard-code a colour: use a token or a token channel. Light sections use `--bone` with `--text-on-light`; dark sections use `--ink` with `--text-on-dark`. Red (`--accent`) is one focal point per screen at most, text only on light; on dark it is `--accent-glow` light, never text.
+- Every text pairing must pass WCAG AA. `/lab` measures them live from the tokens; check it after changing a colour.
+- Atmosphere utilities in `src/styles/atmosphere.css`: `.atmo-grain` (film grain via `--grain-image`, also used by the home bands), `.atmo-vignette`, `.atmo-mist`. All stop moving under reduced motion.
+- Fonts load from Google Fonts in `index.html`: Cormorant Garamond and Montserrat exactly as the legacy site loaded them (Cormorant 300/400/600 and italic 300; Montserrat 200/300/400/500), plus EB Garamond 400/500 and italic 400. Add a weight there before using it.
+- Ornaments are thin line art: use the motifs in `src/features/motifs/` (stroke `MOTIF_STROKE`, 1.3 px at any size, as the legacy pillar icons). One motif per section at most; objects and patterns only, never characters (see the IP rules in the design direction).
 - Image paths are lowercase (`/images/products/void.jpg`). Render's file serving is case-sensitive.
 
 ## Internationalization rules

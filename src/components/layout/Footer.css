@@ -1,7 +1,7 @@
 /* Ported from the FOOTER block of the legacy css/styles.css */
 .site-footer {
   background: var(--ink);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-on-dark-muted);
   padding: 3rem var(--gutter);
   display: flex;
   align-items: center;
@@ -16,7 +16,7 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--text-on-dark);
 }
 
 .footer-copy {

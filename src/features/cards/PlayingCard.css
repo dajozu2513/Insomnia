@@ -1,0 +1,146 @@
+/*
+ * Playing cards (docs/brand/design-direction.md, "Products"). Poker
+ * proportions (5:7). The front is the reality layer (bone paper), the back
+ * the dream layer (ink with a chessboard).
+ */
+.static-card,
+.flip-card {
+  --card-width: 200px;
+  position: relative;
+  display: block;
+  width: var(--card-width);
+  aspect-ratio: 5 / 7;
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  border-radius: 10px;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.card-front {
+  background: var(--bone);
+  color: var(--text-on-light);
+  border: 1px solid var(--bone-deep);
+  box-shadow: 0 10px 30px rgb(var(--ink-rgb) / 0.25);
+}
+
+.card-back {
+  background: var(--ink-raised);
+  color: var(--steel);
+  box-shadow: 0 10px 30px rgb(var(--ink-rgb) / 0.4);
+}
+
+/* Fine inner frame; doubled in steel on the back */
+.card-frame {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid var(--bone-deep);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.card-frame--steel {
+  border-color: rgb(var(--steel-rgb) / 0.55);
+  box-shadow:
+    0 0 0 4px var(--ink-raised),
+    0 0 0 5px rgb(var(--steel-rgb) / 0.35);
+}
+
+.card-back-pattern {
+  position: absolute;
+  inset: 18px;
+  border-radius: 3px;
+  background: repeating-conic-gradient(var(--steel) 0 25%, transparent 0 50%) 0 0 / 22px 22px;
+  opacity: 0.16;
+}
+
+.card-illustration {
+  color: var(--text-on-light);
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  padding-left: 0.32em; /* optically centre the tracked capitals */
+}
+
+.card-index {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.card-index--top {
+  top: 16px;
+  left: 16px;
+}
+
+.card-index--bottom {
+  bottom: 16px;
+  right: 16px;
+  rotate: 180deg;
+}
+
+/* The card's one red detail: a small diamond pip (accent on light only) */
+.card-pip {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  rotate: 45deg;
+}
+
+/* ── FLIP ── slow and calm, never bouncy */
+.flip-card {
+  appearance: none;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 1200px;
+  font: inherit;
+  border-radius: 10px;
+}
+
+.flip-card:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 6px;
+}
+
+.flip-card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 1.4s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card .card-back {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The card still turns, but instantly */
+  .flip-card-inner {
+    transition: none;
+  }
+}

@@ -1,21 +1,45 @@
 /*
- * Design tokens, ported unchanged from the legacy Black & White site
- * (_reference/black-and-white/css/styles.css, :root block).
- * The palette is strictly black, white and warm greys; add new tokens here
- * rather than hard-coding colours in components.
+ * Design tokens. The palette comes from docs/brand/design-direction.md: black
+ * and white shifted toward night and aged paper, with one rare accent (blood
+ * red). Every text pairing is measured on the /lab page; keep it at WCAG AA.
+ * Add new tokens here rather than hard-coding colours in components.
  */
 :root {
-  --bg: #f5f4f2;
-  --surface: #ffffff;
-  --ink: #0e0e0d;
-  --ink-mid: #555553;
-  --ink-light: #999997;
-  --border: #e0deda;
+  /* ── PALETTE ── */
+  --ink: #0d0c0e; /* near-black, main dark background */
+  --ink-raised: #17151a; /* dark surfaces, cards on dark */
+  --bone: #e8e1d3; /* aged paper, main light background */
+  --bone-deep: #d6cdbb; /* light surfaces, rules on light */
+  --text-on-dark: #ebe6dc;
+  --text-on-light: #141215;
+  --steel: #b8bbc1; /* thin lines and ornaments on dark */
+  --accent: #8f1d22; /* blood red: one focal point per screen at most; text only on light */
+  --accent-glow: rgba(196, 40, 45, 0.35); /* glows and light only, never fills */
+
+  /* ── DERIVED ──
+     Secondary text, not in the design direction's list: the palette needs a
+     quieter text colour on each side. Both pass AA on both backgrounds of
+     their side (see /lab). */
+  --text-on-light-muted: #5a5459; /* 5.67:1 on bone, 4.67:1 on bone-deep */
+  --text-on-dark-muted: #8f8a83; /* 5.70:1 on ink, 5.29:1 on ink-raised */
+
+  /* Channels for translucent overlays: rgb(var(--ink-rgb) / 0.55) */
+  --ink-rgb: 13 12 14;
+  --text-on-dark-rgb: 235 230 220;
+  --steel-rgb: 184 187 193;
+
+  /* Role alias kept from the legacy names */
+  --border: var(--bone-deep); /* 1px rules on light */
+
   --radius: 2px;
+
+  /* ── TYPE ── */
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Montserrat', sans-serif;
+  /* Candidate body face, compared with Montserrat Light on /lab */
+  --font-serif-body: 'EB Garamond', Georgia, serif;
 
-  /* Shared layout values that the legacy CSS repeated inline */
+  /* ── LAYOUT ── */
   --gutter: clamp(1.5rem, 5vw, 4rem);
   --header-height: 72px;
 }

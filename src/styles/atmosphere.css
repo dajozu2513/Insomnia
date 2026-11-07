@@ -1,0 +1,110 @@
+/*
+ * ATMOSPHERE: the dream layer (docs/brand/design-direction.md, "Atmosphere").
+ * Film grain, soft vignette and layered mist for dark "dream" panels. All of it
+ * is subtle and sits on top of an ink background; none of it is a texture taken
+ * from a reference image.
+ */
+
+:root {
+  /* Fractal-noise SVG, ported from the legacy band grain */
+  --grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes grain {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-22px, 14px);
+  }
+  66% {
+    transform: translate(18px, -26px);
+  }
+  100% {
+    transform: translate(-8px, 30px);
+  }
+}
+
+/* ── GRAIN ── on a positioned, overflow-hidden container */
+.atmo-grain::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: -60px;
+  background-image: var(--grain-image);
+  opacity: 0.07;
+  pointer-events: none;
+  animation: grain 0.8s steps(3) infinite;
+}
+
+/* ── VIGNETTE ── darkens the edges toward ink */
+.atmo-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 50%,
+    rgb(var(--ink-rgb) / 0) 45%,
+    rgb(var(--ink-rgb) / 0.85) 100%
+  );
+}
+
+/* ── MIST ── two soft layers drifting very slowly in opposite directions */
+.atmo-mist {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atmo-mist::before,
+.atmo-mist::after {
+  content: '';
+  position: absolute;
+  inset: -20% -40%;
+  background:
+    radial-gradient(
+      ellipse 30% 22% at 30% 62%,
+      rgb(var(--text-on-dark-rgb) / 0.09),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 26% 18% at 68% 48%,
+      rgb(var(--text-on-dark-rgb) / 0.07),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 16% at 50% 82%,
+      rgb(var(--text-on-dark-rgb) / 0.08),
+      transparent 70%
+    );
+  filter: blur(6px);
+  animation: mist-drift 60s ease-in-out infinite alternate;
+}
+
+.atmo-mist::after {
+  opacity: 0.8;
+  transform: scaleX(-1);
+  animation-duration: 85s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes mist-drift {
+  from {
+    translate: -6% 0;
+  }
+  to {
+    translate: 6% -2%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No drift and no grain flicker: the layers stay, still */
+  .atmo-grain::after,
+  .atmo-mist::before,
+  .atmo-mist::after {
+    animation: none;
+  }
+}
