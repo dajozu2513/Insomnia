@@ -1,0 +1,200 @@
+/*
+ * BANDS (dream windows onto the chain), ported from the legacy SEPARATOR block.
+ * Layers, bottom to top: photo (fallback only), mist, radial shade and text,
+ * film grain (above the shade, below the text).
+ */
+.separator {
+  position: relative;
+  height: 460px;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+/* Taller than the band so Band.tsx can drift and slowly zoom it */
+.separator-bg {
+  position: absolute;
+  inset: -18% 0;
+  background-image: url('/images/background/horizontal.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  will-change: transform;
+}
+
+@media (orientation: portrait) {
+  .separator-bg {
+    background-image: url('/images/background/vertical.jpg');
+  }
+}
+
+/* Film grain (texture from styles/atmosphere.css) */
+.separator::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: -60px;
+  background-image: var(--grain-image);
+  opacity: 0.07;
+  pointer-events: none;
+  animation: grain 0.8s steps(3) infinite;
+}
+
+/* Mist drifting low across the band, lighter than the hero's */
+.separator-mist {
+  opacity: 0.7;
+  mask-image: linear-gradient(to top, black 0%, transparent 85%);
+}
+
+.separator-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--ink-rgb) / 0.62);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Over the 3D chain: dark only behind the text, so the links stay bright at the edges */
+.has-3d .separator {
+  background: transparent;
+}
+
+.has-3d .separator-bg {
+  display: none;
+}
+
+.has-3d .separator-overlay {
+  background: radial-gradient(
+    ellipse 42% 38% at 50% 50%,
+    rgb(var(--ink-rgb) / 0.7) 0%,
+    rgb(var(--ink-rgb) / 0) 100%
+  );
+}
+
+.separator-text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--text-on-dark);
+  padding: 0 1.5rem;
+}
+
+/* ── REVEAL ── the line rises out of its slot and settles its tracking */
+.reveal-wrap {
+  display: block;
+  overflow: hidden;
+}
+
+.reveal-line {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .reveal-line {
+  transform: translateY(0);
+}
+
+/* ── BAND 1: one italic phrase ── */
+.separator-headline {
+  font-family: var(--font-display);
+  /* One line, and narrow enough that the drape rising at the band edges clears it */
+  font-size: clamp(1.3rem, 3.4vw, 2.8rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.06em;
+}
+
+.separator-headline .reveal-line {
+  letter-spacing: 0.16em;
+  transition:
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    letter-spacing 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .separator-headline .reveal-line {
+  letter-spacing: 0.06em;
+}
+
+/* ── BAND 2: "Sonder" and its meaning, set low in the band so the chain above clears it ── */
+.separator--word .separator-overlay {
+  justify-content: flex-end;
+  padding-bottom: clamp(3.5rem, 9vw, 5.5rem);
+}
+
+.band-word {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 8vw, 5.6rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  padding-left: 0.08em;
+}
+
+.band-meaning {
+  max-width: 34ch;
+  text-wrap: balance;
+  margin-top: 1rem;
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.55;
+  color: var(--text-on-dark);
+  opacity: 0;
+  transition: opacity 1.2s ease 0.4s;
+}
+
+.visible .band-meaning {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .separator {
+    height: 300px;
+  }
+
+  /* The longer Spanish phrase breaks into two balanced lines here; the drape
+     sags well below the band's centre, so two lines still clear it */
+  .separator-headline {
+    font-size: 5.6vw;
+    text-wrap: balance;
+  }
+
+  .separator-text {
+    padding: 0 1rem;
+  }
+
+  /* Band 2 needs room for the word, its meaning and the drape above them */
+  .separator--word {
+    height: 380px;
+  }
+
+  .separator--word .separator-overlay {
+    padding-bottom: 2.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .separator::after {
+    animation: none;
+  }
+
+  .separator-bg {
+    will-change: auto;
+  }
+
+  /* No rise and no tracking change: the text fades in */
+  .reveal-line,
+  .separator-headline .reveal-line {
+    transform: none;
+    opacity: 0;
+    letter-spacing: 0.06em;
+    transition: opacity 0.8s ease;
+  }
+
+  .visible .reveal-line {
+    opacity: 1;
+  }
+}

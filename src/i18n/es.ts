@@ -22,7 +22,7 @@ export const es = {
   header: {
     tagline: 'Acero • Palabra',
   },
-  // Approved taglines (docs/brand/design-direction.md). Shown on /lab for now.
+  // Approved taglines (docs/brand/design-direction.md).
   brand: {
     heroTagline: 'Todo lo que sientes cuando el mundo duerme.',
     metaTagline: 'Acero y palabras para quienes no duermen.',
@@ -37,18 +37,52 @@ export const es = {
   },
   home: {
     hero: {
-      // Brand name: identical in both languages.
+      // Brand name: identical in both languages. The hero line is brand.heroTagline.
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
-    // PLACEHOLDER: band phrases pending. Kept about as long as the legacy
-    // phrases so the drapes can be checked against a realistic line.
-    band1: '[Frase de la primera banda]',
-    band2: '[Frase de la segunda banda]',
-    // PLACEHOLDER: temporary opaque sections, designed in step 3.
-    section1: '[Sección pendiente]',
-    section2: '[Sección pendiente]',
-    section3: '[Sección pendiente]',
+    pillarsLabel: 'Pilares',
+    // Order matters: icons are a chain link, an open quotation mark and a crescent moon.
+    pillars: [
+      {
+        title: 'Acero',
+        text: 'Piezas de acero inoxidable hechas a mano. Lo que no se oxida, permanece.',
+      },
+      {
+        title: 'Palabra',
+        text: 'Palabras para sentimientos que aún no tenían nombre, impresas para llevar.',
+      },
+      {
+        title: 'Vigilia',
+        text: 'Diseñado en las horas en que todos duermen. Negro y blanco, como la noche y la pantalla.',
+      },
+    ],
+    band1: 'El acero recuerda lo que la noche olvida.',
+    band2: {
+      // The word is not translated.
+      word: 'Sonder',
+      meaning:
+        'Darte cuenta de que cada desconocido vive una vida tan intensa y compleja como la tuya.',
+    },
+    // Section headings: a roman lead and an italic tail, as in the legacy titles.
+    jewelry: {
+      lead: 'Joyería',
+      em: 'de acero',
+      // PLACEHOLDER: the jewelry deck arrives in a later step.
+      body: '[Baraja de eslabones pendiente]',
+    },
+    tshirts: {
+      lead: 'Camisetas',
+      em: 'estampadas',
+      // PLACEHOLDER: the T-shirt section arrives in a later step.
+      body: '[Camisetas pendientes]',
+    },
+    readings: {
+      lead: 'Lecturas',
+      em: '',
+      // PLACEHOLDER: the readings arrive in a later step.
+      body: '[Lecturas pendientes]',
+    },
   },
   notFound: {
     // PLACEHOLDER: 404 copy pending.
@@ -90,27 +124,11 @@ export const es = {
     },
     type: {
       title: 'Tipografía',
-      text: 'Mismo titular, cuerpo y etiquetas; el cuerpo cambia entre Montserrat Light y EB Garamond.',
-      bodyMontserrat: 'Cuerpo: Montserrat Light',
-      bodyGaramond: 'Cuerpo: EB Garamond',
+      text: 'Títulos en Cormorant Garamond, cuerpo en EB Garamond; Montserrat para etiquetas, interfaz y reloj.',
+      faces: 'Cuerpo: EB Garamond, etiquetas: Montserrat',
       onBone: 'Sobre hueso',
       onInk: 'Sobre tinta',
       label: 'Leer',
-      // Legacy pillar copy, used as the body specimen.
-      pillars: [
-        {
-          title: 'Estética Black & White',
-          text: 'Un universo en blanco y negro. Sin distracciones, sin ruido.',
-        },
-        {
-          title: 'Una sola paleta',
-          text: 'El contraste como lenguaje. Negro y blanco como filosofía.',
-        },
-        {
-          title: 'Identidad propia',
-          text: 'No seguimos tendencias. Definimos las nuestras.',
-        },
-      ],
     },
     clock: {
       title: 'Reloj de la noche',

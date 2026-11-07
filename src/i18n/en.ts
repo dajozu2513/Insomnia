@@ -23,7 +23,7 @@ export const en: Dictionary = {
   header: {
     tagline: 'Steel • Words',
   },
-  // Approved taglines (docs/brand/design-direction.md). Shown on /lab for now.
+  // Approved taglines (docs/brand/design-direction.md).
   brand: {
     heroTagline: 'Everything you feel while the world sleeps.',
     metaTagline: "Steel and words for those who don't sleep.",
@@ -38,18 +38,52 @@ export const en: Dictionary = {
   },
   home: {
     hero: {
-      // Brand name: identical in both languages.
+      // Brand name: identical in both languages. The hero line is brand.heroTagline.
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
-    // PLACEHOLDER: band phrases pending. Kept about as long as the legacy
-    // phrases so the drapes can be checked against a realistic line.
-    band1: '[Phrase for the first band]',
-    band2: '[Phrase for the second band]',
-    // PLACEHOLDER: temporary opaque sections, designed in step 3.
-    section1: '[Section pending]',
-    section2: '[Section pending]',
-    section3: '[Section pending]',
+    pillarsLabel: 'Pillars',
+    // Order matters: icons are a chain link, an open quotation mark and a crescent moon.
+    pillars: [
+      {
+        title: 'Steel',
+        text: "Handmade stainless steel pieces. What doesn't rust, remains.",
+      },
+      {
+        title: 'Words',
+        text: 'Words for feelings that had no name yet, printed to wear.',
+      },
+      {
+        title: 'Vigil',
+        text: 'Designed in the hours when everyone else sleeps. Black and white, like the night and the screen.',
+      },
+    ],
+    band1: 'Steel remembers what the night forgets.',
+    band2: {
+      // The word is not translated.
+      word: 'Sonder',
+      meaning:
+        'The realization that every stranger is living a life as vivid and complex as your own.',
+    },
+    // Section headings: a roman lead and an italic tail, as in the legacy titles.
+    jewelry: {
+      lead: 'Steel',
+      em: 'jewelry',
+      // PLACEHOLDER: the jewelry deck arrives in a later step.
+      body: '[Link deck pending]',
+    },
+    tshirts: {
+      lead: 'Printed',
+      em: 'T-shirts',
+      // PLACEHOLDER: the T-shirt section arrives in a later step.
+      body: '[T-shirts pending]',
+    },
+    readings: {
+      lead: 'Readings',
+      em: '',
+      // PLACEHOLDER: the readings arrive in a later step.
+      body: '[Readings pending]',
+    },
   },
   notFound: {
     // PLACEHOLDER: 404 copy pending.
@@ -90,27 +124,11 @@ export const en: Dictionary = {
     },
     type: {
       title: 'Typography',
-      text: 'Same heading, body and labels; the body switches between Montserrat Light and EB Garamond.',
-      bodyMontserrat: 'Body: Montserrat Light',
-      bodyGaramond: 'Body: EB Garamond',
+      text: 'Headings in Cormorant Garamond, body in EB Garamond; Montserrat for labels, UI and the clock.',
+      faces: 'Body: EB Garamond, labels: Montserrat',
       onBone: 'On bone',
       onInk: 'On ink',
       label: 'Read',
-      // Legacy pillar copy, used as the body specimen.
-      pillars: [
-        {
-          title: 'Black & White Aesthetic',
-          text: 'A universe in black and white. No distractions, no noise.',
-        },
-        {
-          title: 'One palette only',
-          text: 'Contrast as language. Black and white as philosophy.',
-        },
-        {
-          title: 'A voice of its own',
-          text: "We don't follow trends. We set our own.",
-        },
-      ],
     },
     clock: {
       title: 'Night clock',

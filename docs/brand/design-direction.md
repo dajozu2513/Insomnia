@@ -24,7 +24,7 @@ Base stays black and white, shifted toward night and aged paper. One accent only
 | Token             | Value                     | Use                               |
 | ----------------- | ------------------------- | --------------------------------- |
 | `--ink`           | `#0d0c0e`                 | near-black, main dark background  |
-| `--ink-raised`    | `#17151a`                 | dark surfaces, cards on dark      |
+| `--ink-raised`    | `#1d1a20`                 | dark surfaces, cards on dark      |
 | `--bone`          | `#e8e1d3`                 | aged paper, main light background |
 | `--bone-deep`     | `#d6cdbb`                 | light surfaces, rules on light    |
 | `--text-on-dark`  | `#ebe6dc`                 |                                   |
@@ -33,13 +33,18 @@ Base stays black and white, shifted toward night and aged paper. One accent only
 | `--accent`        | `#8f1d22`                 | blood red                         |
 | `--accent-glow`   | `rgba(196, 40, 45, 0.35)` | glows and light only, never fills |
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. All text must meet WCAG AA.
+Derived tokens (added after the lab review, both AA on their side):
+
+- `--text-on-light-muted`: `#4f4a50` (6.65:1 on bone, 5.48:1 on bone-deep)
+- `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
+
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. All text must meet WCAG AA.
 
 ## Typography
 
 - Display: Cormorant Garamond (roman and italic), unchanged.
 - Labels, UI, clock: Montserrat, small, widely spaced capitals, tabular figures for numbers.
-- Body text: to be decided in the lab between Montserrat Light and EB Garamond.
+- Body text: EB Garamond (decided in the lab review). Montserrat is not used for body text.
 
 ## Motifs
 
@@ -49,7 +54,7 @@ Accent rules: red is rare. Use it for a single focal point per screen at most: a
 - Wrought-iron filigree: thin ornamental frames and section dividers.
 - Roses with thorns, keys, teacups: occasional small line ornaments.
 
-Rules: all ornaments are thin line art in the same stroke weight as the pillar icons; at most one motif per section; ornament, never full illustrated scenes.
+Rules: all ornaments are thin line art in the same stroke weight as the pillar icons; at most one motif per section; ornament, never full illustrated scenes. Line art on light sections uses `--text-on-light` or `--text-on-light-muted`, never `--steel` (steel is for dark sections only).
 
 ## Atmosphere
 

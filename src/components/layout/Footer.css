@@ -20,6 +20,8 @@
 }
 
 .footer-copy {
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;

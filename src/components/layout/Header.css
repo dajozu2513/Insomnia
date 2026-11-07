@@ -70,7 +70,7 @@
 }
 
 .brand-sub {
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-weight: 200;
   font-size: 0.6rem;
   letter-spacing: 0.3em;
@@ -88,6 +88,8 @@
 }
 
 .header-tag {
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 0.62rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -97,6 +99,20 @@
 }
 
 .site-header.scrolled .header-tag {
+  color: var(--text-on-light-muted);
+  text-shadow: none;
+}
+
+/* Night clock beside the tagline (features/night/ScrollClock.tsx). Same type as
+   the tagline; the fixed-width box comes from clock.css. */
+.scroll-clock {
+  font-size: 0.62rem;
+  color: var(--text-on-dark);
+  text-shadow: 0 1px 6px rgb(var(--ink-rgb) / 0.7);
+  transition: color 0.4s;
+}
+
+.site-header.scrolled .scroll-clock {
   color: var(--text-on-light-muted);
   text-shadow: none;
 }
@@ -126,7 +142,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.6rem;
   font-weight: 500;
   letter-spacing: 0.15em;
@@ -161,12 +177,19 @@
 }
 
 @media (max-width: 600px) {
-  /* Keep the brand on one line: drop the tagline, the language toggle stays */
+  /* Keep the brand on one line: drop the tagline; the clock and the language toggle stay */
   .header-tag {
     display: none;
   }
 
   .brand-name {
     white-space: nowrap;
+  }
+}
+
+/* Very narrow phones: brand, clock and toggle no longer fit on one line; the clock goes */
+@media (max-width: 359px) {
+  .scroll-clock {
+    display: none;
   }
 }

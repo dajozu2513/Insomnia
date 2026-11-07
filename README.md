@@ -4,9 +4,9 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 **Live site:** https://insomnia-js.onrender.com
 
-The site continues the visual language of the earlier Black & White site (a strict black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and rebuilds it as a typed React application.
+The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: foundation. Tooling, design tokens, bilingual infrastructure and the layout shell are in place. The 3D chain, collection, apparel line and articles are being ported in the next steps.
+> Status: in progress. The 3D chain, intro, hero, pillars, bands and the scroll clock are built; the jewelry deck, the T-shirt line and the readings come next.
 
 ## Highlights
 
@@ -15,6 +15,10 @@ The site continues the visual language of the earlier Black & White site (a stri
 - **Design tokens in plain CSS.** No UI or CSS framework; colours, fonts and spacing come from CSS custom properties ported from the original site.
 - **Motion with restraint.** Every animation honours `prefers-reduced-motion`: movement is replaced by short fades and the 3D scene stops its render loop.
 - **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
+- **A 3D steel chain behind the page.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page falls back to photography.
+- **A night that follows the scroll.** A clock in the header runs from 6:00 PM at the top of the page to 6:00 AM at the bottom, in fixed-width tabular figures so nothing shifts as it ticks.
+- **One scroll frame.** Every scroll-driven effect (progress hairline, clock, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
+- **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the clock, the line-art motifs, a flipping playing card and the atmosphere layers.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
 
 ## Tech stack
@@ -26,7 +30,7 @@ The site continues the visual language of the earlier Black & White site (a stri
 | Build     | Vite 8                                                   |
 | 3D        | Three.js 0.183.0                                         |
 | Styling   | Plain CSS, custom properties                             |
-| Fonts     | Cormorant Garamond and Montserrat (Google Fonts)         |
+| Fonts     | Cormorant Garamond, EB Garamond, Montserrat              |
 | Quality   | ESLint (typescript-eslint strict type-checked), Prettier |
 | Hosting   | Render static site (`render.yaml`)                       |
 
@@ -57,9 +61,10 @@ src/
   app/                 App and router
   components/layout/   Header, Footer, language toggle, page layout
   pages/               Route-level pages
-  features/            Feature modules (chain, intro, collection, apparel, articles)
+  features/            Feature modules (chain, home, intro, night clock, motifs, cards)
   i18n/                Language provider, hook and ES/EN dictionaries
-  hooks/               Shared hooks
+  hooks/               Shared hooks (reduced motion, in-view reveals)
+  lib/                 Shared scroll frame
   data/                Typed product data
   styles/              Design tokens and global styles
 public/images/         Product and background photography

@@ -6,7 +6,7 @@
 .night-clock {
   display: inline-block;
   width: 9.6em;
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.7rem;
   font-weight: 400;
   font-variant-numeric: tabular-nums;

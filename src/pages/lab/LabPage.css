@@ -17,6 +17,8 @@
 .lab-motif-name,
 .lab-swatch-role,
 .lab-clock-width {
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 0.6rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -37,7 +39,7 @@
 
 .lab-intro {
   max-width: 52ch;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   line-height: 1.8;
   color: var(--text-on-dark);
 }
@@ -69,7 +71,7 @@
 
 .lab-text {
   max-width: 64ch;
-  font-size: 0.82rem;
+  font-size: 1rem;
   line-height: 1.8;
   color: var(--text-on-light-muted);
   margin-bottom: 1.8rem;
@@ -103,6 +105,7 @@
 }
 
 .lab-swatch-value {
+  font-family: var(--font-ui);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
@@ -140,6 +143,7 @@
 
 .lab-cell-ratio {
   display: block;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -147,6 +151,7 @@
 
 .lab-cell-verdict {
   display: block;
+  font-family: var(--font-ui);
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -202,7 +207,7 @@
 }
 
 .lab-specimen-label {
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.62rem;
   font-weight: 400;
   letter-spacing: 0.25em;
@@ -236,21 +241,32 @@
   max-width: 36ch;
 }
 
-/* The two body candidates, at sizes that read about equally large */
-.lab-specimen--montserrat .lab-specimen-body {
+/* Body text: EB Garamond (decided in the lab review) */
+.lab-specimen-body {
   font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 0.82rem;
-  letter-spacing: 0.05em;
-  line-height: 1.8;
-}
-
-.lab-specimen--garamond .lab-specimen-body {
-  font-family: var(--font-serif-body);
   font-weight: 400;
   font-size: 1.02rem;
   letter-spacing: 0.01em;
   line-height: 1.65;
+}
+
+/* UI sample: Montserrat labels and the clock, beside the body text */
+.lab-specimen-ui {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem 2rem;
+  margin-top: 1.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.lab-specimen--bone {
+  --rule: var(--bone-deep);
+}
+
+.lab-specimen--ink {
+  --rule: var(--ink-raised);
 }
 
 /* ── CLOCK ── */
@@ -388,4 +404,8 @@
     justify-content: center;
     padding: 2rem 1rem;
   }
+}
+
+.lab-specimen-ui .lab-specimen-label {
+  margin: 0;
 }

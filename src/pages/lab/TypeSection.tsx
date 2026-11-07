@@ -1,6 +1,6 @@
+import { NightClockTime } from '../../features/clock/NightClockTime';
 import { useI18n } from '../../i18n';
 
-const FACES = ['montserrat', 'garamond'] as const;
 const GROUNDS = ['bone', 'ink'] as const;
 
 export function TypeSection() {
@@ -15,29 +15,27 @@ export function TypeSection() {
       <p className="lab-text">{copy.text}</p>
 
       <div className="lab-type-grid">
-        {GROUNDS.map((ground) =>
-          FACES.map((face) => (
-            <article
-              key={`${ground}-${face}`}
-              className={`lab-specimen lab-specimen--${ground} lab-specimen--${face}`}
-            >
-              <p className="lab-specimen-meta">
-                {face === 'montserrat' ? copy.bodyMontserrat : copy.bodyGaramond}
-                {' / '}
-                {ground === 'bone' ? copy.onBone : copy.onInk}
-              </p>
-              <h3 className="lab-specimen-heading">{t.brand.heroTagline}</h3>
-              <p className="lab-specimen-label">{t.header.tagline}</p>
-              {copy.pillars.map((pillar) => (
-                <div key={pillar.title} className="lab-specimen-pillar">
-                  <h4 className="lab-specimen-title">{pillar.title}</h4>
-                  <p className="lab-specimen-body">{pillar.text}</p>
-                </div>
-              ))}
+        {GROUNDS.map((ground) => (
+          <article key={ground} className={`lab-specimen lab-specimen--${ground}`}>
+            <p className="lab-specimen-meta">
+              {copy.faces}
+              {' / '}
+              {ground === 'bone' ? copy.onBone : copy.onInk}
+            </p>
+            <h3 className="lab-specimen-heading">{t.brand.heroTagline}</h3>
+            <p className="lab-specimen-label">{t.header.tagline}</p>
+            {t.home.pillars.map((pillar) => (
+              <div key={pillar.title} className="lab-specimen-pillar">
+                <h4 className="lab-specimen-title">{pillar.title}</h4>
+                <p className="lab-specimen-body">{pillar.text}</p>
+              </div>
+            ))}
+            <div className="lab-specimen-ui">
               <p className="lab-specimen-label lab-specimen-label--link">{copy.label}</p>
-            </article>
-          )),
-        )}
+              <NightClockTime minutes={21 * 60 + 47} periods={t.clock} />
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );

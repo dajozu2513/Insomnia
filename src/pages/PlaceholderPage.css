@@ -15,8 +15,8 @@
 }
 
 .placeholder-label {
-  font-family: var(--font-body);
-  font-weight: 300;
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 0.62rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -25,6 +25,7 @@
 }
 
 .placeholder-link {
+  font-family: var(--font-ui);
   font-size: 0.62rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;

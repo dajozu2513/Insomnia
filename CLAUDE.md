@@ -13,7 +13,7 @@ Website for **Insomnia by Joel Soto**, a brand that merges two lines by Joel Sot
 
 The site keeps the Black & White aesthetic (minimalism, black and white palette, a 3D steel chain behind the home page) but is rebuilt in React + TypeScript and deployed on Render as a static site. Repo: `github.com/dajozu2513/Insomnia`.
 
-Current state: foundation (tooling, design tokens, i18n, header/footer shell) plus the 3D steel chain, shown on a temporary home layout (hero, two bands, opaque placeholder sections). The intro splash, the real home sections, collection grid, product modal, apparel and articles have not been ported yet.
+Current state: foundation, the 3D steel chain, and the first half of the home page in the Insomnia aesthetic: intro splash, hero, pillars, both bands, the header scroll clock, and section headings for jewelry, T-shirts and readings (their bodies are placeholders). The jewelry deck, T-shirts, readings, footer dawn and the 3D night lighting (step 4) are still to come.
 
 ## Stack
 
@@ -47,16 +47,21 @@ src/
   main.tsx              entry: mounts <App>, imports tokens.css then global.css
   app/                  App.tsx (providers) and router.tsx (route table)
   components/layout/    Layout (skip link, Header, <main>, Footer), Header, Footer, LanguageToggle
-  pages/                route-level components (HomePage is a temporary chain test layout; NotFoundPage is a placeholder)
+  pages/                route-level components: HomePage (composes features/home), NotFoundPage (placeholder)
     lab/                /lab: internal visual lab (not linked, noindex, lazy-loaded): palette and measured contrast, type, clock, motifs, card, atmosphere
   features/             one folder per feature
     chain/              3D steel chain (see "3D chain" below)
+    home/               home sections: Hero, Pillars (+ PillarIcons), Band / Bands (SteelBand, SonderBand), HomeSection
+    intro/              IntroSplash (once per tab)
+    night/              night cycle: progress store (night.ts, SHOW_SCROLL_CLOCK) and the header ScrollClock
     motifs/             thin line-art SVG ornaments: Chessboard, FiligreeDivider, Rose, Key, ClockFace, OvalLink (placeholder link)
     clock/              night clock: formatClockTime() and <NightClockTime> (fixed width, tabular figures)
     cards/              playing card: CardFront, CardBack, FlipCard (slow flip, instant with reduced motion)
-                        intro, collection, apparel, articles to come
+                        jewelry deck, apparel, articles to come
   i18n/                 LanguageProvider, useI18n, es.ts, en.ts, types
-  hooks/                shared hooks (usePrefersReducedMotion)
+  hooks/                shared hooks: usePrefersReducedMotion, useInView (legacy observe-fade / observe-reveal)
+  lib/                  scrollFrame.ts: the single rAF-batched scroll/resize scheduler
+  types/                css.d.ts (CSS custom properties in inline styles)
   data/                 typed product data (empty for now)
   styles/               tokens.css (design tokens), global.css (reset, base type, reduced-motion contract), atmosphere.css (grain, vignette, mist)
 public/images/          photos copied from the legacy site, lowercase .jpg names
@@ -77,12 +82,12 @@ Component CSS sits next to its component (`Header.tsx` imports `Header.css`) and
   - Palette: `--ink`, `--ink-raised`, `--bone`, `--bone-deep`, `--text-on-dark`, `--text-on-light`, `--steel`, `--accent`, `--accent-glow`.
   - Derived (added, AA-checked): `--text-on-dark-muted`, `--text-on-light-muted` for secondary text; `--border` (alias of `--bone-deep`, 1px rules on light).
   - Channels for translucent overlays: `--ink-rgb`, `--text-on-dark-rgb`, `--steel-rgb`, used as `rgb(var(--ink-rgb) / 0.55)`.
-  - Type: `--font-display` (Cormorant Garamond), `--font-body` (Montserrat), `--font-serif-body` (EB Garamond, body candidate); layout: `--gutter`, `--header-height`, `--radius`.
+  - Type: `--font-display` (Cormorant Garamond: titles, phrases), `--font-body` (EB Garamond: body text, set on `<body>`), `--font-ui` (Montserrat: labels, UI, clock; set it explicitly on every label); layout: `--gutter`, `--header-height`, `--radius`.
   - The legacy `--bg`, `--surface`, `--ink-mid` and `--ink-light` are gone (`--bone` and the muted text tokens replace them).
-- Never hard-code a colour: use a token or a token channel. Light sections use `--bone` with `--text-on-light`; dark sections use `--ink` with `--text-on-dark`. Red (`--accent`) is one focal point per screen at most, text only on light; on dark it is `--accent-glow` light, never text.
+- Never hard-code a colour: use a token or a token channel. Light sections use `--bone` with `--text-on-light`; dark sections use `--ink` with `--text-on-dark`. Line art on light sections uses `--text-on-light` or `--text-on-light-muted`, never `--steel`. Red (`--accent`) is one focal point per screen at most, text only on light; on dark it is `--accent-glow` light, never text; and never in persistent UI (header, footer, language toggle).
 - Every text pairing must pass WCAG AA. `/lab` measures them live from the tokens; check it after changing a colour.
 - Atmosphere utilities in `src/styles/atmosphere.css`: `.atmo-grain` (film grain via `--grain-image`, also used by the home bands), `.atmo-vignette`, `.atmo-mist`. All stop moving under reduced motion.
-- Fonts load from Google Fonts in `index.html`: Cormorant Garamond and Montserrat exactly as the legacy site loaded them (Cormorant 300/400/600 and italic 300; Montserrat 200/300/400/500), plus EB Garamond 400/500 and italic 400. Add a weight there before using it.
+- Fonts load from Google Fonts in `index.html`: Cormorant Garamond 300/400/600 and italic 300; EB Garamond 400 and italic 400; Montserrat 200/400/500. Montserrat 300 and EB Garamond 500 were dropped once body text moved to EB Garamond. Add a weight there before using it.
 - Ornaments are thin line art: use the motifs in `src/features/motifs/` (stroke `MOTIF_STROKE`, 1.3 px at any size, as the legacy pillar icons). One motif per section at most; objects and patterns only, never characters (see the IP rules in the design direction).
 - Image paths are lowercase (`/images/products/void.jpg`). Render's file serving is case-sensitive.
 
@@ -95,6 +100,20 @@ Component CSS sits next to its component (`Header.tsx` imports `Header.css`) and
 - Strings in `[brackets]` are placeholders for copy Joel has not written yet, marked with a `// PLACEHOLDER` comment. Never invent brand copy; add a placeholder instead.
 - Text that is the same in both languages (product names, the brand name) stays identical in both dictionaries or stays out of them. In the legacy site product names were never translated because they are lookup keys.
 - No emojis anywhere: code, comments, docs or UI.
+
+## Home page (`src/features/home/`, `intro/`, `night/`)
+
+Section map and look come from `docs/brand/design-direction.md`; behaviour is ported from the legacy CLAUDE.md ("Home page"), `js/main.js` and `css/styles.css`.
+
+- **Scroll frame** (`src/lib/scrollFrame.ts`): every scroll-driven effect subscribes with `subscribeScrollFrame(listener)`. One passive scroll/resize listener plus a body `ResizeObserver`, batched into one rAF; listeners write to the DOM through refs. Never add another window scroll listener for visual effects, and never set React state per frame (the header's `.scrolled` flag is the only state, and it only changes when it flips).
+- **Night cycle** (`features/night/night.ts`): night progress is page scroll progress (0 at the top, 1 at the bottom). `subscribeNightProgress(cb)` calls back inside the scroll frame; `getNightProgress()` returns the latest value; `nightMinutesAt(p)` maps it to 6:00 PM..6:00 AM in one-minute steps. Step 4 drives the 3D lighting from `subscribeNightProgress`, without React.
+- **Scroll clock** (`night/ScrollClock.tsx`): beside the header tagline, behind `SHOW_SCROLL_CLOCK`. Text is written through refs, only when the minute changes; same markup as `<NightClockTime>` (hour slot sized by an invisible "00", fixed-width box), so nothing shifts. `aria-hidden`. Below 600 px the tagline hides and the clock stays between brand and toggle; below 360 px the clock hides too.
+- **Intro** (`intro/IntroSplash.tsx`): name rises, hairline draws, "6:00 p. m." / "6:00 PM" fades in, then a clip-path curtain lifts after 2 s. Once per tab (`sessionStorage['insomnia-intro-seen']`). Whether to show is read in a state initializer (pure) and the key is written in the effect, so StrictMode's double mount is harmless. `index.html` adds `intro-pending` to `<html>` before first paint on a first visit to `/` (page stays ink, no flash); while it is set the hero entrance is paused (`animation-play-state`).
+- **Hero** (`home/Hero.tsx`): letter-by-letter title (`h1` with `aria-label`, chars `aria-hidden`), "by Joel Soto", then the hero line, positioned out of flow below the sub so the title keeps the legacy position in the ring. Mist along the bottom (`.atmo-mist.hero-mist`, masked); the legacy radial overlay is the vignette. No call to action. Photo-fallback parallax 0.35x through the scroll frame.
+- **Pillars** (`home/Pillars.tsx`): Steel / Words / Vigil on bone, icons from `PillarIcons.tsx` (link, open quotation mark, crescent moon) that draw themselves: a ref measures every stroked shape into `--len` and adds `.draw`; shapes with `stroke="none"` get `.fill` and fade in after. A filigree divider sits above, in `--text-on-light-muted`.
+- **Bands** (`home/Band.tsx`, `Bands.tsx`): `SteelBand` (italic phrase; chain sags under it) and `SonderBand` ("Sonder", `lang="en"`, and its meaning, set low in the band; chain hangs above). Radial shade, mist and grain; text reveals at 30% in view. Photo fallback drifts and eases out of a 1.1x zoom (static with reduced motion; never `background-attachment: fixed`). Font sizes are tuned so the drapes clear the text at 1280x800 and 390x844; re-check both bands after changing band copy or sizes (band 2 is 380 px tall on phones for that reason).
+- **Reality sections** (`home/HomeSection.tsx`): opaque bone, legacy heading (roman lead, italic tail, rising out of its slot at 30%; the header fades in at 12%).
+- **useInView** (`hooks/useInView.ts`): the legacy `.observe-fade` (`FADE_THRESHOLD` 0.12) and `.observe-reveal` (`REVEAL_THRESHOLD` 0.3) observers as a hook returning `[ref, visible]`; one re-render per element, then it disconnects.
 
 ## 3D chain (`src/features/chain/`)
 
@@ -149,4 +168,4 @@ Render static site `insomnia-js`, created manually in the Render dashboard and d
 
 To run the legacy site next to the new one, start the `legacy-black-and-white` configuration in `.claude/launch.json` (port 8081). It runs the legacy `server.js` unchanged through a CommonJS wrapper, because this repo's `package.json` is `"type": "module"`.
 
-Already ported: design tokens, reset and base typography, fonts, the header (transparent over the hero, `.scrolled` after 60px, 1px scroll-progress hairline, ES/EN toggle), the footer, the reduced-motion contract, and the 3D chain with the hero/band window styles. Not yet ported from the home page: the intro splash, the hero entrance animations (letter-by-letter title), the photo-fallback parallax of the hero and band backgrounds, the band phrase reveal, pillars, collection, modal and articles. Changes from the legacy version: the language key is `insomnia-lang` (was `bw-lang`), the header and footer are styled by `.site-header` / `.site-footer` classes instead of element selectors, the brand links to `/`, and there is a skip link and visible focus outlines on the header controls.
+Already ported: design tokens, reset and base typography, fonts, the header (transparent over the hero, `.scrolled` after 60px, 1px scroll-progress hairline, ES/EN toggle), the footer, the reduced-motion contract, the 3D chain, the intro splash, the hero entrance, the photo-fallback parallax and drift, the band reveals, the pillars with self-drawing icons, and the section headings. Not yet ported: collection grid, product modal, articles and page transitions. Legacy reduced-motion gaps fixed on the way: the hero photo parallax and the hero rise now stop with reduced motion too. Changes from the legacy version: the language key is `insomnia-lang` (was `bw-lang`), the header and footer are styled by `.site-header` / `.site-footer` classes instead of element selectors, the brand links to `/`, and there is a skip link and visible focus outlines on the header controls.

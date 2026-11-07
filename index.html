@@ -20,17 +20,25 @@
       ) {
         document.documentElement.classList.add('has-3d');
       }
+      // Intro splash: on the first visit to the home page in this tab, keep the page
+      // ink until the splash mounts (IntroSplash.tsx uses the same key).
+      try {
+        if (location.pathname === '/' && !sessionStorage.getItem('insomnia-intro-seen')) {
+          document.documentElement.classList.add('intro-pending');
+        }
+      } catch (e) {
+        // no storage: no splash
+      }
     </script>
 
     <!--
-      Fonts: Cormorant Garamond and Montserrat exactly as the legacy Black & White
-      site loads them, plus EB Garamond 400/500 and italic 400 as the candidate
-      body face (compared on /lab).
+      Fonts: Cormorant Garamond (display) as the legacy site loaded it; EB Garamond
+      400 and italic 400 (body); Montserrat 200/400/500 (labels, UI, clock).
     -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@200;300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=EB+Garamond:ital,wght@0,400;1,400&family=Montserrat:wght@200;400;500&display=swap"
       rel="stylesheet"
     />
   </head>

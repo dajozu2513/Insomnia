@@ -1,82 +1,41 @@
-import {
-  ChainAnchorsProvider,
-  ChainStage,
-  useChainBandRef,
-  useChainHeroRef,
-} from '../features/chain';
+import { ChainAnchorsProvider, ChainStage } from '../features/chain';
+import { SonderBand, SteelBand } from '../features/home/Bands';
+import { Hero } from '../features/home/Hero';
+import { HomeSection } from '../features/home/HomeSection';
+import { Pillars } from '../features/home/Pillars';
+import { IntroSplash } from '../features/intro/IntroSplash';
 import { useI18n } from '../i18n';
-import './HomePage.css';
 
 /*
- * TEMPORARY home layout, only to test the 3D chain. It reproduces the legacy
- * rhythm (hero window, opaque section, band, opaque section, band, opaque
- * section) at the legacy heights so the necklace and both drapes can be
- * compared with the old site. Step 3 replaces the opaque placeholders with the
- * real sections.
+ * Home: one night (docs/brand/design-direction.md, "Section map").
+ * Intro > Hero (dream) > Pillars (reality) > Band 1 (dream) > Jewelry (reality)
+ * > Band 2 (dream) > T-shirts (reality) > Readings > Footer.
  *
  * LAYERING RULE: the hero and the bands are windows onto the chain (transparent
  * under `has-3d`). Every other section must have an opaque background, and no
  * section may fade its own opacity, or the chain's black stage flashes through.
  */
 export function HomePage() {
+  const { t } = useI18n();
+  const { jewelry, tshirts, readings } = t.home;
+
   return (
     <ChainAnchorsProvider>
+      <IntroSplash />
       <ChainStage />
-      <HomeSections />
+      <Hero />
+      <Pillars />
+      <SteelBand />
+      <HomeSection id="jewelry" lead={jewelry.lead} em={jewelry.em}>
+        <p className="home-section-placeholder">{jewelry.body}</p>
+      </HomeSection>
+      <SonderBand />
+      <HomeSection id="tshirts" lead={tshirts.lead} em={tshirts.em}>
+        <p className="home-section-placeholder">{tshirts.body}</p>
+      </HomeSection>
+      <HomeSection id="readings" lead={readings.lead} em={readings.em}>
+        <p className="home-section-placeholder">{readings.body}</p>
+      </HomeSection>
     </ChainAnchorsProvider>
-  );
-}
-
-function HomeSections() {
-  const { t } = useI18n();
-  const heroRef = useChainHeroRef();
-
-  return (
-    <>
-      <section ref={heroRef} className="hero" aria-labelledby="hero-title">
-        <div className="hero-bg" aria-hidden="true" />
-        <div className="hero-overlay" aria-hidden="true" />
-        <div className="hero-content">
-          <h1 id="hero-title" className="hero-title">
-            {t.home.hero.title}
-          </h1>
-          <p className="hero-sub">{t.home.hero.sub}</p>
-        </div>
-      </section>
-
-      <PlaceholderSection variant="first" label={t.home.section1} />
-      <Band phrase={t.home.band1} />
-      <PlaceholderSection variant="second" label={t.home.section2} />
-      <Band phrase={t.home.band2} />
-      <PlaceholderSection variant="third" label={t.home.section3} />
-    </>
-  );
-}
-
-function Band({ phrase }: { phrase: string }) {
-  const bandRef = useChainBandRef();
-
-  return (
-    <section ref={bandRef} className="separator">
-      <div className="separator-bg" aria-hidden="true" />
-      <div className="separator-overlay">
-        <p className="separator-headline">{phrase}</p>
-      </div>
-    </section>
-  );
-}
-
-// PLACEHOLDER: opaque stand-ins for the pillars, collection and articles.
-function PlaceholderSection({
-  variant,
-  label,
-}: {
-  variant: 'first' | 'second' | 'third';
-  label: string;
-}) {
-  return (
-    <section className={`home-placeholder home-placeholder--${variant}`}>
-      <p className="home-placeholder-label">{label}</p>
-    </section>
   );
 }
