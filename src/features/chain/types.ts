@@ -27,6 +27,12 @@ export interface ChainSceneOptions {
   };
   /** Called once, on the frame after the first draw (fades the canvas in). */
   onReady?: () => void;
+  /**
+   * Called when the browser drops the WebGL context (a phone backgrounding the
+   * tab, a GPU reset). The engine has already stopped; dispose it and build a
+   * new one (ChainStage does this, with a retry limit).
+   */
+  onContextLost?: () => void;
 }
 
 export interface ChainScene {

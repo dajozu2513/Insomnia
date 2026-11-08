@@ -130,8 +130,8 @@ export const es = {
     },
   },
   notFound: {
-    // PLACEHOLDER: 404 copy pending.
-    title: '[Página no encontrada]',
+    title: 'Esta hora no existe.',
+    text: 'Te perdiste en la niebla.',
     back: 'Volver al inicio',
   },
   // Internal design lab at /lab (not linked, noindex).

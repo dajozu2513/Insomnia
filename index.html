@@ -3,10 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Head tags for the home page in Spanish, so crawlers and link previews that do not
+      run JavaScript see a complete page. Each route rewrites them in the visitor's
+      language (src/lib/head.ts); keep these values in sync with the home route there
+      and with meta.description in src/i18n/es.ts.
+    -->
     <title>Insomnia by Joel Soto</title>
-    <!-- Must match meta.description in src/i18n/es.ts (LanguageProvider swaps it for English) -->
     <meta name="description" content="Todo lo que sientes cuando el mundo duerme." />
-    <!-- PLACEHOLDER: Open Graph and Twitter tags arrive in step 9. -->
+    <link rel="canonical" href="https://insomnia-js.onrender.com/" />
+    <meta name="theme-color" content="#0d0c0e" />
+    <meta property="og:site_name" content="Insomnia by Joel Soto" />
+    <meta property="og:title" content="Insomnia by Joel Soto" />
+    <meta property="og:description" content="Todo lo que sientes cuando el mundo duerme." />
+    <meta property="og:url" content="https://insomnia-js.onrender.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:image" content="https://insomnia-js.onrender.com/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Insomnia by Joel Soto" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Insomnia by Joel Soto" />
+    <meta name="twitter:description" content="Todo lo que sientes cuando el mundo duerme." />
+    <meta name="twitter:image" content="https://insomnia-js.onrender.com/og.png" />
+
+    <!-- Icons: the pocket watch (public/; sources at /icon-source/:size) -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Insomnia by Joel Soto",
+        "url": "https://insomnia-js.onrender.com/",
+        "logo": "https://insomnia-js.onrender.com/icons/icon-512.png"
+      }
+    </script>
 
     <!--
       3D chain: decided before first paint, as in the legacy site. When WebGL and
@@ -38,16 +76,7 @@
       }
     </script>
 
-    <!--
-      Fonts: Cormorant Garamond (display) as the legacy site loaded it; EB Garamond
-      400 and italic 400 (body); Montserrat 200/400/500 (labels, UI, clock).
-    -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=EB+Garamond:ital,wght@0,400;1,400&family=Montserrat:wght@200;400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fonts are self-hosted (src/styles/fonts.css); the build preloads the title face. -->
   </head>
   <body>
     <div id="root"></div>

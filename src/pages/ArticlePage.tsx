@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { findArticle } from '../data/articles';
 import { ArticleView } from '../features/readings/ArticleView';
 import { NotFoundPage } from './NotFoundPage';
@@ -10,5 +11,9 @@ export function ArticlePage() {
   const article = findArticle(slug);
   if (!article) return <NotFoundPage />;
   // Keyed by slug: moving to another article starts a fresh page (reveal, progress)
-  return <ArticleView key={article.slug} article={article} />;
+  return (
+    <ErrorBoundary key={article.slug} name="Article">
+      <ArticleView article={article} />
+    </ErrorBoundary>
+  );
 }

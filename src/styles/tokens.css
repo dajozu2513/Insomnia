@@ -41,11 +41,11 @@
   --radius: 2px;
 
   /* ── TYPE ── */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Cormorant Garamond', 'Cormorant Garamond Fallback', Georgia, serif;
   /* Body text */
-  --font-body: 'EB Garamond', Georgia, serif;
+  --font-body: 'EB Garamond', 'EB Garamond Fallback', Georgia, serif;
   /* Labels, UI and the clock: small, widely spaced capitals, tabular figures */
-  --font-ui: 'Montserrat', sans-serif;
+  --font-ui: 'Montserrat', 'Montserrat Fallback', Arial, sans-serif;
 
   /* ── LAYOUT ── */
   --gutter: clamp(1.5rem, 5vw, 4rem);

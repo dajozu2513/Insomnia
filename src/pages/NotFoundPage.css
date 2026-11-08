@@ -1,0 +1,61 @@
+/*
+ * 404: on ink, the pocket watch large and stopped at 3:47 in line art
+ * (--steel, the line colour for dark), then the heading, the line below and
+ * the way home.
+ */
+.not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  padding: calc(var(--header-height) + 2rem) var(--gutter) 3rem;
+  background: var(--ink);
+  color: var(--text-on-dark);
+  text-align: center;
+}
+
+.not-found-watch {
+  margin-bottom: 1.4rem;
+  color: var(--steel);
+  animation: notFoundFade 1.2s ease both;
+}
+
+.not-found-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.not-found-text {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--text-on-dark-muted);
+}
+
+.not-found-link {
+  margin-top: 1.6rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--font-ui);
+  font-size: 0.75rem; /* 12px: the page's one action, legible on phones */
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-on-dark);
+  text-decoration: none;
+}
+
+.not-found-link:focus-visible {
+  outline: 1px solid var(--text-on-dark);
+  outline-offset: 6px;
+}
+
+@keyframes notFoundFade {
+  from {
+    opacity: 0;
+  }
+}

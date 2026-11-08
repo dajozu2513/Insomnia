@@ -1,0 +1,57 @@
+/*
+ * The fallback photo for the hero and the bands, used only without the 3D chain:
+ * the rules that set it are scoped to html:not(.has-3d), so while the chain
+ * runs the photo is never downloaded (ChainStage removes .has-3d on failure,
+ * and the photo then loads). AVIF, then WebP, then JPEG; a portrait crop for
+ * portrait screens and a smaller landscape file below 900 px.
+ */
+:root {
+  --fallback-photo: url('/images/background/horizontal-768.jpg');
+}
+
+@supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
+  :root {
+    --fallback-photo: image-set(
+      url('/images/background/horizontal-768.avif') type('image/avif'),
+      url('/images/background/horizontal-768.webp') type('image/webp'),
+      url('/images/background/horizontal-768.jpg') type('image/jpeg')
+    );
+  }
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  :root {
+    --fallback-photo: url('/images/background/horizontal-1308.jpg');
+  }
+
+  @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
+    :root {
+      --fallback-photo: image-set(
+        url('/images/background/horizontal-1308.avif') type('image/avif'),
+        url('/images/background/horizontal-1308.webp') type('image/webp'),
+        url('/images/background/horizontal-1308.jpg') type('image/jpeg')
+      );
+    }
+  }
+}
+
+@media (orientation: portrait) {
+  :root {
+    --fallback-photo: url('/images/background/vertical-736.jpg');
+  }
+
+  @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
+    :root {
+      --fallback-photo: image-set(
+        url('/images/background/vertical-736.avif') type('image/avif'),
+        url('/images/background/vertical-736.webp') type('image/webp'),
+        url('/images/background/vertical-736.jpg') type('image/jpeg')
+      );
+    }
+  }
+}
+
+html:not(.has-3d) .hero-bg,
+html:not(.has-3d) .separator-bg {
+  background-image: var(--fallback-photo);
+}

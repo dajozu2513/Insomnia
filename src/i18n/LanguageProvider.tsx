@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { dictionaries } from './dictionaries';
 import { LanguageContext, type LanguageContextValue } from './LanguageContext';
 import { DEFAULT_LANG, LANG_STORAGE_KEY, isLang, type Lang } from './types';
-import { setSiteDescription } from '../lib/pageMeta';
 
 // Storage can throw (private mode, blocked site data); the site must still work.
 function readStoredLang(): Lang {
@@ -32,8 +31,6 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    // index.html ships the Spanish description for crawlers; keep it in the visitor's language.
-    setSiteDescription(dictionaries[lang].meta.description);
   }, [lang]);
 
   const setLang = useCallback((next: Lang) => {

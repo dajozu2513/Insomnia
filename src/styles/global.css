@@ -61,7 +61,7 @@ main {
   color: var(--text-on-dark);
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: 0.62rem;
+  font-size: 0.75rem; /* 12px: shown only on focus, and part of every page's legible text */
   letter-spacing: 0.25em;
   text-transform: uppercase;
   text-decoration: none;

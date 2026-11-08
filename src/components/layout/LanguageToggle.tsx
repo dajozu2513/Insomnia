@@ -12,12 +12,13 @@ export function LanguageToggle() {
           lang={option}
           className={option === lang ? 'lang-opt active' : 'lang-opt'}
           aria-pressed={option === lang}
-          aria-label={t.a11y.languageNames[option]}
           onClick={() => {
             if (option !== lang) setLang(option);
           }}
         >
+          {/* Spoken as "ES, Español": the visible code first, then the language */}
           {option.toUpperCase()}
+          <span className="visually-hidden">, {t.a11y.languageNames[option]}</span>
         </button>
       ))}
     </div>

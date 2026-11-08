@@ -23,6 +23,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Readings with a title morph.** An editorial index of three articles on the home page; each opens on its own page, its title morphing into the heading through same-document View Transitions, with a reading-progress hairline and a pocket watch that follow the text from 6:00 PM to 6:00 AM.
 - **T-shirt prints generated in code.** Ten typographic compositions, one per word (a crowd of strangers, a frame too tight, a letter out of place, a plot that knots), laid out from measured font metrics and kept print-safe (one colour, flat tints, no gradients). They render on a flat SVG tee that follows every configurator choice live: colour, print language, placement and the side shown.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, the nine links, all ten T-shirt prints on both colours and in both languages, a flipping playing card and the atmosphere layers.
+- **Ready to share and fast to load.** Per-route titles, descriptions, canonical links, Open Graph and Twitter cards, JSON-LD, a sitemap, a share image rendered from the intro itself, a pocket-watch favicon that follows light and dark themes, self-hosted fonts with metric-matched fallbacks, AVIF fallback photos that never load while the 3D chain runs, and error boundaries so one failing part never blanks the page.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
 
 ## Tech stack
@@ -63,15 +64,17 @@ Then open http://localhost:5173.
 ```
 src/
   app/                 App and router
-  components/layout/   Header, Footer, language toggle, page layout
-  pages/               Route-level pages
+  components/          Error boundary; layout/: Header, Footer, language toggle, page layout
+  pages/               Route-level pages (home, article, 404, /lab, /brand-assets)
   features/            Feature modules (chain, home, intro, night clock, motifs, cards, jewelry deck, T-shirts, shared product dialog)
   i18n/                Language provider, hook and ES/EN dictionaries
-  hooks/               Shared hooks (reduced motion, in-view reveals)
-  lib/                 Shared scroll frame
+  hooks/               Shared hooks (reduced motion, in-view reveals, head tags)
+  lib/                 Shared scroll frame, head tags
   data/                Typed data: the nine links, forms and sizes; the ten T-shirt designs and options; the three articles
-  styles/              Design tokens and global styles
-public/images/         Background photography for the no-WebGL fallback, Open Graph image
+  assets/fonts/        Self-hosted fonts (woff2) and their licences
+  styles/              Fonts, design tokens and global styles
+public/                Share image, favicons and icons, manifest, robots.txt, sitemap.xml
+public/images/         Background photography for the no-WebGL fallback (AVIF, WebP, JPEG)
 docs/brand/            Brand documents
 docs/content/          Approved copy (articles.md, the source of src/data/articles.ts)
 ```
@@ -79,6 +82,44 @@ docs/content/          Approved copy (articles.md, the source of src/data/articl
 ## Deployment
 
 The site is live at https://insomnia-js.onrender.com, served by a Render static site that builds the `main` branch with `npm ci && npm run build`, publishes `dist/`, and rewrites every path to `index.html` so client-side routes work on refresh. The service is configured in the Render dashboard; `render.yaml` documents that configuration and Node 24 comes from `.nvmrc`.
+
+## Share image and icons
+
+The share image and the icons are rendered by the site itself, from the hidden route `/brand-assets` (not linked, noindex), and captured with a headless Chromium browser against the production build (`npm run build && npm run preview`):
+
+```bash
+msedge --headless=new --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=6000 --screenshot=og.png http://localhost:4173/brand-assets/og
+```
+
+The icons use `/brand-assets/icon?stroke=<line width in drawing units>` at `--window-size=512,512` (0.75 for the 512 icon, 0.95 for 192 and the 180 Apple touch icon, 2.4 and 3.2 for the 32 and 16 favicon), downscaled from 512 (headless browsers will not size a window below about 500 px). `og.png` is stored as a palette PNG to keep it small. `favicon.svg` is drawn by hand from the watch and switches between ink and bone with the browser theme.
+
+## Headers on Render
+
+Add these in the Render dashboard (the service's Settings, Headers), not in the repo. Hashed files under `/assets/` never change, everything else may:
+
+| Path        | Header                      | Value                                      |
+| ----------- | --------------------------- | ------------------------------------------ |
+| `/*`        | `Cache-Control`             | `public, max-age=0, must-revalidate`       |
+| `/assets/*` | `Cache-Control`             | `public, max-age=31536000, immutable`      |
+| `/images/*` | `Cache-Control`             | `public, max-age=604800`                   |
+| `/*`        | `X-Content-Type-Options`    | `nosniff`                                  |
+| `/*`        | `Referrer-Policy`           | `strict-origin-when-cross-origin`          |
+| `/*`        | `X-Frame-Options`           | `DENY`                                     |
+| `/*`        | `Permissions-Policy`        | `camera=(), microphone=(), geolocation=()` |
+| `/*`        | `Strict-Transport-Security` | `max-age=31536000`                         |
+
+After saving, check a response (`curl -I https://insomnia-js.onrender.com/assets/<any file>`): the hashed files must come back with the one-year cache. If Render applies the `/*` cache rule to them too, replace that rule with `/index.html` and `/lecturas/*`. A Content-Security-Policy is left out for now: `index.html` has inline scripts (the 3D check and the JSON-LD) that would need hashes kept in sync.
+
+## Launch checklist
+
+- [ ] Add the headers above in the Render dashboard and confirm them with `curl -I`.
+- [ ] Check that `/robots.txt`, `/sitemap.xml`, `/og.png`, `/favicon.ico` and `/site.webmanifest` are served as files, not as the app's index page (Render serves existing files before the rewrite).
+- [ ] Paste the live URL and an article URL into the Facebook Sharing Debugger, the LinkedIn Post Inspector and a WhatsApp chat to see the preview; re-scrape if an old preview is cached.
+- [ ] Add the site to Google Search Console, submit `https://insomnia-js.onrender.com/sitemap.xml` and inspect the home page and one article.
+- [ ] Run Lighthouse on the live site (mobile and desktop, home and one article).
+- [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
+- [ ] Test in Firefox (not covered by the automated checks).
+- [ ] Remaining placeholders: none in the site copy; see the step 9 report for internal ones.
 
 ## Author
 

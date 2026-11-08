@@ -125,8 +125,8 @@ export const en: Dictionary = {
     },
   },
   notFound: {
-    // PLACEHOLDER: 404 copy pending.
-    title: '[Page not found]',
+    title: "This hour doesn't exist.",
+    text: 'You got lost in the mist.',
     back: 'Back to home',
   },
   // Internal design lab at /lab (not linked, noindex).

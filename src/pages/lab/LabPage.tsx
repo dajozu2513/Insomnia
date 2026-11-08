@@ -1,3 +1,4 @@
+import { useHead } from '../../hooks/useHead';
 import { useI18n } from '../../i18n';
 import { AtmosphereSection } from './AtmosphereSection';
 import { CardSection } from './CardSection';
@@ -15,15 +16,19 @@ import './LabPage.css';
  * it ships in the main bundle.
  */
 export function LabPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const copy = t.lab;
+  useHead({
+    title: copy.pageTitle,
+    description: copy.intro,
+    path: '/lab',
+    type: 'website',
+    lang,
+    noindex: true,
+  });
 
   return (
     <div className="lab">
-      {/* React hoists these into <head> */}
-      <title>{copy.pageTitle}</title>
-      <meta name="robots" content="noindex, nofollow" />
-
       <header className="lab-hero">
         <p className="lab-eyebrow">{copy.eyebrow}</p>
         <h1 className="lab-title">{copy.title}</h1>

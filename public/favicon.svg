@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 0 52 52">
+  <!--
+    Insomnia by Joel Soto: the pocket watch at 6:00, in line art. Ink on light
+    browser themes, bone on dark ones. Drawn from src/features/clock/PocketWatch.tsx
+    with a heavier line and only the quarter ticks, so it reads at 16 px.
+  -->
+  <style>
+    .w { fill: none; stroke: #141215; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+    .d { fill: #141215; }
+    @media (prefers-color-scheme: dark) {
+      .w { stroke: #ebe6dc; }
+      .d { fill: #ebe6dc; }
+    }
+  </style>
+  <g class="w">
+    <ellipse cx="20" cy="4.6" rx="3.6" ry="3.1" />
+    <rect x="17.6" y="8" width="4.8" height="3.6" rx="1" />
+    <path d="M18.6 11.6 V14.6 M21.4 11.6 V14.6" />
+    <circle cx="20" cy="32" r="17" />
+    <path d="M20 18.2 V21.2 M33.8 32 H30.8 M20 45.8 V42.8 M6.2 32 H9.2" />
+    <path d="M20 30 V37.6" />
+    <circle cx="20" cy="39.2" r="1.6" />
+    <path d="M20 34.6 V19.6" />
+  </g>
+  <circle class="d" cx="20" cy="32" r="1.5" />
+</svg>

@@ -10,20 +10,14 @@
   background: var(--ink);
 }
 
-/* Taller than the band so Band.tsx can drift and slowly zoom it */
+/* Taller than the band so Band.tsx can drift and slowly zoom it (the image is
+   set in photo.css, without the 3D chain only) */
 .separator-bg {
   position: absolute;
   inset: -18% 0;
-  background-image: url('/images/background/horizontal.jpg');
   background-size: cover;
   background-position: center 30%;
   will-change: transform;
-}
-
-@media (orientation: portrait) {
-  .separator-bg {
-    background-image: url('/images/background/vertical.jpg');
-  }
 }
 
 /* Mist drifting low across the band */

@@ -37,7 +37,8 @@ export function Header() {
       <div className="header-left">
         {SHOW_SCROLL_CLOCK && <ScrollClock />}
         <Link to="/" className="brand" aria-label={t.a11y.homeLink}>
-          <span className="brand-name">Insomnia</span>
+          {/* The space keeps the visible text "Insomnia by Joel Soto", which the label starts with */}
+          <span className="brand-name">Insomnia</span>{' '}
           <span className="brand-sub">by Joel Soto</span>
         </Link>
       </div>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /lab
+Disallow: /brand-assets
+
+Sitemap: https://insomnia-js.onrender.com/sitemap.xml

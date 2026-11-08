@@ -38,12 +38,15 @@ export function Deck() {
               ref={dialog.triggerRef(link.id)}
               type="button"
               className="deck-card"
-              aria-label={`${link.name}, ${lowerFirst(link.chainType[lang])}`}
               aria-haspopup="dialog"
               onClick={() => {
                 dialog.openItem(link);
               }}
             >
+              {/* The name comes from this text (the drawn card is decorative): "Void, clip" */}
+              <span className="visually-hidden">
+                {link.name}, {lowerFirst(link.chainType[lang])}
+              </span>
               <span className="deck-card-inner">
                 <CardFront link={link} ref={dialog.sourceRef(link.id)} />
                 <CardBack />

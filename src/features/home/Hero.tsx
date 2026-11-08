@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n';
 import { subscribeScrollFrame } from '../../lib/scrollFrame';
 import { has3d } from './has3d';
 import './Hero.css';
+import './photo.css';
 import './byline.css';
 
 /** Photo-fallback parallax: the hero photo moves at 0.35x the scroll (legacy). */

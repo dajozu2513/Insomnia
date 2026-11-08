@@ -2,10 +2,11 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ARTICLES, articlePath, type Article } from '../../data/articles';
+import { useHead } from '../../hooks/useHead';
 import { useInView } from '../../hooks/useInView';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { useI18n } from '../../i18n';
-import { setPageDescription } from '../../lib/pageMeta';
+import { OG_IMAGE, SITE_NAME, SITE_URL } from '../../lib/head';
 import { setProgressSource } from '../../lib/scrollFrame';
 import { PILLAR_ICONS, titleTransitionName } from './pillarIcon';
 import './article.css';
@@ -37,16 +38,31 @@ export function ArticleView({ article }: { article: Article }) {
     };
   }, []);
 
-  // Document title and description from the article, in the current language.
-  useEffect(() => {
-    const previous = document.title;
-    document.title = `${title} | Insomnia`;
-    setPageDescription(article.excerpt[lang]);
-    return () => {
-      document.title = previous;
-      setPageDescription(null);
-    };
-  }, [title, article, lang]);
+  // Head tags from the article, in the current language, with its Article JSON-LD.
+  const path = articlePath(article.slug);
+  const description = article.excerpt[lang];
+  useHead({
+    title: `${title} | Insomnia`,
+    description,
+    path,
+    type: 'article',
+    lang,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title,
+      description,
+      inLanguage: lang,
+      author: { '@type': 'Person', name: 'Joel Soto' },
+      publisher: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+        logo: { '@type': 'ImageObject', url: `${SITE_URL}/icons/icon-512.png` },
+      },
+      image: OG_IMAGE,
+      mainEntityOfPage: `${SITE_URL}${path}`,
+    },
+  });
 
   return (
     <article className="article-page" aria-labelledby="article-title">

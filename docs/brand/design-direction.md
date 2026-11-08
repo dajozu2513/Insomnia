@@ -100,3 +100,9 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 - Grid crop (step 7): the T-shirt grid shows each black tee as a close crop on the chest print (the same frame for all ten, with the collar, shoulder line and seams in view so it reads as fabric), so long words read at grid size; the dialog keeps the whole tee at realistic print scale, and the tee opens out from the crop.
 - Readings (step 7): an editorial index in the Readings section (one row per article between thin rules: number, the pillar's line icon and category; italic title and excerpt; "Leer / Read"), and one reading page per article on paper: the pillar icon, the category, the title in Cormorant italic, six paragraphs in EB Garamond at a reading measure. The header hairline and the pocket watch follow the reading, from 6:00 PM at the start of the text to 6:00 AM at its end. No 3D chain on reading pages. The index title morphs into the article's heading (View Transitions); the header stays put.
 - Phase 2: a 3D preview that repeats the chosen link along the silhouette of the chosen form, reusing the chain engine.
+
+## Edges of the site (step 9)
+
+- 404: on ink, the pocket watch large and stopped at 3:47 in steel line art, "Esta hora no existe." / "This hour doesn't exist." in Cormorant italic, "Te perdiste en la niebla." / "You got lost in the mist." below, and the way home.
+- Share image (1200 x 630): the intro itself (ink, the red mist low at the bottom, "INSOMNIA" with "by Joel Soto" in the intro's type, the hairline and the watch at 6:00), set larger so it reads as a small preview; no film grain.
+- Favicon: the pocket watch at 6:00 in line art, ink on light browser themes and bone on dark ones; the app icons show it in bone on ink.

@@ -14,21 +14,15 @@
   background: var(--ink);
 }
 
-/* Photo fallback; moved by Hero.tsx at 0.35x the scroll */
+/* Photo fallback (the image is set in photo.css, without the 3D chain only);
+   moved by Hero.tsx at 0.35x the scroll */
 .hero-bg {
   position: absolute;
   inset: -10%;
-  background-image: url('/images/background/horizontal.jpg');
   background-size: cover;
   background-position: center top;
   will-change: transform;
   transition: opacity 1.2s ease;
-}
-
-@media (orientation: portrait) {
-  .hero-bg {
-    background-image: url('/images/background/vertical.jpg');
-  }
 }
 
 .hero-overlay {

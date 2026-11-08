@@ -5,6 +5,7 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { subscribeScrollFrame } from '../../lib/scrollFrame';
 import { has3d } from './has3d';
 import './Band.css';
+import './photo.css';
 
 /**
  * A band: a pure dream window onto the chain (transparent under `has-3d`),

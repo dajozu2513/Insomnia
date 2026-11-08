@@ -6,6 +6,14 @@ import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 
 export const router = createBrowserRouter([
+  // Sources of the share image and the icons (captured to files; not linked, noindex).
+  {
+    path: 'brand-assets/:asset',
+    lazy: async () => {
+      const { BrandAssetPage } = await import('../pages/brand/BrandAssetPage');
+      return { Component: BrandAssetPage };
+    },
+  },
   {
     element: <Layout />,
     children: [

@@ -32,7 +32,6 @@ export function TeeGrid() {
               ref={dialog.triggerRef(tee.id)}
               type="button"
               className="tee-card"
-              aria-label={`${tee.word}, ${copy.item}`}
               aria-haspopup="dialog"
               onClick={() => {
                 dialog.openItem(tee);
@@ -48,9 +47,9 @@ export function TeeGrid() {
                   crop
                 />
               </span>
-              <span className="tee-name" aria-hidden="true">
-                {tee.word}
-              </span>
+              {/* The visible name, then ", camiseta" for screen readers: "Sonder, camiseta" */}
+              <span className="tee-name">{tee.word}</span>
+              <span className="visually-hidden">, {copy.item}</span>
             </button>
           </li>
         ))}

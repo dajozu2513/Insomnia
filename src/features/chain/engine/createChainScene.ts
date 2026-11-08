@@ -290,7 +290,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let disposed = false;
 
   function updateLoop(): void {
-    if (disposed) return;
+    if (disposed || contextLost) return;
     const shouldRun = showing.size > 0 && !document.hidden && !reducedMotion;
     if (shouldRun === running) return;
     running = shouldRun;
@@ -366,6 +366,18 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   // when the progress does. Without a running loop (reduced motion, or nothing on
   // screen), this is also where the scene redraws on scroll.
   applyNight(options.night.get());
+  // ── CONTEXT LOSS ── stop at once and let the owner rebuild on a fresh canvas.
+  // preventDefault keeps the browser from treating the loss as final.
+  let contextLost = false;
+  const onContextLost = (event: Event): void => {
+    event.preventDefault();
+    contextLost = true;
+    running = false;
+    renderer.setAnimationLoop(null);
+    options.onContextLost?.();
+  };
+  canvas.addEventListener('webglcontextlost', onContextLost);
+
   const unsubscribeNight = options.night.subscribe((progress) => {
     const changed = applyNight(progress);
     if (!running && showing.size > 0 && (changed || window.scrollY !== lastScroll)) {
@@ -440,6 +452,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       bodyObserver.disconnect();
       window.removeEventListener('resize', rebuild);
       document.removeEventListener('visibilitychange', updateLoop);
+      canvas.removeEventListener('webglcontextlost', onContextLost);
 
       scene.environment = null;
       envTarget.dispose();
@@ -453,7 +466,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       key.dispose();
       rim.dispose();
       renderer.dispose();
-      renderer.forceContextLoss();
+      if (!contextLost) renderer.forceContextLoss();
       canvas.remove();
       path = null;
     },

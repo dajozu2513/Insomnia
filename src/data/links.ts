@@ -45,7 +45,7 @@ export const LINKS: readonly ChainLink[] = [
     id: 'star',
     name: 'Star',
     rank: '2',
-    chainType: { es: 'Estaciones de estrella', en: 'Star stations' },
+    chainType: { es: 'Estrellas', en: 'Star stations' },
     technical: {
       es: 'Estrella plana de cinco puntas, pulida, unida con argollas pequeñas.',
       en: 'A flat, polished five-pointed star joined by small rings.',
@@ -73,7 +73,7 @@ export const LINKS: readonly ChainLink[] = [
     id: 'static',
     name: 'Static',
     rank: '4',
-    chainType: { es: 'Forzada texturizada', en: 'Textured cable' },
+    chainType: { es: 'Rolo texturizado', en: 'Textured rolo' },
     technical: {
       es: 'Óvalo pequeño con superficie grabada que capta la luz en destellos.',
       en: 'A small oval with an engraved surface that catches the light in flashes.',
@@ -87,7 +87,7 @@ export const LINKS: readonly ChainLink[] = [
     id: 'together',
     name: 'Together',
     rank: '5',
-    chainType: { es: 'Forzada rectangular', en: 'Rectangular cable' },
+    chainType: { es: 'Rolo rectangular', en: 'Rectangular rolo' },
     technical: {
       es: 'Rectángulo alargado de esquinas rectas en alambre de sección cuadrada; cada eslabón gira en ángulo recto respecto al anterior.',
       en: 'An elongated rectangle with square corners in square-section wire; each link turns at a right angle to the last.',
@@ -101,7 +101,7 @@ export const LINKS: readonly ChainLink[] = [
     id: 'meridian',
     name: 'Meridian',
     rank: '6',
-    chainType: { es: 'Forzada fina', en: 'Fine cable' },
+    chainType: { es: 'Rolo fino', en: 'Fine rolo' },
     technical: {
       es: 'Óvalo pequeño y liso de alambre delgado; la cadena más delicada.',
       en: 'A small, smooth oval of fine wire; the most delicate chain.',
@@ -115,7 +115,7 @@ export const LINKS: readonly ChainLink[] = [
     id: 'heart',
     name: 'Heart',
     rank: '7',
-    chainType: { es: 'Estaciones de corazón', en: 'Heart stations' },
+    chainType: { es: 'Corazones', en: 'Heart stations' },
     technical: {
       es: 'Corazón abombado y pulido, unido con argollas pequeñas.',
       en: 'A puffed, polished heart joined by small rings.',
