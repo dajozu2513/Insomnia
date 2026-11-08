@@ -59,16 +59,18 @@ export const en: Dictionary = {
     },
     // The jewelry deck and its configurator. Link names and texts live in src/data/links.ts,
     // forms and sizes in src/data/forms.ts.
+    product: {
+      close: 'Close',
+      cta: 'Ask on WhatsApp',
+      newTab: '(opens WhatsApp)',
+    },
     deck: {
       listLabel: 'Link deck',
-      close: 'Close',
       form: 'Form',
       size: 'Size',
       otherPrompt: 'What piece do you have in mind?',
       measureLabel: 'Measurement in cm (optional)',
       measureHelper: "Not sure of your size? We'll help you on WhatsApp.",
-      cta: 'Ask on WhatsApp',
-      newTab: '(opens WhatsApp)',
       whatsapp: {
         intro: "Hi, I'm interested in an Insomnia piece:",
         link: 'Link',
@@ -79,8 +81,36 @@ export const en: Dictionary = {
     tshirts: {
       lead: 'Printed',
       em: 'T-shirts',
-      // PLACEHOLDER: the T-shirt section arrives in a later step.
-      body: '[T-shirts pending]',
+    },
+    tees: {
+      listLabel: 'T-shirts',
+      item: 'T-shirt',
+      colour: 'Color',
+      size: 'Size',
+      printLanguage: 'Print language',
+      placement: 'Print',
+      view: 'View',
+      mockup: {
+        tee: 'T-shirt',
+        black: 'black',
+        white: 'white',
+        front: 'front view',
+        back: 'back view',
+        blank: 'no print on this side',
+      },
+      credit: {
+        before: 'Words from ',
+        title: 'The Dictionary of Obscure Sorrows',
+        after: ' by John Koenig. Meanings written in our own words.',
+      },
+      whatsapp: {
+        intro: "Hi, I'm interested in an Insomnia T-shirt:",
+        design: 'Design',
+        colour: 'Color',
+        size: 'Size',
+        printLanguage: 'Print language',
+        placement: 'Print',
+      },
     },
     readings: {
       lead: 'Readings',
@@ -147,6 +177,14 @@ export const en: Dictionary = {
       text: 'The nine links in thin line art, as one family, at card size and at corner-index size.',
       cardSize: 'Card size',
       indexSize: 'Index size',
+    },
+    prints: {
+      title: 'Prints',
+      text: 'The ten code-generated prints, in ink on the white tee and in bone on the black one: front (the word alone, from the front-and-back print) and back (the word with its meaning), in both languages.',
+      front: 'Front',
+      back: 'Back',
+      black: 'Black',
+      white: 'White',
     },
     motifs: {
       title: 'Motifs',

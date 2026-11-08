@@ -27,7 +27,7 @@
       try {
         if (
           location.pathname === '/' &&
-          !/[?&]link=/.test(location.search) &&
+          !/[?&](link|tee)=/.test(location.search) &&
           !sessionStorage.getItem('insomnia-intro-seen')
         ) {
           document.documentElement.classList.add('intro-pending');

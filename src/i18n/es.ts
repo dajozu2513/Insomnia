@@ -58,16 +58,19 @@ export const es = {
     },
     // The jewelry deck and its configurator. Link names and texts live in src/data/links.ts,
     // forms and sizes in src/data/forms.ts.
+    // Shared by the product dialogs (jewelry and T-shirts).
+    product: {
+      close: 'Cerrar',
+      cta: 'Consultar por WhatsApp',
+      newTab: '(se abre en WhatsApp)',
+    },
     deck: {
       listLabel: 'Baraja de eslabones',
-      close: 'Cerrar',
       form: 'Forma',
       size: 'Medida',
       otherPrompt: '¿Qué pieza tienes en mente?',
       measureLabel: 'Medida en cm (opcional)',
       measureHelper: 'Si no sabes tu medida, te ayudamos por WhatsApp.',
-      cta: 'Consultar por WhatsApp',
-      newTab: '(se abre en WhatsApp)',
       whatsapp: {
         intro: 'Hola, me interesa una pieza de Insomnia:',
         link: 'Eslabón',
@@ -78,8 +81,40 @@ export const es = {
     tshirts: {
       lead: 'Camisetas',
       em: 'estampadas',
-      // PLACEHOLDER: the T-shirt section arrives in a later step.
-      body: '[Camisetas pendientes]',
+    },
+    // The T-shirt grid and its configurator. Words and meanings live in src/data/tees.ts,
+    // with the colours, sizes, print languages and placements.
+    tees: {
+      listLabel: 'Camisetas',
+      /** Accessible name of a grid tee: "Sonder, camiseta". */
+      item: 'camiseta',
+      colour: 'Color',
+      size: 'Talla',
+      printLanguage: 'Idioma del estampado',
+      placement: 'Estampado',
+      view: 'Vista',
+      /** Accessible name of the mockup: "Camiseta Sonder, negra, vista de frente". */
+      mockup: {
+        tee: 'Camiseta',
+        black: 'negra',
+        white: 'blanca',
+        front: 'vista de frente',
+        back: 'vista de espalda',
+        blank: 'sin estampado en este lado',
+      },
+      credit: {
+        before: 'Palabras de ',
+        title: 'The Dictionary of Obscure Sorrows',
+        after: ', de John Koenig. Los significados están escritos con nuestras propias palabras.',
+      },
+      whatsapp: {
+        intro: 'Hola, me interesa una camiseta de Insomnia:',
+        design: 'Diseño',
+        colour: 'Color',
+        size: 'Talla',
+        printLanguage: 'Idioma del estampado',
+        placement: 'Estampado',
+      },
     },
     readings: {
       lead: 'Lecturas',
@@ -147,6 +182,14 @@ export const es = {
       text: 'Los nueve eslabones en línea fina, como una sola familia, a tamaño de carta y de índice.',
       cardSize: 'Tamaño de carta',
       indexSize: 'Tamaño de índice',
+    },
+    prints: {
+      title: 'Estampados',
+      text: 'Los diez estampados generados en código, en tinta sobre la camiseta blanca y en hueso sobre la negra: frente (la palabra sola, del estampado de frente y espalda) y espalda (la palabra con su significado), en los dos idiomas.',
+      front: 'Frente',
+      back: 'Espalda',
+      black: 'Negra',
+      white: 'Blanca',
     },
     motifs: {
       title: 'Motivos',

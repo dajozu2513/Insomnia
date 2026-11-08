@@ -1,0 +1,255 @@
+/*
+ * PRINTED T-SHIRTS: the grid of ten black tees on the bone section (reality),
+ * the mockups, the prints, and the T-shirt dialog's details. Red rule: nothing
+ * is red at rest; the hovered or focused tee's short rule under its name turns
+ * --accent, the one red on screen.
+ */
+
+/* ── MOCKUP ── */
+.tee {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tee--white {
+  --tee-fill: var(--tee-white);
+  --tee-edge: rgb(var(--ink-rgb) / 0.45);
+  --tee-line: rgb(var(--ink-rgb) / 0.2);
+  --tee-inside: rgb(var(--ink-rgb) / 0.07);
+}
+
+.tee--black {
+  --tee-fill: var(--ink);
+  --tee-edge: var(--ink);
+  --tee-line: rgb(var(--text-on-dark-rgb) / 0.16);
+  --tee-inside: rgb(var(--text-on-dark-rgb) / 0.07);
+}
+
+.tee-body {
+  fill: var(--tee-fill);
+  stroke: var(--tee-edge);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tee-inside {
+  fill: var(--tee-inside);
+}
+
+.tee-line {
+  fill: none;
+  stroke: var(--tee-line);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ── PRINT: one colour, ink on the white tee, bone on the black one ── */
+.print--white {
+  color: var(--ink);
+}
+
+.print--black {
+  color: var(--bone);
+}
+
+.print-word,
+.print-crowd {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.print-meaning {
+  font-family: var(--font-body);
+}
+
+.print-mark-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.print-mark-by {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* ── GRID: 5 x 2 on desktop, two columns on phones ── */
+.tees {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(1.6rem, 3vw, 2.6rem) clamp(0.8rem, 2vw, 1.6rem);
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* Reveal: each tee rises into place in turn, calmly (the slot moves; the card hovers) */
+.tee-slot {
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  translate: 0 18px;
+  transition:
+    opacity 0.9s ease,
+    translate 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(0.1s + var(--i) * 0.09s);
+}
+
+.tees.is-visible .tee-slot {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.tee-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 220px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-on-light);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s ease;
+}
+
+.tee-card:focus-visible {
+  outline: 1px solid var(--text-on-light);
+  outline-offset: 6px;
+}
+
+.tee-figure {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 8px 12px rgb(var(--ink-rgb) / 0.12));
+}
+
+.tee-name {
+  position: relative;
+  padding-bottom: 0.45rem;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.18em;
+  padding-left: 0.18em;
+}
+
+/* The one red: a short rule under the hovered or focused tee's name */
+.tee-name::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  translate: -50% 0;
+  scale: 0 1;
+  transition: scale 0.5s ease;
+}
+
+.tee-card:focus-visible .tee-name::after {
+  scale: 1 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tee-card:hover {
+    transform: translateY(-6px);
+  }
+
+  .tee-card:hover .tee-name::after {
+    scale: 1 1;
+  }
+
+  .tees:has(.tee-card:hover) .tee-card:not(:hover) {
+    opacity: 0.7; /* the names on the dimmed tees still clear AA */
+  }
+}
+
+.tees-credit {
+  max-width: 52ch;
+  margin: clamp(2.6rem, 5vw, 3.8rem) auto 0;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-on-light-muted);
+}
+
+.tees-credit cite {
+  font-style: italic;
+}
+
+@media (max-width: 860px) {
+  .tees {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 520px;
+  }
+}
+
+/* ── IN THE DIALOG: the mockup, large, with the front/back toggle under it ── */
+.product-dialog--tee .product-dialog-panel {
+  max-width: 1000px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.product-dialog--tee .product-dialog-media {
+  padding: clamp(1.6rem, 3.5vw, 2.8rem);
+}
+
+.product-dialog--tee .product-dialog-fly {
+  width: min(400px, 100%);
+}
+
+.tee-view .configurator-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.tee-view .configurator-legend {
+  float: left;
+  margin: 0;
+}
+
+.tee-meaning {
+  color: var(--text-on-light);
+  font-size: 1.2rem;
+}
+
+@media (max-width: 760px) {
+  .product-dialog--tee .product-dialog-panel {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 460px;
+  }
+
+  .product-dialog--tee .product-dialog-fly {
+    width: min(280px, 84%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A short fade replaces the rise; no lift */
+  .tee-slot {
+    translate: none;
+    transition: opacity 0.6s ease;
+    transition-delay: 0s;
+  }
+
+  .tee-card,
+  .tee-card:hover {
+    transform: none;
+  }
+
+  .tee-name::after {
+    transition: none;
+  }
+}

@@ -5,6 +5,7 @@ import { ClockSection } from './ClockSection';
 import { LinksSection } from './LinksSection';
 import { MotifSection } from './MotifSection';
 import { PaletteSection } from './PaletteSection';
+import { PrintsSection } from './PrintsSection';
 import { TypeSection } from './TypeSection';
 import './LabPage.css';
 
@@ -34,6 +35,7 @@ export function LabPage() {
       <ClockSection />
       <MotifSection />
       <LinksSection />
+      <PrintsSection />
       <CardSection />
       <AtmosphereSection />
     </div>

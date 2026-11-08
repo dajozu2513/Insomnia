@@ -23,6 +23,8 @@
   --text-on-light-muted: #4f4a50; /* 6.65:1 on bone, 5.48:1 on bone-deep */
   /* Cards and other paper raised slightly off a bone section */
   --bone-raised: #efe9dd;
+  /* Garment white for the white T-shirt mockup: brighter than the paper, so it reads as white on bone. */
+  --tee-white: #f7f5f0;
   --text-on-dark-muted: #8f8a83; /* 5.70:1 on ink, 5.02:1 on ink-raised */
 
   /* Channels for translucent overlays: rgb(var(--ink-rgb) / 0.55) */

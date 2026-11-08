@@ -1,9 +1,7 @@
 import { CUSTOM_SIZE_ID, FORMS, OTHER_FORM_ID, SIZES } from '../../data/forms';
 import type { ChainLink } from '../../data/links';
 import type { Lang } from '../../i18n';
-
-/** Joel's WhatsApp number (same as the legacy site). */
-export const WHATSAPP_NUMBER = '50660062513';
+import { composeMessage } from '../product/whatsapp';
 
 /** What the visitor chose in the configurator. */
 export interface Configuration {
@@ -52,23 +50,14 @@ export function buildMessage(
   lang: Lang,
   strings: MessageStrings,
 ): string {
-  const lines = [strings.intro, `- ${strings.link}: *${link.name}*`];
-
   const form = FORMS.find((f) => f.id === config.formId);
-  if (form) {
-    const other = config.formId === OTHER_FORM_ID ? config.otherText.trim() : '';
-    lines.push(`- ${strings.form}: ${form.label[lang]}${other ? ` (${other})` : ''}`);
-  }
-
+  const other = config.formId === OTHER_FORM_ID ? config.otherText.trim() : '';
   const size = SIZES.find((s) => s.id === config.sizeId);
-  if (size) {
-    const cm = config.sizeId === CUSTOM_SIZE_ID ? formatMeasure(config.measure, lang) : null;
-    lines.push(`- ${strings.size}: ${size.label[lang]}${cm ? ` (${cm} cm)` : ''}`);
-  }
+  const cm = config.sizeId === CUSTOM_SIZE_ID ? formatMeasure(config.measure, lang) : null;
 
-  return lines.join('\n');
-}
-
-export function whatsappUrl(message: string): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return composeMessage(strings.intro, [
+    [strings.link, `*${link.name}*`],
+    [strings.form, form && `${form.label[lang]}${other ? ` (${other})` : ''}`],
+    [strings.size, size && `${size.label[lang]}${cm ? ` (${cm} cm)` : ''}`],
+  ]);
 }

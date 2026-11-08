@@ -5,6 +5,7 @@ import { Hero } from '../features/home/Hero';
 import { HomeSection } from '../features/home/HomeSection';
 import { Pillars } from '../features/home/Pillars';
 import { IntroSplash } from '../features/intro/IntroSplash';
+import { TeeGrid } from '../features/tees/TeeGrid';
 import { useI18n } from '../i18n';
 
 /*
@@ -36,7 +37,7 @@ export function HomePage() {
       {/* Band 2 */}
       <Band />
       <HomeSection id="tshirts" lead={tshirts.lead} em={tshirts.em}>
-        <p className="home-section-placeholder">{tshirts.body}</p>
+        <TeeGrid />
       </HomeSection>
       {/* Band 3: separates the T-shirts from the readings */}
       <Band />

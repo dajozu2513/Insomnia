@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { findLink } from '../../data/links';
 import { PocketWatch } from '../clock/PocketWatch';
 import { useI18n } from '../../i18n';
+import { activeDeepLink } from '../product/deepLink';
 import '../home/byline.css';
 import './IntroSplash.css';
 
@@ -19,8 +19,8 @@ type Phase = 'hidden' | 'showing' | 'lifting';
 
 function alreadySeen(): boolean {
   try {
-    // A deep link to a card (?link=<valid id>) goes straight to it: no splash
-    if (findLink(new URLSearchParams(window.location.search).get('link'))) return true;
+    // A deep link to a product (?link= or ?tee= with a valid id) goes straight to it: no splash
+    if (activeDeepLink()) return true;
     return window.sessionStorage.getItem(INTRO_SEEN_KEY) !== null;
   } catch {
     return true; // no storage: never risk showing it on every load

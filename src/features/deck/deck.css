@@ -234,6 +234,22 @@
   }
 }
 
+/* ── IN THE DIALOG: the card, large; its suit marks are the screen's one red ── */
+.product-dialog--link .product-dialog-fly {
+  width: min(260px, 100%);
+  aspect-ratio: 5 / 7;
+}
+
+.product-dialog--link .deck-suit {
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .product-dialog--link .product-dialog-fly {
+    width: min(170px, 60%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Face up from the start; no lift */
   .deck-card-inner {

@@ -455,3 +455,66 @@
   text-transform: uppercase;
   color: var(--text-on-light-muted);
 }
+
+/* ── PRINTS: the ten T-shirt prints on swatches of the tee colours ── */
+.lab-prints-row {
+  padding: 1.6rem 2rem;
+  border: 1px solid var(--bone-deep);
+  background: var(--bone-raised);
+}
+
+.lab-prints-row + .lab-prints-row {
+  border-top: none;
+}
+
+.lab-prints-row .lab-specimen-meta {
+  color: var(--text-on-light-muted);
+  margin-bottom: 1.2rem;
+}
+
+.lab-prints {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.lab-print {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lab-print-swatch {
+  display: block;
+  padding: 0.6rem;
+  border: 1px solid var(--bone-deep);
+}
+
+.lab-print-swatch--black {
+  background: var(--ink);
+}
+
+.lab-print-swatch--white {
+  background: var(--tee-white);
+}
+
+.lab-print-swatch .print {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lab-print-caption {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-on-light-muted);
+}
+
+@media (max-width: 900px) {
+  .lab-prints {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
