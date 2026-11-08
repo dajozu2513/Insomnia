@@ -20,7 +20,12 @@
   color: var(--text-on-light);
   background: rgb(var(--ink-rgb) / 0.65);
   backdrop-filter: blur(4px);
+  overflow-x: hidden;
   overflow-y: auto;
+  /* The flying product can overflow the viewport for a moment (its transform counts as
+     overflow): no horizontal scrollbar, and a reserved vertical gutter, so no scrollbar
+     can appear mid-flight and shift the panel. */
+  scrollbar-gutter: stable;
   animation: dialogOverlayIn 0.5s ease both;
 }
 

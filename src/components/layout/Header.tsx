@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
 
 import { ScrollClock } from '../../features/night/ScrollClock';
 import { SHOW_SCROLL_CLOCK } from '../../features/night/night';
@@ -14,6 +14,8 @@ const SCROLLED_AFTER = 60;
 export function Header() {
   const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
+  // Article pages are paper from the top: the header is solid there from the start.
+  const solid = useMatch('/lecturas/:slug') !== null;
   const progressRef = useRef<HTMLSpanElement>(null);
 
   // The hairline is written straight to the DOM in the shared scroll frame (the
@@ -30,7 +32,7 @@ export function Header() {
   );
 
   return (
-    <header id="site-header" className={scrolled ? 'site-header scrolled' : 'site-header'}>
+    <header id="site-header" className={scrolled || solid ? 'site-header scrolled' : 'site-header'}>
       {/* The watch is the emblem beside the name: top-left, as tall as the brand block */}
       <div className="header-left">
         {SHOW_SCROLL_CLOCK && <ScrollClock />}

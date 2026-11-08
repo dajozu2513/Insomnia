@@ -5,6 +5,8 @@ import './HomeSection.css';
 
 interface HomeSectionProps {
   id: string;
+  /** The section's own anchor (e.g. "lecturas" for /#lecturas). */
+  anchor?: string;
   /** Roman lead of the heading. */
   lead: string;
   /** Italic tail of the heading (legacy two-part titles); empty for none. */
@@ -16,12 +18,12 @@ interface HomeSectionProps {
  * A reality section (bone, opaque, so it covers the chain): heading in the
  * legacy style (roman lead, italic tail, rising out of its slot) over its content.
  */
-export function HomeSection({ id, lead, em, children }: HomeSectionProps) {
+export function HomeSection({ id, anchor, lead, em, children }: HomeSectionProps) {
   const [headerRef, headerVisible] = useInView<HTMLElement>(FADE_THRESHOLD);
   const [titleRef, titleVisible] = useInView<HTMLHeadingElement>(REVEAL_THRESHOLD);
 
   return (
-    <section className="home-section" aria-labelledby={`${id}-title`}>
+    <section id={anchor} className="home-section" aria-labelledby={`${id}-title`}>
       <header
         ref={headerRef}
         className={headerVisible ? 'section-header visible' : 'section-header'}

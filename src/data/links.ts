@@ -5,8 +5,8 @@ import type { Lang } from '../i18n';
  *
  * A link's `name` is never translated and never gets an i18n key (it is the
  * same word in every language). Every other text is localized here, typed so
- * both languages are always present. Poetic descriptions are the legacy
- * Black & White texts (js/main.js PRODUCTS), unchanged except Meridian.
+ * both languages are always present. Poetic descriptions are the
+ * legacy site texts (js/main.js PRODUCTS), unchanged except Meridian.
  *
  * To add a link: add an entry below (its `id` is the deep-link value and the
  * key of its illustration in features/deck/linkArt.tsx), then draw its SVG.

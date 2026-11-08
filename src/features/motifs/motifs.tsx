@@ -15,7 +15,7 @@ interface ChessboardProps extends MotifProps {
   fillOpacity?: number;
 }
 
-/** Chessboard tile: the bridge from Black & White. Filled squares inside a fine grid. */
+/** Chessboard tile: the bridge from the legacy site. Filled squares inside a fine grid. */
 export function Chessboard({ squares = 4, fillOpacity = 0.85, ...props }: ChessboardProps) {
   const id = useId();
   const cell = 48 / squares;

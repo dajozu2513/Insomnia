@@ -15,6 +15,13 @@ interface ProductDialogProps {
   labelledBy: string;
   /** The grid element the product flies from (null: no FLIP, e.g. for deep links). */
   source: HTMLElement | null;
+  /**
+   * The part of the product the source shows, as fractions of the flying
+   * element (the T-shirt grid shows a crop of the tee). The FLIP starts from
+   * that part, clipped to it, and opens out to the whole product. Omitted: the
+   * source shows the whole product.
+   */
+  sourceCrop?: { x: number; y: number; width: number; height: number };
   onClose: () => void;
   /** The product, large, on the left (stacked on phones); it flies in from the grid. */
   media: ReactNode;
@@ -39,6 +46,7 @@ export function ProductDialog({
   className,
   labelledBy,
   source,
+  sourceCrop,
   onClose,
   media,
   mediaFooter,
@@ -65,16 +73,26 @@ export function ProductDialog({
     const onScreen = from && from.bottom > 0 && from.top < window.innerHeight && from.width > 0;
     if (fly && from && onScreen && !reducedMotion) {
       const to = fly.getBoundingClientRect();
-      animation = fly.animate(
-        [
-          {
-            transformOrigin: 'top left',
-            transform: `translate(${String(from.left - to.left)}px, ${String(from.top - to.top)}px) scale(${String(from.width / to.width)})`,
-          },
-          { transformOrigin: 'top left', transform: 'none' },
-        ],
-        { duration: FLIP_MS, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
-      );
+      const crop = sourceCrop ?? { x: 0, y: 0, width: 1, height: 1 };
+      // Scale so the part the source shows matches it, then move that part onto it
+      const scale = from.width / (to.width * crop.width);
+      const dx = from.left - to.left - crop.x * to.width * scale;
+      const dy = from.top - to.top - crop.y * to.height * scale;
+      const pct = (value: number) => `${String(value * 100)}%`;
+      const start: Keyframe = {
+        transformOrigin: 'top left',
+        transform: `translate(${String(dx)}px, ${String(dy)}px) scale(${String(scale)})`,
+      };
+      const end: Keyframe = { transformOrigin: 'top left', transform: 'none' };
+      if (sourceCrop) {
+        // Clipped to the crop at first (local box, before the transform), then opening out
+        start.clipPath = `inset(${pct(crop.y)} ${pct(1 - crop.x - crop.width)} ${pct(1 - crop.y - crop.height)} ${pct(crop.x)})`;
+        end.clipPath = 'inset(0% 0% 0% 0%)';
+      }
+      animation = fly.animate([start, end], {
+        duration: FLIP_MS,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      });
     }
 
     return () => {

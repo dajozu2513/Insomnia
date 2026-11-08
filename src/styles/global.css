@@ -1,5 +1,5 @@
 /*
- * Reset and base typography, ported from the legacy Black & White site.
+ * Reset and base typography, ported from the legacy site.
  * Component styles live next to their components (for example
  * src/components/layout/Header.css).
  */
@@ -13,7 +13,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* No smooth scrolling: route changes must jump (an article opens at its top, Back lands
+     on the Readings section) before a view transition captures the new page. */
   /* Reserve the scrollbar's space, so locking scroll (dialogs) never shifts the layout */
   scrollbar-gutter: stable;
 }
@@ -88,8 +89,3 @@ main {
  * In TypeScript, read the preference with usePrefersReducedMotion()
  * (src/hooks/usePrefersReducedMotion.ts) and skip the motion entirely.
  */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}

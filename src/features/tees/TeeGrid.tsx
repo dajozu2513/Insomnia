@@ -7,7 +7,8 @@ import { TeeMockup } from './TeeMockup';
 import './tees.css';
 
 /**
- * The printed T-shirts: the ten designs as black tees seen from the front (5 x 2
+ * The printed T-shirts: the ten designs as black tees, a close crop on the chest
+ * print, the same frame for all ten (5 x 2
  * on desktop, two columns on phones), revealed with a calm stagger the first
  * time the grid comes into view. Selecting one opens its dialog and
  * configurator; ?tee=<id> opens it on load. The credit line sits under the grid.
@@ -37,13 +38,14 @@ export function TeeGrid() {
                 dialog.openItem(tee);
               }}
             >
-              <span ref={dialog.sourceRef(tee.id)} className="tee-figure">
+              <span ref={dialog.sourceRef(tee.id)} className="tee-figure tee-figure--crop">
                 <TeeMockup
                   tee={tee}
                   colour={PREVIEW_DEFAULTS.colour}
                   lang={lang}
                   side="front"
                   placement={PREVIEW_DEFAULTS.placement}
+                  crop
                 />
               </span>
               <span className="tee-name" aria-hidden="true">

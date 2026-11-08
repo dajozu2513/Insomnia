@@ -119,8 +119,14 @@ export const es = {
     readings: {
       lead: 'Lecturas',
       em: '',
-      // PLACEHOLDER: the readings arrive in a later step.
-      body: '[Lecturas pendientes]',
+    },
+    // The Readings index and the article pages. Article copy lives in src/data/articles.ts.
+    articles: {
+      listLabel: 'Lecturas',
+      read: 'Leer',
+      back: 'Volver a Lecturas',
+      backShort: 'Volver',
+      more: 'Seguir leyendo',
     },
   },
   notFound: {

@@ -10,7 +10,11 @@ export interface ScrollFrame {
   viewportHeight: number;
   /** Scrollable distance (document height minus viewport). */
   maxScroll: number;
-  /** scrollY / maxScroll, clamped to 0..1 (0 when the page cannot scroll). */
+  /**
+   * Reading progress, 0..1: scrollY / maxScroll (0 when the page cannot scroll),
+   * or, while a progress source is set (an article's text), how far through that
+   * element the reader is. The header hairline and the night clock follow it.
+   */
   progress: number;
 }
 
@@ -19,12 +23,29 @@ type Listener = (frame: ScrollFrame) => void;
 const listeners = new Set<Listener>();
 let pending = 0;
 let bodyObserver: ResizeObserver | null = null;
+let progressSource: Element | null = null;
+
+/**
+ * Reading progress across one element (ported from the legacy article.js): 0
+ * until its top passes 40% of the viewport, 1 once its bottom reaches the
+ * viewport's bottom edge.
+ */
+function elementProgress(element: Element, viewportHeight: number): number {
+  const rect = element.getBoundingClientRect();
+  const total = Math.max(rect.height - viewportHeight * 0.6, 1);
+  return Math.min(Math.max((-rect.top + viewportHeight * 0.4) / total, 0), 1);
+}
 
 function measure(): ScrollFrame {
   const scrollY = window.scrollY;
   const viewportHeight = window.innerHeight;
   const maxScroll = Math.max(document.documentElement.scrollHeight - viewportHeight, 0);
-  const progress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
+  const progress =
+    progressSource?.isConnected === true
+      ? elementProgress(progressSource, viewportHeight)
+      : maxScroll > 0
+        ? Math.min(Math.max(scrollY / maxScroll, 0), 1)
+        : 0;
   return { scrollY, viewportHeight, maxScroll, progress };
 }
 
@@ -69,4 +90,14 @@ export function subscribeScrollFrame(listener: Listener): () => void {
     listeners.delete(listener);
     if (listeners.size === 0) detach();
   };
+}
+
+/**
+ * Measures `progress` across `element` instead of the whole page (null restores
+ * the page). Article pages set their text here, so the hairline and the watch
+ * run from the start of the text (6:00 PM) to its end (6:00 AM).
+ */
+export function setProgressSource(element: Element | null): void {
+  progressSource = element;
+  if (listeners.size > 0) schedule();
 }

@@ -6,7 +6,7 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: in progress. The 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator) are built; the readings come next.
+> Status: in progress. The 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
 
 ## Highlights
 
@@ -20,6 +20,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **A night that follows the scroll.** A line-art pocket watch, the emblem beside the name in the header, turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React. The intro opens on the full name over a slow red mist.
 - **One scroll frame.** Every scroll-driven effect (progress hairline, watch hands, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
 - **A jewelry deck instead of a product grid.** The nine chain links are drawn in code as playing cards that deal themselves face up; choosing one opens an accessible dialog (FLIP animation, focus management, deep links) with a configurator that composes the WhatsApp inquiry live.
+- **Readings with a title morph.** An editorial index of three articles on the home page; each opens on its own page, its title morphing into the heading through same-document View Transitions, with a reading-progress hairline and a pocket watch that follow the text from 6:00 PM to 6:00 AM.
 - **T-shirt prints generated in code.** Ten typographic compositions, one per word (a crowd of strangers, a frame too tight, a letter out of place, a plot that knots), laid out from measured font metrics and kept print-safe (one colour, flat tints, no gradients). They render on a flat SVG tee that follows every configurator choice live: colour, print language, placement and the side shown.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, the nine links, all ten T-shirt prints on both colours and in both languages, a flipping playing card and the atmosphere layers.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
@@ -68,10 +69,11 @@ src/
   i18n/                Language provider, hook and ES/EN dictionaries
   hooks/               Shared hooks (reduced motion, in-view reveals)
   lib/                 Shared scroll frame
-  data/                Typed data: the nine links, forms and sizes; the ten T-shirt designs and options
+  data/                Typed data: the nine links, forms and sizes; the ten T-shirt designs and options; the three articles
   styles/              Design tokens and global styles
 public/images/         Background photography for the no-WebGL fallback, Open Graph image
 docs/brand/            Brand documents
+docs/content/          Approved copy (articles.md, the source of src/data/articles.ts)
 ```
 
 ## Deployment

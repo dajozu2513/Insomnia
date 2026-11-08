@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { PocketWatch } from '../clock/PocketWatch';
 import { useI18n } from '../../i18n';
@@ -21,6 +22,8 @@ function alreadySeen(): boolean {
   try {
     // A deep link to a product (?link= or ?tee= with a valid id) goes straight to it: no splash
     if (activeDeepLink()) return true;
+    // An anchor (/#lecturas, the articles' Back link) goes straight to its section
+    if (window.location.hash) return true;
     return window.sessionStorage.getItem(INTRO_SEEN_KEY) !== null;
   } catch {
     return true; // no storage: never risk showing it on every load
@@ -49,7 +52,11 @@ function markSeen(): void {
  */
 export function IntroSplash() {
   const { t } = useI18n();
-  const [phase, setPhase] = useState<Phase>(() => (alreadySeen() ? 'hidden' : 'showing'));
+  // Arriving from another page of the site (location key other than 'default') skips it too.
+  const arrivedInApp = useLocation().key !== 'default';
+  const [phase, setPhase] = useState<Phase>(() =>
+    arrivedInApp || alreadySeen() ? 'hidden' : 'showing',
+  );
   const [shows] = useState(phase !== 'hidden');
 
   useEffect(() => {

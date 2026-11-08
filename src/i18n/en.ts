@@ -115,8 +115,13 @@ export const en: Dictionary = {
     readings: {
       lead: 'Readings',
       em: '',
-      // PLACEHOLDER: the readings arrive in a later step.
-      body: '[Readings pending]',
+    },
+    articles: {
+      listLabel: 'Readings',
+      read: 'Read',
+      back: 'Back to Readings',
+      backShort: 'Back',
+      more: 'Keep reading',
     },
   },
   notFound: {

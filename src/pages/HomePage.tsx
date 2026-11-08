@@ -5,6 +5,7 @@ import { Hero } from '../features/home/Hero';
 import { HomeSection } from '../features/home/HomeSection';
 import { Pillars } from '../features/home/Pillars';
 import { IntroSplash } from '../features/intro/IntroSplash';
+import { ReadingsIndex } from '../features/readings/ReadingsIndex';
 import { TeeGrid } from '../features/tees/TeeGrid';
 import { useI18n } from '../i18n';
 
@@ -41,8 +42,8 @@ export function HomePage() {
       </HomeSection>
       {/* Band 3: separates the T-shirts from the readings */}
       <Band />
-      <HomeSection id="readings" lead={readings.lead} em={readings.em}>
-        <p className="home-section-placeholder">{readings.body}</p>
+      <HomeSection id="readings" anchor="lecturas" lead={readings.lead} em={readings.em}>
+        <ReadingsIndex />
       </HomeSection>
     </ChainAnchorsProvider>
   );

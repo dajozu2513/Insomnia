@@ -15,6 +15,7 @@ import { ChipGroup } from '../product/ChipGroup';
 import { ProductDialog } from '../product/ProductDialog';
 import { WhatsAppButton } from '../product/WhatsAppButton';
 import { buildTeeMessage, EMPTY_TEE_CONFIGURATION, type TeeConfiguration } from './teeMessage';
+import { GRID_CROP_FRACTION } from './teeGeometry';
 import { TeeMockup } from './TeeMockup';
 
 interface TeeDialogProps {
@@ -59,6 +60,7 @@ export function TeeDialog({ tee, source, onClose }: TeeDialogProps) {
       className="product-dialog--tee"
       labelledBy={titleId}
       source={source}
+      sourceCrop={GRID_CROP_FRACTION}
       onClose={onClose}
       media={
         <TeeMockup

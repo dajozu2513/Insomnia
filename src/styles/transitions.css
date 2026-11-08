@@ -1,0 +1,51 @@
+/*
+ * PAGE TRANSITIONS, ported from the legacy site: same-document View
+ * Transitions between the home page and the article pages (React Router's
+ * viewTransition on the Readings links; browsers without View Transitions just
+ * navigate). The old page sinks and fades, the new one rises; an index title
+ * and its article's h1 share the name article-<slug>, so the title morphs. The
+ * header has its own name, so it stays put. Names are unique per page.
+ * With reduced motion the links do not request a transition at all, and these
+ * animations are switched off as a second guard.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: pageOut 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: pageIn 0.7s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* The header is the same on both sides: keep it in place instead of cross-fading it */
+  .site-header {
+    view-transition-name: site-header;
+  }
+}
+
+@keyframes pageOut {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

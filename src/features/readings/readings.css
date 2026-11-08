@@ -1,0 +1,168 @@
+/*
+ * READINGS INDEX, ported from the legacy .articles-grid: an editorial index, not
+ * boxed cards. One row per article between 1px rules: number, pillar icon and
+ * category on the left; title and excerpt in the middle; "Read" on the right.
+ * Rows rise in one after another; they stack under 700 px.
+ */
+.readings {
+  list-style: none;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+
+.reading {
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 0.9s ease,
+    translate 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--i) * 0.12s);
+}
+
+.reading.visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.reading-link {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) 3fr auto;
+  grid-template-areas:
+    'meta title   read'
+    'meta excerpt read';
+  column-gap: clamp(1.5rem, 4vw, 3.5rem);
+  row-gap: 0.5rem;
+  align-items: baseline;
+  padding: clamp(1.8rem, 3.5vw, 2.6rem) 0;
+  color: var(--text-on-light);
+  text-decoration: none;
+}
+
+.reading-link:focus-visible {
+  outline: 1px solid var(--text-on-light);
+  outline-offset: 6px;
+}
+
+.reading-meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  align-self: start;
+  padding-top: 0.55rem;
+}
+
+.reading-number {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-on-light);
+}
+
+/* The pillar icon, small and quiet, beside the number */
+.reading-icon {
+  display: flex;
+  color: var(--text-on-light-muted);
+}
+
+.reading-icon .pillar-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.reading-category {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-on-light-muted);
+}
+
+.reading-title {
+  grid-area: title;
+  justify-self: start;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reading-link:hover .reading-title,
+.reading-link:focus-visible .reading-title {
+  transform: translateX(8px);
+}
+
+.reading-excerpt {
+  grid-area: excerpt;
+  max-width: 52ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-on-light-muted);
+}
+
+.reading-read {
+  grid-area: read;
+  position: relative;
+  padding-bottom: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* The underline draws from the left while the row is hovered or focused */
+.reading-read::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0.2em; /* trailing letter-spacing */
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reading-link:hover .reading-read::after,
+.reading-link:focus-visible .reading-read::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (max-width: 700px) {
+  .reading-link {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'meta' 'title' 'excerpt' 'read';
+    row-gap: 0.7rem;
+  }
+
+  .reading-meta {
+    padding-top: 0;
+  }
+
+  .reading-read {
+    justify-self: start;
+    margin-top: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading {
+    translate: none;
+    transition: opacity 0.6s ease;
+    transition-delay: 0s;
+  }
+
+  .reading-link:hover .reading-title,
+  .reading-link:focus-visible .reading-title {
+    transform: none;
+  }
+}

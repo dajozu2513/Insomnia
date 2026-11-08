@@ -132,6 +132,15 @@
   filter: drop-shadow(0 8px 12px rgb(var(--ink-rgb) / 0.12));
 }
 
+/* The grid crop: a square close-up of the chest print. The collar, the shoulder line
+   and the armhole seams stay in frame, so it still reads as fabric. No shadow: its
+   straight edges are a crop, not the edges of the garment. */
+.tee-figure--crop {
+  filter: none;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
 .tee-name {
   position: relative;
   padding-bottom: 0.45rem;

@@ -5,6 +5,7 @@ import { App } from './app/App';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/atmosphere.css';
+import './styles/transitions.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element in index.html');

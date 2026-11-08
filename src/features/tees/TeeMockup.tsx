@@ -7,6 +7,7 @@ import {
   type TeeSide,
 } from '../../data/tees';
 import { COMPOSITIONS } from './print/compositionMap';
+import { GRID_CROP, TEE_FRAME, viewBox } from './teeGeometry';
 
 /*
  * A flat T-shirt in line art (300 x 330 units, about 0.13 in per unit on a
@@ -43,6 +44,8 @@ interface TeeMockupProps {
   /** Accessible name; without one the mockup is decorative. */
   label?: string;
   className?: string;
+  /** Show only the grid crop on the chest print (same frame for every tee). */
+  crop?: boolean;
 }
 
 export function TeeMockup({
@@ -53,6 +56,7 @@ export function TeeMockup({
   placement,
   label,
   className,
+  crop = false,
 }: TeeMockupProps) {
   const Composition = COMPOSITIONS[tee.composition];
   const content = printContent(placement, side);
@@ -61,7 +65,7 @@ export function TeeMockup({
   return (
     <svg
       className={`tee tee--${colour}${className ? ` ${className}` : ''}`}
-      viewBox="0 0 300 330"
+      viewBox={viewBox(crop ? GRID_CROP : TEE_FRAME)}
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
