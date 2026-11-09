@@ -55,6 +55,7 @@ src/
     chain/              3D steel chain (see "3D chain" below)
     home/               home sections: Hero (+ byline.css, shared with the intro), Pillars (+ PillarIcons), Band, HomeSection
     intro/              IntroSplash (once per tab)
+    atmosphere/         variants.ts: the ?atmo= atmosphere variants under review (palettes for CSS and the 3D scene)
     night/              night cycle: progress store (night.ts, SHOW_SCROLL_CLOCK) and the header ScrollClock (pocket watch)
     motifs/             thin line-art SVG ornaments: Chessboard, FiligreeDivider, Rose, Key, ClockFace, OvalLink (placeholder link)
     clock/              analog clock: <PocketWatch> (line-art pocket watch) and watchGeometry.ts (hand angles)
@@ -71,7 +72,7 @@ src/
   types/                css.d.ts (CSS custom properties in inline styles)
   data/                 links.ts (the nine links), forms.ts (forms and sizes): the deck's single source of truth; tees.ts (the ten designs and the T-shirt options); articles.ts (the three Readings, mirrored from docs/content/articles.md)
   assets/fonts/         self-hosted woff2 files (latin, latin-ext) and their OFL licences
-  styles/               fonts.css (self-hosted faces and metric-matched fallbacks), tokens.css (design tokens), global.css (reset, base type, reduced-motion contract), atmosphere.css (grain, vignette, mist), transitions.css (view transitions)
+  styles/               fonts.css (self-hosted faces and metric-matched fallbacks), tokens.css (design tokens), atmo-variants.css (the ?atmo= variants under review), global.css (reset, base type, reduced-motion contract), atmosphere.css (grain, vignette, mist), transitions.css (view transitions)
 public/                 og.png (share image, 1200 x 630), favicon.svg / favicon.ico / apple-touch-icon.png, icons/ (192, 512), site.webmanifest, robots.txt, sitemap.xml
   images/background/    the no-WebGL fallback photo: horizontal-1308, horizontal-768, vertical-736 as AVIF, WebP and JPEG
 docs/brand/             brand documents (committed)
@@ -180,6 +181,22 @@ const bandRef = useChainBandRef(); // <section ref={bandRef} className="separato
 - The registry (`anchors/registry.ts`) is plain mutable state outside React; registering never re-renders. Changes are batched into one `rebuild()` per microtask.
 - Any number of bands can register; the path drapes across each in document order (the home page has three). Visibility (the render loop), night lighting and particles are not tied to a band count. Bands are sorted by document order. With `DRAPE_STYLE = 'centred'` (the default since the bands lost their text) every drape is a gentle catenary centred in its band, entering alternately from the left and the right; `'legacy'` restores the old low sag / high hang that cleared the band phrases.
 - The engine reads positions on every rebuild: each band's document top and `offsetHeight`. The hero is used for visibility (render loop) only; the necklace is sized from the viewport and centred on it, exactly as in the legacy site, so the hero must be a full-viewport section with its title centred (the title block is nudged down by `translate: 0 6vh` because the ring's near side reads lower).
+
+### Atmosphere variants under review (step 10)
+
+The current look reads as horror (blood red, low dense mist, ash); three dreamlike alternatives are wired behind a switch until the owner chooses. Nothing else differs: same structure, same chain path, same sections.
+
+- **Switch:** `?atmo=a|b|c` on any page; any other value (`?atmo=current`) goes back to the current look, which stays the default. The inline script in `index.html` stores the choice in `sessionStorage['insomnia-atmo']` and sets `<html data-atmo>` before first paint; `currentAtmo()` reads it.
+- **Data** (`src/features/atmosphere/variants.ts`, three-free): `ATMO_PALETTES`: per variant the accent, the accent glow, optional gold, and the scene's `mist` (mode `low` = current, `veils` = variants; colour, light, strength), `glow` (colour, gain on the night glow, base at every hour, lift), `motes` (`dust` = current or `motes`; colour, opacity, size, twinkle). `ChainStage` passes `ATMO_PALETTES[currentAtmo()].scene` as `options.atmosphere`.
+- **Values (tuned by eye):**
+  - A Rosa: accent `#9e2a3a`, glow `rgba(214, 84, 112, 0.35)`, 3D veils `#c4506a` with light `#ffd2dc` (strength 0.72), far glow `#d65470`, motes `#fff1e6`.
+  - B Vino: accent `#6e1f3a`, glow `rgba(164, 96, 150, 0.35)` (mauve), veils `#8e4a7a` with light `#e2cce8` (0.86, a little denser), far glow `#a46096`, motes `#e6e4f2` (silver with violet).
+  - C Rosa y oro: A's accent and glow, veils `#c4506a` with gold light `#f0cc86`, far glow `#d9a46a`, motes `#f2d495`, gold `#d9b26a` (light only: motes and mist, never text or fills).
+- **CSS** (`src/styles/atmo-variants.css`): `[data-atmo]` overrides `--accent`, `--accent-rgb`, `--accent-glow`, `--accent-glow-rgb` (so the card corner marks, the tee rule and the intro follow) and adds `--atmo-light-rgb`, `--atmo-mote-rgb`, `--atmo-gold`. The intro mist keeps its shape and coverage, its layers blend with `screen` and soft cores of light sit inside each gathering. The window mist (hero, bands) rises into high veils, still neutral warm white over the chain. Accents stay AA as text: A 5.67:1 on bone (4.68 on bone-deep), B 8.41:1.
+- **3D** (`engine/heroMist.ts` `veils`, `glow.ts`, `particles.ts` `motes`, `rawColor.ts`): three veils high in the hero frame, broken into long wisps by 3-octave value noise, with wide Gaussian pools of light inside them (the glow; no bloom pass), added as light (`CustomBlending` One/One) after the floor and before the chain without depth, so every link is drawn on top. The far glow keeps a little light at every hour (`base`), lifted towards the veils. Motes are an additive `ShaderMaterial` (bright core, wide halo) whose brightness breathes per mote (`aPhase`, `aRate`), fading with the fog distance; time advances with `dt`, so they are still with reduced motion. Same counts (120 / 60).
+- **Measured** (headless Edge on the Iris Xe, desktop 1280x800 hero; saturation / luminance of the chain, night 0, 0.5, 1): current 0.0314 / 0.2351, 0.0418 / 0.2027, 0.0468 / 0.2415; A 0.0311 / 0.2421, 0.0415 / 0.2076, 0.0451 / 0.2491; B 0.0305 / 0.2441, 0.0405 / 0.2103, 0.0450 / 0.2506; C 0.0310 / 0.2419, 0.0409 / 0.2081, 0.0450 / 0.2489; mean R, G and B within 6 of each other in all. Atmosphere frame cost (with minus without, offscreen bench): current +1.0 ms desktop / +0.9 ms phone (390x844 at 2x); A +1.6 / +1.6; B +1.9 / +1.8; C +1.5 / +1.7.
+- **/lab** "Variantes de atmósfera": a panel per variant scoped with `data-atmo` (intro mist and motes live, a card with its red marks, a still of the 3D hero at midnight from `public/lab/atmo-<variant>.webp`, the hex values, a link to `/?atmo=<variant>`). Re-capture the stills after tuning a variant.
+- **When the owner chooses:** move the chosen values into `tokens.css` and the engine defaults, delete the other variants, the switch in `index.html`, `atmo-variants.css` and the lab stills, and update `docs/brand/design-direction.md` (palette and atmosphere).
 
 ### Night atmosphere (step 4)
 

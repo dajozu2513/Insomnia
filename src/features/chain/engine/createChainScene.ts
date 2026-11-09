@@ -52,6 +52,7 @@ import {
 import { installDebugHook } from './debug';
 import { createFloor } from './floor';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
+import { ATMO_PALETTES } from '../../atmosphere/variants';
 import { createGlow } from './glow';
 import { createHeroMist } from './heroMist';
 import { createNightState, sampleNight } from './nightCycle';
@@ -122,11 +123,13 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   const small = container.clientWidth <= SMALL_SCREEN_MAX;
   const floor = createFloor(Math.min(renderer.capabilities.getMaxAnisotropy(), FLOOR_ANISOTROPY));
   scene.add(floor.mesh);
-  const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP);
+  // The atmosphere variant under review (?atmo=); the current look by default.
+  const atmosphere = options.atmosphere ?? ATMO_PALETTES.current.scene;
+  const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP, atmosphere.motes);
   scene.add(particles.points);
-  const glow = createGlow();
+  const glow = createGlow(atmosphere.glow);
   scene.add(glow.mesh);
-  const heroMist = createHeroMist();
+  const heroMist = createHeroMist(atmosphere.mist);
   scene.add(heroMist.mesh);
   /** Debug switch (bench): draw the atmosphere layers or not. */
   let atmosphereOn = true;
@@ -251,10 +254,12 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       floor.setPresence(floorPresence);
       heroMist.setPresence(mistPresence);
       heroMist.follow(camY, path.halfWidth, path.viewHeight);
+      heroMist.tick(dt);
       particles.points.visible = atmosphereOn;
-      glow.mesh.visible = atmosphereOn && night.glow > 0.002;
+      glow.setStrength(night.glow);
+      if (!atmosphereOn) glow.mesh.visible = false;
       glow.follow(camY, path.halfWidth, path.viewHeight);
-      particles.update(dt, camY, path.halfWidth, path.viewHeight);
+      particles.update(dt, camY, path.halfWidth, path.viewHeight, renderer.domElement.height);
       layoutLinks(path);
     }
     renderer.render(scene, camera);

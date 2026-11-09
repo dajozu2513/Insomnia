@@ -518,3 +518,168 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ── ATMOSPHERE VARIANTS: one panel per variant, scoped with data-atmo ── */
+.lab-atmo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem;
+}
+
+.lab-atmo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem;
+  border: 1px solid var(--bone-deep);
+  background: var(--bone-raised);
+}
+
+.lab-atmo-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--text-on-light);
+}
+
+.lab-atmo-key {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-on-light-muted);
+}
+
+/* The intro's mist and the motes on ink */
+.lab-atmo-intro {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.lab-atmo-title {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  padding-left: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-on-dark);
+}
+
+.lab-atmo-mote {
+  position: absolute;
+  z-index: 2;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(var(--atmo-mote-rgb));
+  box-shadow: 0 0 6px 2px rgb(var(--atmo-mote-rgb) / 0.55);
+  animation: lab-mote-breathe 5s ease-in-out infinite alternate;
+}
+
+/* The current look's dust: faint, no glow, no breathing */
+[data-atmo='current'] .lab-atmo-mote {
+  box-shadow: none;
+  opacity: 0.35;
+  animation: none;
+}
+
+@keyframes lab-mote-breathe {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.4;
+  }
+}
+
+.lab-atmo-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lab-atmo-scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--ink);
+}
+
+.lab-atmo-bottom {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+/* A card with its corner marks in the variant's red (as when selected) */
+.lab-atmo-card {
+  position: relative;
+  flex: none;
+  width: 150px;
+  aspect-ratio: 5 / 7;
+}
+
+.lab-atmo-card .deck-suit {
+  color: var(--accent);
+}
+
+.lab-atmo-values {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.lab-atmo-value {
+  display: grid;
+  grid-template-columns: 8.5rem auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.lab-atmo-value dt {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-on-light-muted);
+}
+
+.lab-atmo-value dd {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lab-atmo-swatch {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid var(--bone-deep);
+}
+
+.lab-atmo-open {
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-on-light);
+}
+
+@media (max-width: 900px) {
+  .lab-atmo-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-atmo-mote {
+    animation: none;
+  }
+}

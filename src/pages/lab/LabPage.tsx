@@ -1,6 +1,7 @@
 import { useHead } from '../../hooks/useHead';
 import { useI18n } from '../../i18n';
 import { AtmosphereSection } from './AtmosphereSection';
+import { AtmoVariantsSection } from './AtmoVariantsSection';
 import { CardSection } from './CardSection';
 import { ClockSection } from './ClockSection';
 import { LinksSection } from './LinksSection';
@@ -43,6 +44,7 @@ export function LabPage() {
       <PrintsSection />
       <CardSection />
       <AtmosphereSection />
+      <AtmoVariantsSection />
     </div>
   );
 }

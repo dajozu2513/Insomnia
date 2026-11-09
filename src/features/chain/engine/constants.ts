@@ -110,9 +110,7 @@ export const SMALL_SCREEN_MAX = 700;
 /** World units/s the dust rises; plus a slow sideways sway. */
 export const PARTICLE_RISE = 0.09;
 export const PARTICLE_SWAY = 0.05;
-export const PARTICLE_SIZE = 0.2;
-export const PARTICLE_OPACITY = 0.35;
-export const PARTICLE_COLOR = '#e6e0d4';
+// Colour, size and opacity belong to the atmosphere variant (src/features/atmosphere/variants.ts).
 
 /** Rim light behind and above the chain, tinted by the night cycle. */
 export const RIM_LIGHT_POSITION = [0, 6, -12] as const;

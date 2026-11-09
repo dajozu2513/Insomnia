@@ -1,0 +1,102 @@
+/*
+ * ATMOSPHERE VARIANTS under review (step 10; src/features/atmosphere/variants.ts).
+ * <html data-atmo="a|b|c"> is set by index.html from ?atmo=; without it the
+ * current look applies unchanged. The same attributes on any element (the /lab
+ * previews) scope a variant to that element.
+ *
+ *   a  Rosa        rose crimson, rose light, warm white motes
+ *   b  Vino        deep wine, mauve light, pale silver-violet motes
+ *   c  Rosa y oro  Rosa plus candlelight gold, as light only (motes, mist cores)
+ *
+ * --accent stays AA as text on light (a: 5.7:1 on bone, b: 8.5:1).
+ */
+/* The current look: its dust colour, and its accent restored inside a /lab preview */
+:root {
+  --atmo-mote-rgb: 230 224 212;
+}
+
+[data-atmo='current'] {
+  --accent: #8f1d22;
+  --accent-rgb: 143 29 34;
+  --accent-glow: rgba(196, 40, 45, 0.35);
+  --accent-glow-rgb: 196 40 45;
+  --atmo-mote-rgb: 230 224 212;
+}
+
+[data-atmo='a'],
+[data-atmo='c'] {
+  --accent: #9e2a3a;
+  --accent-rgb: 158 42 58;
+  --accent-glow: rgba(214, 84, 112, 0.35);
+  --accent-glow-rgb: 214 84 112;
+  /* The light inside the mist */
+  --atmo-light-rgb: 255 210 220;
+  --atmo-mote-rgb: 255 241 230;
+}
+
+[data-atmo='b'] {
+  --accent: #6e1f3a;
+  --accent-rgb: 110 31 58;
+  --accent-glow: rgba(164, 96, 150, 0.35);
+  --accent-glow-rgb: 164 96 150;
+  --atmo-light-rgb: 226 204 232;
+  --atmo-mote-rgb: 230 228 242;
+}
+
+[data-atmo='c'] {
+  /* Candlelight gold: light only, never text or fills */
+  --atmo-gold: #d9b26a;
+  --atmo-gold-rgb: 217 178 106;
+  --atmo-light-rgb: 240 204 134;
+  --atmo-mote-rgb: 242 212 149;
+}
+
+/*
+ * INTRO MIST: same shape and coverage, in the variant's colours. The layers add
+ * light (screen) instead of laying a flat haze, and a soft core of light sits
+ * inside each gathering, so the mist glows from within.
+ */
+:is([data-atmo='a'], [data-atmo='b'], [data-atmo='c']) .intro-red-mist {
+  background:
+    radial-gradient(
+      ellipse 42% 15% at 50% 104%,
+      rgb(var(--atmo-light-rgb) / 0.26) 0%,
+      rgb(var(--atmo-light-rgb) / 0.08) 45%,
+      rgb(var(--atmo-light-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 15% 24% at 1% 94%,
+      rgb(var(--atmo-light-rgb) / 0.2) 0%,
+      rgb(var(--atmo-light-rgb) / 0.06) 45%,
+      rgb(var(--atmo-light-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 15% 24% at 99% 92%,
+      rgb(var(--atmo-light-rgb) / 0.2) 0%,
+      rgb(var(--atmo-light-rgb) / 0.06) 45%,
+      rgb(var(--atmo-light-rgb) / 0) 100%
+    );
+}
+
+:is([data-atmo='a'], [data-atmo='b'], [data-atmo='c']) .intro-red-mist::before,
+:is([data-atmo='a'], [data-atmo='b'], [data-atmo='c']) .intro-red-mist::after {
+  mix-blend-mode: screen;
+  filter: blur(26px);
+}
+
+/*
+ * WINDOW MIST (hero and bands): high, soft veils instead of a band along the
+ * bottom. Still neutral warm white over the chain (the rose light lives in the
+ * 3D scene, behind the links), so the steel is never tinted.
+ */
+:is([data-atmo='a'], [data-atmo='b'], [data-atmo='c']) .atmo-mist.hero-mist {
+  inset: 4% 0 auto 0;
+  height: 60%;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 58%, transparent 100%);
+  opacity: 0.75;
+}
+
+:is([data-atmo='a'], [data-atmo='b'], [data-atmo='c']) .separator-mist {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 52%, transparent 88%);
+  opacity: 0.6;
+}

@@ -6,6 +6,7 @@ import './styles/fonts.css';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/atmosphere.css';
+import './styles/atmo-variants.css';
 import './styles/transitions.css';
 
 const root = document.getElementById('root');
