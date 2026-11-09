@@ -19,19 +19,19 @@ Taglines:
 
 ## Palette
 
-Base stays black and white, shifted toward night and aged paper. One accent only: blood red.
+Base stays black and white, shifted toward night and aged paper. One accent only: the red of roses (chosen in step 10 over blood red, which read as horror).
 
-| Token             | Value                     | Use                               |
-| ----------------- | ------------------------- | --------------------------------- |
-| `--ink`           | `#0d0c0e`                 | near-black, main dark background  |
-| `--ink-raised`    | `#1d1a20`                 | dark surfaces, cards on dark      |
-| `--bone`          | `#e8e1d3`                 | aged paper, main light background |
-| `--bone-deep`     | `#d6cdbb`                 | light surfaces, rules on light    |
-| `--text-on-dark`  | `#ebe6dc`                 |                                   |
-| `--text-on-light` | `#141215`                 |                                   |
-| `--steel`         | `#b8bbc1`                 | thin lines and ornaments on dark  |
-| `--accent`        | `#8f1d22`                 | blood red                         |
-| `--accent-glow`   | `rgba(196, 40, 45, 0.35)` | glows and light only, never fills |
+| Token             | Value                      | Use                                           |
+| ----------------- | -------------------------- | --------------------------------------------- |
+| `--ink`           | `#0d0c0e`                  | near-black, main dark background              |
+| `--ink-raised`    | `#1d1a20`                  | dark surfaces, cards on dark                  |
+| `--bone`          | `#e8e1d3`                  | aged paper, main light background             |
+| `--bone-deep`     | `#d6cdbb`                  | light surfaces, rules on light                |
+| `--text-on-dark`  | `#ebe6dc`                  |                                               |
+| `--text-on-light` | `#141215`                  |                                               |
+| `--steel`         | `#b8bbc1`                  | thin lines and ornaments on dark              |
+| `--accent`        | `#9e2a3a`                  | rose crimson                                  |
+| `--accent-glow`   | `rgba(214, 84, 112, 0.35)` | rose light: glows and light only, never fills |
 
 Derived tokens (added after the lab review, both AA on their side):
 
@@ -39,7 +39,7 @@ Derived tokens (added after the lab review, both AA on their side):
 - `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
 - `--tee-white`: `#f7f5f0`, the white T-shirt in the mockups (a garment colour, never text or a background); ink prints on it at 17.9:1, bone prints on the black tee at 15:1
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's red mist, a soft blood-red haze on ink (from `--accent` and `--accent-glow`) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by a subtler red haze inside the 3D scene, low and towards the edges, behind the chain only. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's rose mist, a soft, glowing rose light on ink (from `--accent` and `--accent-glow`, with a paler light inside it) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by rose light inside the 3D scene that rises into high, soft veils, behind the chain only. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
 
 ## Typography
 
@@ -59,17 +59,9 @@ Rules: all ornaments are thin line art in the same stroke weight as the pillar i
 
 ## Atmosphere
 
-Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles (dust or ash). In the 3D scene: depth fog and the chessboard floor. Everything subtle; the steel chain must always read as silver steel.
+Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles: tiny glowing motes, like fireflies or stardust. In the 3D scene: depth fog and the chessboard floor. Everything subtle; the steel chain must always read as silver steel.
 
-As built (steps 4 and 5): the chessboard floor belongs to the hero window alone: it fades out as the hero leaves the viewport and never shows while a band is on screen. It lies under the hero necklace in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes of dust (60 on small screens) rise slowly through all three windows. A faint blood-red glow (`--accent-glow`) lives far behind the chain around midnight, as light in the mist, never on the steel. The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
-
-### Under review (step 10): a less horror, more fairy-tale atmosphere
-
-The blood red, the low dense mist and the ash read as horror. Three alternatives can be seen on any page with `?atmo=a|b|c` (and side by side in /lab); the current look stays until one is chosen. In all three the red is the red of roses, the mist is high, soft and layered with light inside it, and the particles are tiny glowing motes that breathe slowly, like fireflies or stardust. The steel stays neutral silver in every one (measured).
-
-- A, Rosa: rose crimson `#9e2a3a`, rose light `rgba(214, 84, 112, 0.35)`, warm white motes.
-- B, Vino: deep wine `#6e1f3a`, a mauve light, motes of pale silver with a hint of violet; the veils a little denser.
-- C, Rosa y oro: Rosa plus candlelight gold `#d9b26a`, used only as light (the motes and the light in the mist), never as text or fills.
+As built (steps 4 and 5): the chessboard floor belongs to the hero window alone: it fades out as the hero leaves the viewport and never shows while a band is on screen. It lies under the hero necklace in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes (60 on small screens) rise slowly through all three windows: warm white, softly glowing, their brightness breathing slowly. In the hero, the rose light rises into three high, soft veils with pools of paler light inside them; a faint rose glow lives far behind the chain at every hour, strongest at midnight, as light in the mist, never on the steel. The mist in the windows sits high, in veils, never as a dense band along the bottom (step 10: the low dense mist read as horror). The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
 
 ## The night cycle
 
@@ -81,7 +73,7 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 
 ## Section map (home)
 
-1. Intro (6:00 PM): "Insomnia by Joel Soto", the hairline and the watch over a red mist
+1. Intro (6:00 PM): "Insomnia by Joel Soto", the hairline and the watch over the rose mist
 2. Hero, dream window: chain necklace around "Insomnia / by Joel Soto" (no other text), chessboard floor in mist
 3. Pillars, reality (bone)
 4. Band 1, dream: no text, a pure window; the chain drapes across its centre
@@ -112,5 +104,5 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 ## Edges of the site (step 9)
 
 - 404: on ink, the pocket watch large and stopped at 3:47 in steel line art, "Esta hora no existe." / "This hour doesn't exist." in Cormorant italic, "Te perdiste en la niebla." / "You got lost in the mist." below, and the way home.
-- Share image (1200 x 630): the intro itself (ink, the red mist low at the bottom, "INSOMNIA" with "by Joel Soto" in the intro's type, the hairline and the watch at 6:00), set larger so it reads as a small preview; no film grain.
+- Share image (1200 x 630): the intro itself (ink, the rose mist low at the bottom, "INSOMNIA" with "by Joel Soto" in the intro's type, the hairline and the watch at 6:00), set larger so it reads as a small preview; no film grain.
 - Favicon: the pocket watch at 6:00 in line art, ink on light browser themes and bone on dark ones; the app icons show it in bone on ink.

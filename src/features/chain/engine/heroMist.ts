@@ -1,15 +1,6 @@
-import {
-  CustomBlending,
-  Mesh,
-  OneFactor,
-  OneMinusSrcAlphaFactor,
-  PlaneGeometry,
-  ShaderMaterial,
-  SrcAlphaFactor,
-} from 'three';
+import { CustomBlending, Mesh, OneFactor, PlaneGeometry, ShaderMaterial } from 'three';
 
-import type { SceneAtmosphere } from '../../atmosphere/variants';
-import { DIST } from './constants';
+import { DIST, MIST_COLOUR, MIST_LIGHT, MIST_STRENGTH } from './constants';
 import { rawColor } from './rawColor';
 
 /** Depth of the plane: behind every link, in front of the far floor. */
@@ -34,38 +25,8 @@ const VERTEX = /* glsl */ `
   }
 `;
 
-const BLOB = /* glsl */ `
-  // Eased radial falloff: 1 at the centre of the ellipse, 0 at its rim.
-  float blob(vec2 uv, vec2 centre, vec2 radius) {
-    float d = length((uv - centre) / radius);
-    float t = clamp(1.0 - d, 0.0, 1.0);
-    return t * t * (3.0 - 2.0 * t);
-  }
-`;
-
 /**
- * The current look: the intro's blood-red haze in the bottom and the lower
- * corners, the centre left clean. Laid over the background with alpha.
- */
-const LOW_FRAGMENT = /* glsl */ `
-  uniform vec3 uColour;
-  uniform vec3 uLight;
-  uniform float uStrength;
-  varying vec2 vUv;
-  ${BLOB}
-  void main() {
-    // uv: (0, 0) bottom-left of the view, (1, 1) top-right
-    float bottom = blob(vUv, vec2(0.5, -0.12), vec2(0.62, 0.42));
-    float left = blob(vUv, vec2(-0.04, 0.02), vec2(0.32, 0.5));
-    float right = blob(vUv, vec2(1.04, 0.06), vec2(0.32, 0.5));
-    vec3 colour = mix(uColour, uLight, clamp(bottom * 1.2, 0.0, 1.0));
-    float alpha = clamp(bottom * 0.42 + left * 0.46 + right * 0.44, 0.0, 0.6) * uStrength;
-    gl_FragColor = vec4(colour, alpha);
-  }
-`;
-
-/**
- * The dreamlike variants: three soft veils high in the frame, waving very
+ * The rose veils: three soft veils high in the frame, waving very
  * gently, broken into long thin wisps by a little value noise, with a few wide
  * pools of light inside them (the glow). Added as light, never laid over as a
  * colour. The drift is time-based and very slow; it stops with reduced motion.
@@ -130,28 +91,25 @@ const VEILS_FRAGMENT = /* glsl */ `
  * The hero's haze, drawn after the floor and before the chain with neither
  * depth test nor depth writes: it lies over the fog, the floor and the
  * background, and every link is drawn on top of it, so the steel is never
- * tinted. 'low' is the current blood-red mist (the intro's shape: the bottom
- * and lower corners); 'veils' is the dreamlike variants' light high in the
- * frame (src/features/atmosphere/variants.ts).
+ * tinted. The intro's rose mist gathers low; inside the scene the light rises
+ * into high veils, so the hero reads as luminous rather than dense.
  */
-export function createHeroMist(mist: SceneAtmosphere['mist']): HeroMist {
-  const veils = mist.mode === 'veils';
+export function createHeroMist(): HeroMist {
   const geometry = new PlaneGeometry(1, 1);
   const material = new ShaderMaterial({
     uniforms: {
-      uColour: { value: rawColor(mist.colour) },
-      uLight: { value: rawColor(mist.light) },
+      uColour: { value: rawColor(MIST_COLOUR) },
+      uLight: { value: rawColor(MIST_LIGHT) },
       uStrength: { value: 0 },
       uTime: { value: 0 },
     },
     vertexShader: VERTEX,
-    fragmentShader: veils ? VEILS_FRAGMENT : LOW_FRAGMENT,
-    // Opaque pass, after the floor and before the chain: alpha blending for the
-    // low mist, additive light for the veils
+    fragmentShader: VEILS_FRAGMENT,
+    // Opaque pass, after the floor and before the chain; added as light
     transparent: false,
     blending: CustomBlending,
-    blendSrc: veils ? OneFactor : SrcAlphaFactor,
-    blendDst: veils ? OneFactor : OneMinusSrcAlphaFactor,
+    blendSrc: OneFactor,
+    blendDst: OneFactor,
     depthTest: false,
     depthWrite: false,
     fog: false,
@@ -166,7 +124,7 @@ export function createHeroMist(mist: SceneAtmosphere['mist']): HeroMist {
   return {
     mesh,
     setPresence(presence) {
-      const strength = mist.strength * presence;
+      const strength = MIST_STRENGTH * presence;
       const uniform = material.uniforms.uStrength;
       if (uniform) uniform.value = strength;
       mesh.visible = strength > 0.002;
@@ -178,7 +136,6 @@ export function createHeroMist(mist: SceneAtmosphere['mist']): HeroMist {
       mesh.scale.set(halfWidth * 2 * scale * 1.02, viewHeight * scale * 1.02, 1);
     },
     tick(dt) {
-      if (!veils) return;
       time += dt;
       const uniform = material.uniforms.uTime;
       if (uniform) uniform.value = time;

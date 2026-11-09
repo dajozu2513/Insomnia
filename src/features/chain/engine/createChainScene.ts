@@ -52,7 +52,6 @@ import {
 import { installDebugHook } from './debug';
 import { createFloor } from './floor';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
-import { ATMO_PALETTES } from '../../atmosphere/variants';
 import { createGlow } from './glow';
 import { createHeroMist } from './heroMist';
 import { createNightState, sampleNight } from './nightCycle';
@@ -123,13 +122,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   const small = container.clientWidth <= SMALL_SCREEN_MAX;
   const floor = createFloor(Math.min(renderer.capabilities.getMaxAnisotropy(), FLOOR_ANISOTROPY));
   scene.add(floor.mesh);
-  // The atmosphere variant under review (?atmo=); the current look by default.
-  const atmosphere = options.atmosphere ?? ATMO_PALETTES.current.scene;
-  const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP, atmosphere.motes);
+  const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP);
   scene.add(particles.points);
-  const glow = createGlow(atmosphere.glow);
+  const glow = createGlow();
   scene.add(glow.mesh);
-  const heroMist = createHeroMist(atmosphere.mist);
+  const heroMist = createHeroMist();
   scene.add(heroMist.mesh);
   /** Debug switch (bench): draw the atmosphere layers or not. */
   let atmosphereOn = true;

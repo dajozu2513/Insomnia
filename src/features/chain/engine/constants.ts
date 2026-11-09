@@ -102,15 +102,34 @@ export const FLOOR_DROP_WIDE = 0.54;
 export const FLOOR_DARK = '#0f0e11';
 export const FLOOR_LIGHT = '#3e3a35';
 
-/** Floating dust: count on large and small screens. */
+/** Floating motes: count on large and small screens. */
 export const PARTICLES_DESKTOP = 120;
 export const PARTICLES_SMALL = 60;
 /** Viewport width (CSS px) at or below which the small-screen budget applies. */
 export const SMALL_SCREEN_MAX = 700;
-/** World units/s the dust rises; plus a slow sideways sway. */
+/** World units/s the motes rise; plus a slow sideways sway. */
 export const PARTICLE_RISE = 0.09;
 export const PARTICLE_SWAY = 0.05;
-// Colour, size and opacity belong to the atmosphere variant (src/features/atmosphere/variants.ts).
+
+/*
+ * The rose atmosphere (chosen in step 10 from the review variants as "Rosa"):
+ * dreamlike and luminous, the red of roses rather than blood. Colours are
+ * passed to the shaders as they are written (rawColor.ts).
+ */
+/** Hero veils: the rose light, the light in their brightest pools, overall strength. */
+export const MIST_COLOUR = '#c4506a';
+export const MIST_LIGHT = '#ffd2dc';
+export const MIST_STRENGTH = 0.72;
+/** Far glow: colour, gain on the night cycle's glow, light kept at every hour, lift (fraction of the view). */
+export const GLOW_COLOUR = '#d65470';
+export const GLOW_GAIN = 1.4;
+export const GLOW_BASE = 0.05;
+export const GLOW_LIFT = 0.18;
+/** Glowing motes: warm white, a bright core with a wide halo, brightness breathing by 60%. */
+export const MOTE_COLOUR = '#fff1e6';
+export const MOTE_OPACITY = 1;
+export const MOTE_SIZE = 0.34;
+export const MOTE_TWINKLE = 0.6;
 
 /** Rim light behind and above the chain, tinted by the night cycle. */
 export const RIM_LIGHT_POSITION = [0, 6, -12] as const;

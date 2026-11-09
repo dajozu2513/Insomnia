@@ -137,7 +137,7 @@ export const en: Dictionary = {
     intro: 'The new design direction, piece by piece, to review before it reaches the home page.',
     palette: {
       title: 'Palette',
-      text: 'Black and white shifted toward night and aged paper, with one accent only: blood red.',
+      text: 'Black and white shifted toward night and aged paper, with one accent only: the red of roses.',
       contrastTitle: 'Measured contrast',
       contrastText:
         'Read from the live tokens. Text: AA needs 4.5:1 (3:1 for large text). Lines and ornaments: 3:1.',
@@ -157,7 +157,7 @@ export const en: Dictionary = {
         textOnLight: 'Text on light',
         textOnLightMuted: 'Secondary text on light (added)',
         steel: 'Thin lines and ornaments on dark',
-        accent: 'Blood red: one focal point; text on light only',
+        accent: 'Rose red: one focal point; text on light only',
         accentGlow: 'Glows and light only, never fills',
       },
     },
@@ -210,20 +210,6 @@ export const en: Dictionary = {
       // PLACEHOLDER: oval link drawing until the nine link illustrations exist.
       sampleName: 'Void',
       sampleIndex: '1',
-    },
-    atmoVariants: {
-      title: 'Atmosphere variants',
-      text: 'Three atmospheres under review, less horror and more fairy tale: the red of roses, high luminous mist, motes that glow. Each panel shows the intro mist, the motes, a card with its red mark and the home page 3D scene. The chosen one applies across the site with ?atmo=.',
-      names: { current: 'Current', a: 'Rosa', b: 'Vino', c: 'Rosa y oro' },
-      scene: 'Home page 3D scene, midnight',
-      values: 'Values',
-      accent: 'Accent',
-      glow: 'Glow',
-      mist: '3D mist',
-      light: 'Light in the mist',
-      motes: 'Motes',
-      gold: 'Gold (light only)',
-      open: 'Open the home page in this atmosphere',
     },
     atmosphere: {
       title: 'Atmosphere',

@@ -1,7 +1,7 @@
 /*
  * Design tokens. The palette comes from docs/brand/design-direction.md: black
- * and white shifted toward night and aged paper, with one rare accent (blood
- * red). Every text pairing is measured on the /lab page; keep it at WCAG AA.
+ * and white shifted toward night and aged paper, with one rare accent (the red
+ * of roses). Every text pairing is measured on the /lab page; keep it at WCAG AA.
  * Add new tokens here rather than hard-coding colours in components.
  */
 :root {
@@ -13,8 +13,8 @@
   --text-on-dark: #ebe6dc;
   --text-on-light: #141215;
   --steel: #b8bbc1; /* thin lines and ornaments on dark */
-  --accent: #8f1d22; /* blood red: one focal point per screen at most; text only on light */
-  --accent-glow: rgba(196, 40, 45, 0.35); /* glows and light only, never fills */
+  --accent: #9e2a3a; /* rose crimson: one focal point per screen at most; text only on light (5.67:1 on bone) */
+  --accent-glow: rgba(214, 84, 112, 0.35); /* rose light: glows and light only, never fills */
 
   /* ── DERIVED ──
      Secondary text, not in the design direction's list: the palette needs a
@@ -32,8 +32,10 @@
   --bone-rgb: 232 225 211;
   --text-on-dark-rgb: 235 230 220;
   --steel-rgb: 184 187 193;
-  --accent-rgb: 143 29 34;
-  --accent-glow-rgb: 196 40 45;
+  --accent-rgb: 158 42 58;
+  --accent-glow-rgb: 214 84 112;
+  /* The light inside the mist (the intro's glowing cores) */
+  --mist-light-rgb: 255 210 220;
 
   /* Role alias kept from the legacy names */
   --border: var(--bone-deep); /* 1px rules on light */

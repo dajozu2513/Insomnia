@@ -60,18 +60,6 @@
       ) {
         document.documentElement.classList.add('has-3d');
       }
-      // Atmosphere variants under review (src/features/atmosphere/variants.ts): ?atmo=a|b|c
-      // chooses one for this browser session; any other value goes back to the current look.
-      try {
-        var atmo = new URLSearchParams(location.search).get('atmo');
-        if (atmo === 'a' || atmo === 'b' || atmo === 'c')
-          sessionStorage.setItem('insomnia-atmo', atmo);
-        else if (atmo !== null) sessionStorage.removeItem('insomnia-atmo');
-        var chosenAtmo = sessionStorage.getItem('insomnia-atmo');
-        if (chosenAtmo) document.documentElement.dataset.atmo = chosenAtmo;
-      } catch (e) {
-        // no storage: the current look
-      }
       // Intro splash: on the first visit to the home page in this tab, keep the page
       // ink until the splash mounts (IntroSplash.tsx uses the same key).
       try {

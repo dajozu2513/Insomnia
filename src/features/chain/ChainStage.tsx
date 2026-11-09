@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { ATMO_PALETTES, currentAtmo } from '../atmosphere/variants';
 import { getNightProgress, subscribeNightProgress } from '../night/night';
 import { useChainAnchorRegistry } from './anchors/useChainAnchors';
 import type { ChainScene, ChainSceneOptions } from './types';
@@ -85,7 +84,6 @@ export function ChainStage() {
           getAnchors: registry.getAnchors,
           reducedMotion: reducedMotionRef.current,
           night: { get: getNightProgress, subscribe: subscribeNightProgress },
-          atmosphere: ATMO_PALETTES[currentAtmo()].scene,
           onReady: () => {
             setStatus('ready');
           },

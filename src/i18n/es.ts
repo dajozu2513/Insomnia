@@ -143,7 +143,7 @@ export const es = {
       'La nueva dirección de diseño, pieza por pieza, para revisarla antes de aplicarla al inicio.',
     palette: {
       title: 'Paleta',
-      text: 'Negro y blanco hacia la noche y el papel envejecido, con un solo acento: rojo sangre.',
+      text: 'Negro y blanco hacia la noche y el papel envejecido, con un solo acento: el rojo de las rosas.',
       contrastTitle: 'Contraste medido',
       contrastText:
         'Leído de los tokens en vivo. Texto: AA pide 4,5:1 (3:1 en texto grande). Líneas y ornamentos: 3:1.',
@@ -163,7 +163,7 @@ export const es = {
         textOnLight: 'Texto sobre claro',
         textOnLightMuted: 'Texto secundario sobre claro (añadido)',
         steel: 'Líneas finas y ornamentos sobre oscuro',
-        accent: 'Rojo sangre: un solo punto focal; texto solo sobre claro',
+        accent: 'Rojo de rosa: un solo punto focal; texto solo sobre claro',
         accentGlow: 'Solo brillos y luz, nunca rellenos',
       },
     },
@@ -216,20 +216,6 @@ export const es = {
       // PLACEHOLDER: oval link drawing until the nine link illustrations exist.
       sampleName: 'Void',
       sampleIndex: '1',
-    },
-    atmoVariants: {
-      title: 'Variantes de atmósfera',
-      text: 'Tres atmósferas en revisión, menos de terror y más de cuento: el rojo de las rosas, la niebla alta y luminosa, motas que brillan. Cada panel muestra la niebla de la intro, las motas, una carta con su marca roja y la escena 3D del inicio. La elegida se activa en todo el sitio con ?atmo=.',
-      names: { current: 'Actual', a: 'Rosa', b: 'Vino', c: 'Rosa y oro' },
-      scene: 'Escena 3D del inicio, medianoche',
-      values: 'Valores',
-      accent: 'Acento',
-      glow: 'Brillo',
-      mist: 'Niebla 3D',
-      light: 'Luz en la niebla',
-      motes: 'Motas',
-      gold: 'Oro (solo luz)',
-      open: 'Ver el inicio con esta atmósfera',
     },
     atmosphere: {
       title: 'Atmósfera',

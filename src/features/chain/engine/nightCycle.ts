@@ -3,7 +3,7 @@ import { Color, MathUtils } from 'three';
 /*
  * Night-cycle lighting (docs/brand/design-direction.md, "The night cycle").
  * Only cheap parameters change: fog colour and range, tone-mapping exposure in
- * a narrow band, a rim light's colour and intensity, and a faint red glow far
+ * a narrow band, a rim light's colour and intensity, and a faint rose glow far
  * behind the chain. The baked studio environment (what makes the steel read as
  * steel) never changes, so the chain stays neutral silver.
  */
@@ -18,7 +18,7 @@ interface Keyframe {
   exposure: number;
   rimColor: string;
   rimIntensity: number;
-  /** Opacity of the blood-red glow far behind the chain (light only, never on the steel). */
+  /** Strength of the rose glow far behind the chain (light only, never on the steel). */
   glow: number;
 }
 
@@ -35,7 +35,7 @@ export const NIGHT_KEYFRAMES: readonly Keyframe[] = [
     rimIntensity: 0.35,
     glow: 0,
   },
-  // Midnight: deepest, the faint red glow at its strongest
+  // Midnight: deepest, the rose glow at its strongest
   {
     at: 0.5,
     fog: '#0b0a0d',

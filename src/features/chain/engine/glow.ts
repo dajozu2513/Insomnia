@@ -1,6 +1,6 @@
 import { AdditiveBlending, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
 
-import type { SceneAtmosphere } from '../../atmosphere/variants';
+import { GLOW_BASE, GLOW_COLOUR, GLOW_GAIN, GLOW_LIFT } from './constants';
 import { rawColor } from './rawColor';
 
 /** Depth of the glow plane, far behind every link. */
@@ -8,7 +8,7 @@ const GLOW_Z = -14;
 
 export interface Glow {
   mesh: Mesh;
-  /** The night cycle's glow, 0..1 (strongest at midnight); the variant scales it. */
+  /** The night cycle's glow, 0..1 (strongest at midnight). */
   setStrength: (nightGlow: number) => void;
   /** Keeps the glow centred on the camera and sized to the view at its depth. */
   follow: (cameraY: number, halfWidth: number, viewHeight: number) => void;
@@ -18,15 +18,14 @@ export interface Glow {
 /**
  * The glow far behind the chain: a light in the mist rather than a colour on
  * the steel. A radial falloff in a tiny shader; additive, so it only ever adds
- * light to the dark behind the links. The current look is the blood-red
- * midnight glow; the dreamlike variants keep a little of it at every hour, in
- * their own colour, lifted towards the veils.
+ * light to the dark behind the links. Rose light, strongest at midnight, with
+ * a little kept at every hour, lifted towards the veils.
  */
-export function createGlow(glow: SceneAtmosphere['glow']): Glow {
+export function createGlow(): Glow {
   const geometry = new PlaneGeometry(1, 1);
   const material = new ShaderMaterial({
     uniforms: {
-      uColor: { value: rawColor(glow.colour) },
+      uColor: { value: rawColor(GLOW_COLOUR) },
       uStrength: { value: 0 },
     },
     vertexShader: /* glsl */ `
@@ -59,14 +58,14 @@ export function createGlow(glow: SceneAtmosphere['glow']): Glow {
   return {
     mesh,
     setStrength(nightGlow) {
-      const strength = glow.base + nightGlow * glow.gain;
+      const strength = GLOW_BASE + nightGlow * GLOW_GAIN;
       const uniform = material.uniforms.uStrength;
       if (uniform) uniform.value = strength;
       mesh.visible = strength > 0.002;
     },
     follow(cameraY, halfWidth, viewHeight) {
       const height = viewHeight * 1.25;
-      mesh.position.y = cameraY + glow.lift * height;
+      mesh.position.y = cameraY + GLOW_LIFT * height;
       mesh.scale.set(halfWidth * 2.4, height, 1);
     },
     dispose() {

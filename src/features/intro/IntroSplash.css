@@ -57,10 +57,12 @@
 }
 
 /*
- * RED MIST: the threshold into the night, and the one large use of red in the
- * design (docs/brand/design-direction.md). Soft blood-red haze built from
+ * ROSE MIST: the threshold into the night, and the one large use of red in the
+ * design (docs/brand/design-direction.md). A soft rose light built from
  * --accent and --accent-glow, gathered in the bottom and the lower corners so
- * the upper half and the centre, where the name sits, stay clean ink. Two layers drift slowly in
+ * the upper half and the centre, where the name sits, stay clean ink. It glows
+ * rather than lies flat: the layers add light (screen) over a soft core of
+ * light (--mist-light-rgb) inside each gathering. Two layers drift slowly in
  * opposite directions; static with reduced motion. A glow, never a fill.
  */
 .intro-red-mist {
@@ -69,6 +71,25 @@
   z-index: 1;
   overflow: hidden;
   pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 42% 15% at 50% 104%,
+      rgb(var(--mist-light-rgb) / 0.26) 0%,
+      rgb(var(--mist-light-rgb) / 0.08) 45%,
+      rgb(var(--mist-light-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 15% 24% at 1% 94%,
+      rgb(var(--mist-light-rgb) / 0.2) 0%,
+      rgb(var(--mist-light-rgb) / 0.06) 45%,
+      rgb(var(--mist-light-rgb) / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 15% 24% at 99% 92%,
+      rgb(var(--mist-light-rgb) / 0.2) 0%,
+      rgb(var(--mist-light-rgb) / 0.06) 45%,
+      rgb(var(--mist-light-rgb) / 0) 100%
+    );
 }
 
 .intro-red-mist::before,
@@ -76,7 +97,8 @@
   content: '';
   position: absolute;
   inset: -15%;
-  filter: blur(18px);
+  filter: blur(26px);
+  mix-blend-mode: screen;
 }
 
 .intro-red-mist::before {

@@ -1,5 +1,3 @@
-import type { SceneAtmosphere } from '../atmosphere/variants';
-
 /*
  * Types shared by the chain's React layer and its engine. This file must not
  * import three: it is loaded with the main bundle, and three.js belongs in the
@@ -35,8 +33,6 @@ export interface ChainSceneOptions {
    * new one (ChainStage does this, with a retry limit).
    */
   onContextLost?: () => void;
-  /** The atmosphere variant under review (?atmo=); the current look when omitted. */
-  atmosphere?: SceneAtmosphere;
 }
 
 export interface ChainScene {
