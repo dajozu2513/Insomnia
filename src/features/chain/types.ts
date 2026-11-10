@@ -6,10 +6,12 @@
 
 /** The page elements the chain is built around: its "windows". */
 export interface ChainAnchors {
-  /** The hero section the necklace frames. */
+  /** The hero section: the entrance and the fall play while it scrolls. */
   hero: HTMLElement | null;
-  /** The transparent bands the chain drapes across, in document order. */
+  /** Every transparent band (a window onto the shaft), in document order. */
   bands: readonly HTMLElement[];
+  /** The bands the chain drapes across (band 1 only, for now), in document order. */
+  chainBands: readonly HTMLElement[];
 }
 
 export interface ChainSceneOptions {
@@ -25,6 +27,11 @@ export interface ChainSceneOptions {
     get: () => number;
     subscribe: (listener: (progress: number) => void) => () => void;
   };
+  /**
+   * Development only (?fall=0..1): freezes the entrance at that progress for
+   * screenshots. null in normal browsing; production builds never pass it.
+   */
+  fall?: number | null;
   /** Called once, on the frame after the first draw (fades the canvas in). */
   onReady?: () => void;
   /**

@@ -1,79 +1,101 @@
 /*
- * HERO (dream window onto the chain), ported from the legacy HERO block.
- * Transparent under `has-3d`; the photo fallback shows otherwise.
+ * HERO: the entrance (docs/brand/design-direction.md, "The entrance and the
+ * fall"). Under has-3d, and unless motion is reduced, the hero is a tall
+ * section whose scroll plays the 3D sequence on the fixed canvas behind it; a
+ * pinned viewport inside holds the name. Otherwise it has normal height and
+ * shows the still of shot 1 (no sequence).
  */
 .hero {
   position: relative;
   height: 100svh;
   min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
   background: var(--ink);
 }
 
-/* Photo fallback (the image is set in photo.css, without the 3D chain only);
-   moved by Hero.tsx at 0.35x the scroll */
-.hero-bg {
-  position: absolute;
-  inset: -10%;
-  background-size: cover;
-  background-position: center top;
-  will-change: transform;
-  transition: opacity 1.2s ease;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--ink-rgb) / 0.6) 0%,
-    rgb(var(--ink-rgb) / 0.5) 50%,
-    rgb(var(--ink-rgb) / 0.7) 100%
-  );
+@media (prefers-reduced-motion: no-preference) {
+  .has-3d .hero {
+    height: 280svh;
+  }
 }
 
 .has-3d .hero {
   background: transparent;
 }
 
-.has-3d .hero-bg {
+/* The viewport the visitor sees while the sequence plays (sticky: no overflow on .hero) */
+.hero-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/*
+ * Shot 1 as a still (photo.css), painted at once: the first thing on screen
+ * before the live scene is ready, which then crossfades in over it (the canvas
+ * fades in for 2 s as the still fades out). Without WebGL it simply stays.
+ * Sized to the height, like the 3D camera's vertical field of view, so the
+ * crossfade does not jump.
+ */
+.hero-still {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ink);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: opacity 2s ease;
+}
+
+.chain-live .hero-still {
   opacity: 0;
 }
 
-/* Over the chain: darker only behind the title, plus the soft vignette at the edges */
-.has-3d .hero-overlay {
-  background:
-    radial-gradient(
-      ellipse 38% 30% at 50% 50%,
-      rgb(var(--ink-rgb) / 0.55) 0%,
-      rgb(var(--ink-rgb) / 0) 100%
-    ),
-    radial-gradient(ellipse at center, rgb(var(--ink-rgb) / 0) 55%, rgb(var(--ink-rgb) / 0.55) 100%);
+/* A soft vignette at the edges of the view */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgb(var(--ink-rgb) / 0) 58%,
+    rgb(var(--ink-rgb) / 0.5) 100%
+  );
 }
 
-/* Mist in high, soft veils across the window (never a band along the bottom); thin and
-   neutral warm white over the chain, so the steel stays silver */
-/* Two classes: beats .atmo-mist's inset: 0 from the global atmosphere styles */
-.atmo-mist.hero-mist {
-  inset: 4% 0 auto 0;
-  height: 60%;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 58%, transparent 100%);
-  opacity: 0.75;
+/* The name floats above the hole; it rises and fades as the visitor goes over the edge (Hero.tsx) */
+.hero-float {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 17%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
+/* A darker hush behind the name, so it reads over the scene (AA), fading with it */
+.hero-float::before {
+  content: '';
+  position: absolute;
+  inset: -40% -10%;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 42% 46% at 50% 50%,
+    rgb(var(--ink-rgb) / 0.72) 0%,
+    rgb(var(--ink-rgb) / 0.6) 40%,
+    rgb(var(--ink-rgb) / 0) 100%
+  );
+  pointer-events: none;
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
   text-align: center;
   color: var(--text-on-dark);
   padding: 0 1.5rem;
-  /* The chain ring's near side sits lower and looks bigger, so its optical centre
-     is below the viewport's. `translate`, not `transform`: the entrance owns that. */
-  translate: 0 6vh;
+  text-shadow: 0 2px 18px rgb(var(--ink-rgb) / 0.8);
   animation: heroFadeIn 1.2s ease both;
 }
 
@@ -147,9 +169,5 @@
 
   .hero-title .char {
     animation: heroFade 0.8s ease both;
-  }
-
-  .hero-bg {
-    will-change: auto;
   }
 }

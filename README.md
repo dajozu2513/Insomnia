@@ -6,7 +6,7 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: in progress. The 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
+> Status: in progress. The entrance and the fall (a first-person 3D descent into a hole in the earth), the 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
 
 ## Highlights
 
@@ -15,15 +15,16 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Design tokens in plain CSS.** No UI or CSS framework; colours, fonts and spacing come from CSS custom properties ported from the original site.
 - **Motion with restraint.** Every animation honours `prefers-reduced-motion`: movement is replaced by short fades and the 3D scene stops its render loop.
 - **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
-- **A 3D steel chain behind the page.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page falls back to photography.
-- **A night atmosphere in 3D.** A procedural chessboard floor dissolves into the fog under the hero, faint dust drifts through every window, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
+- **A first-person fall.** The hero is a tall, scroll-driven 3D sequence: the visitor stands at the edge of a hole framed by old roots, with a small steel pocket watch lying on one of them, steps over the rim and falls down a shaft of earth and rock that widens into mist for the rest of the page. Walls, roots, stones and bark are procedural (layered noise in shaders, recycled wall segments, instanced roots and stones), with no image textures.
+- **A 3D steel chain in the first window.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page shows stills rendered from the scene itself.
+- **A night atmosphere in 3D.** Glowing motes drift through the hole and every window and streak while falling fast, a rose light rises from far below, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
 - **A night that follows the scroll.** A line-art pocket watch, the emblem beside the name in the header, turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React. The intro opens on the full name over a slow red mist.
 - **One scroll frame.** Every scroll-driven effect (progress hairline, watch hands, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
 - **A jewelry deck instead of a product grid.** The nine chain links are drawn in code as playing cards that deal themselves face up; choosing one opens an accessible dialog (FLIP animation, focus management, deep links) with a configurator that composes the WhatsApp inquiry live.
 - **Readings with a title morph.** An editorial index of three articles on the home page; each opens on its own page, its title morphing into the heading through same-document View Transitions, with a reading-progress hairline and a pocket watch that follow the text from 6:00 PM to 6:00 AM.
 - **T-shirt prints generated in code.** Ten typographic compositions, one per word (a crowd of strangers, a frame too tight, a letter out of place, a plot that knots), laid out from measured font metrics and kept print-safe (one colour, flat tints, no gradients). They render on a flat SVG tee that follows every configurator choice live: colour, print language, placement and the side shown.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, the nine links, all ten T-shirt prints on both colours and in both languages, a flipping playing card and the atmosphere layers.
-- **Ready to share and fast to load.** Per-route titles, descriptions, canonical links, Open Graph and Twitter cards, JSON-LD, a sitemap, a share image rendered from the intro itself, a pocket-watch favicon that follows light and dark themes, self-hosted fonts with metric-matched fallbacks, AVIF fallback photos that never load while the 3D chain runs, and error boundaries so one failing part never blanks the page.
+- **Ready to share and fast to load.** Per-route titles, descriptions, canonical links, Open Graph and Twitter cards, JSON-LD, a sitemap, a share image rendered from the intro itself, a pocket-watch favicon that follows light and dark themes, self-hosted fonts with metric-matched fallbacks, a still of the scene as the first paint (AVIF, about 20 kB) that crossfades into the live 3D scene, and error boundaries so one failing part never blanks the page.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
 
 ## Tech stack
@@ -74,7 +75,7 @@ src/
   assets/fonts/        Self-hosted fonts (woff2) and their licences
   styles/              Fonts, design tokens and global styles
 public/                Share image, favicons and icons, manifest, robots.txt, sitemap.xml
-public/images/         Background photography for the no-WebGL fallback (AVIF, WebP, JPEG)
+public/images/fall/    Stills rendered from the 3D scene: the edge (first paint, no-WebGL hero) and the shaft (no-WebGL bands), wide and tall, as AVIF, WebP and JPEG
 docs/brand/            Brand documents
 docs/content/          Approved copy (articles.md, the source of src/data/articles.ts)
 ```
@@ -92,6 +93,15 @@ msedge --headless=new --hide-scrollbars --force-device-scale-factor=1 --window-s
 ```
 
 The icons use `/brand-assets/icon?stroke=<line width in drawing units>` at `--window-size=512,512` (0.75 for the 512 icon, 0.95 for 192 and the 180 Apple touch icon, 2.4 and 3.2 for the 32 and 16 favicon), downscaled from 512 (headless browsers will not size a window below about 500 px). `og.png` is stored as a palette PNG to keep it small. `favicon.svg` is drawn by hand from the watch and switches between ink and bone with the browser theme.
+
+## Stills of the fall
+
+The hero's first paint and the no-WebGL fallback are stills rendered from the 3D scene itself (`public/images/fall/`): `edge-wide` and `edge-tall` (shot 1 at the edge of the hole), `shaft-wide` and `shaft-tall` (the misty shaft, for the bands). They are captured from the dev server with a headless Chromium browser on a real GPU, at `?fall=0` and `?fall=1`, with every DOM element hidden except the canvas, then encoded as AVIF, WebP and JPEG:
+
+- wide: a 1920 x 800 viewport at device scale 1.25 (the edge) or 1 (the shaft), clipped to the canvas. Every screen wider than 1.3:1 uses the same vertical field of view, so the still lines up with the live frame exactly.
+- tall: a 540 x 900 viewport at device scale 2 (the edge) or 1.5 (the shaft). Phones are slightly narrower, so their field of view differs by a few percent; the 2-second crossfade hides it.
+
+Re-render them after changing anything in shot 1 or the shaft's look (the scene, the camera, the atmosphere constants).
 
 ## Headers on Render
 
@@ -117,7 +127,7 @@ After saving, check a response (`curl -I https://insomnia-js.onrender.com/assets
 - [ ] Paste the live URL and an article URL into the Facebook Sharing Debugger, the LinkedIn Post Inspector and a WhatsApp chat to see the preview; re-scrape if an old preview is cached.
 - [ ] Add the site to Google Search Console, submit `https://insomnia-js.onrender.com/sitemap.xml` and inspect the home page and one article.
 - [ ] Run Lighthouse on the live site (mobile and desktop, home and one article).
-- [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
+- [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the entrance and the fall (slow and fast scrolling), the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
 - [ ] Test in Firefox (not covered by the automated checks).
 - [ ] Remaining placeholders: none in the site copy; see the step 9 report for internal ones.
 

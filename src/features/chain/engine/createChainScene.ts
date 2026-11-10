@@ -15,7 +15,7 @@ import {
 } from 'three';
 
 import type { ChainAnchors, ChainScene, ChainSceneOptions } from '../types';
-import { buildPath, cameraYFor, type ChainPath } from './buildPath';
+import { buildChainPath, viewMetrics, type ChainPath, type ViewMetrics } from './buildPath';
 import {
   CAMERA_FAR,
   CAMERA_FOV,
@@ -23,9 +23,6 @@ import {
   DIST,
   DRIFT,
   ENV_BLUR,
-  FLOOR_ANISOTROPY,
-  FLOOR_DROP_PORTRAIT,
-  FLOOR_DROP_WIDE,
   FOG_COLOR,
   FOG_FAR,
   FOG_NEAR,
@@ -47,26 +44,33 @@ import {
   RIM_LIGHT_POSITION,
   SCROLL_EASE,
   SMALL_SCREEN_MAX,
+  STREAK_MAX,
+  STREAK_SPEED,
   TONE_MAPPING_EXPOSURE,
+  WIDEN_FROM,
 } from './constants';
 import { installDebugHook } from './debug';
-import { createFloor } from './floor';
+import { createEdge } from './edge';
+import { cameraForScroll, pageCameraY, type FallCamera, type ScrollMap } from './entrance';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
 import { createGlow } from './glow';
 import { createHeroMist } from './heroMist';
 import { createNightState, sampleNight } from './nightCycle';
 import { createParticles } from './particles';
+import { createShaft } from './shaft';
 import { createStudioEnvironment } from './studioEnvironment';
 
 /**
- * One long steel chain on a fixed, full-viewport canvas behind the page, in a
- * night atmosphere: a chessboard floor in the mist under the hero, slow dust,
- * fog, and lighting that follows the night cycle.
+ * The fall into the hole, on a fixed, full-viewport canvas behind the page.
+ * The hero plays the entrance (standing at the edge of the hole, then falling
+ * down it); after it, the camera keeps descending the misty shaft, so every
+ * band is a window onto the same fall, and the steel chain drapes across the
+ * bands that carry it. Lighting and fog follow the night cycle.
  *
  * Creates its own <canvas> inside `container` (the fixed stage) and removes it
  * again in dispose(), so mounting twice can never leave two canvases or two
  * WebGL contexts. Throws if WebGL is unavailable; the caller falls back to the
- * photos. Everything here runs outside React: scrolling never re-renders.
+ * stills. Everything here runs outside React: scrolling never re-renders.
  */
 export function createChainScene(container: HTMLElement, options: ChainSceneOptions): ChainScene {
   const canvas = document.createElement('canvas');
@@ -87,6 +91,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   let reducedMotion = options.reducedMotion;
   let parallax = reducedMotion ? 1 : PARALLAX;
+  const fallOverride = options.fall ?? null;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
   renderer.setClearColor(FOG_COLOR, 1);
@@ -98,7 +103,9 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   const fog = new Fog(FOG_COLOR, FOG_NEAR, FOG_FAR);
   scene.fog = fog;
   const camera = new PerspectiveCamera(CAMERA_FOV, 1, CAMERA_NEAR, CAMERA_FAR);
-  const tanHalfFov = Math.tan(MathUtils.degToRad(camera.fov / 2));
+  camera.rotation.order = 'YXZ';
+  /** The page camera's half field of view: the chain and the bands are framed with it. */
+  const tanHalfFov = Math.tan(MathUtils.degToRad(CAMERA_FOV / 2));
 
   // ── REFLECTIONS ── a studio built in code, baked into an environment map once.
   // The night cycle never re-bakes it: it is what keeps the steel neutral silver.
@@ -118,22 +125,29 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   rim.position.set(...RIM_LIGHT_POSITION);
   scene.add(rim);
 
-  // ── ATMOSPHERE ──
+  // ── STEEL ── one material for the chain and the pocket watch.
+  const linkGeometry = createLinkGeometry();
+  const steel = createSteelMaterial();
+
+  // ── THE FALL ── the edge of the hole (shot 1) and the shaft of recycled segments.
   const small = container.clientWidth <= SMALL_SCREEN_MAX;
-  const floor = createFloor(Math.min(renderer.capabilities.getMaxAnisotropy(), FLOOR_ANISOTROPY));
-  scene.add(floor.mesh);
+  const edge = createEdge(steel, linkGeometry);
+  scene.add(edge.group);
+  const shaft = createShaft(small);
+  scene.add(shaft.group);
+
+  // ── ATMOSPHERE ──
   const particles = createParticles(small ? PARTICLES_SMALL : PARTICLES_DESKTOP);
   scene.add(particles.points);
   const glow = createGlow();
   scene.add(glow.mesh);
   const heroMist = createHeroMist();
   scene.add(heroMist.mesh);
-  /** Debug switch (bench): draw the atmosphere layers or not. */
+  /** Debug switches (bench): draw the atmosphere layers, and the fall's scene, or not. */
   let atmosphereOn = true;
+  let fallSceneOn = true;
 
   // ── LINKS ──
-  const linkGeometry = createLinkGeometry();
-  const steel = createSteelMaterial();
   const chain = new InstancedMesh(linkGeometry, steel, MAX_LINKS);
   chain.instanceMatrix.setUsage(DynamicDrawUsage);
   chain.frustumCulled = false; // instances are culled by hand in layoutLinks()
@@ -141,29 +155,20 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   scene.add(chain);
 
   let path: ChainPath | null = null;
-  const pxToWorld = () => path?.pxToWorld ?? 1;
-  /** Hero-only layers as of the last draw (also read by the debug hook). */
-  let floorPresence = 0;
-  let mistPresence = 0;
+  let view: ViewMetrics = { pxToWorld: 1, viewHeight: 1, halfWidth: 1, wide: 1 };
+  let map: ScrollMap = {
+    heroTop: 0,
+    heroHeight: 0,
+    viewportHeight: 1,
+    pxToWorld: 1,
+    parallax,
+  };
   /** The windows, as of the last rebuild. */
-  let anchors: ChainAnchors = { hero: null, bands: [] };
-
-  /**
-   * How present the hero window is, from its real position on the page (not the
-   * eased camera): 1 while it fills the top of the viewport, 0 once it is gone.
-   * The floor and the hero's red mist belong to the hero alone, so both are also
-   * forced off whenever any band is on screen, at any scroll speed.
-   */
-  function heroPresence(): { hero: number; bandOnScreen: boolean } {
-    const vh = window.innerHeight;
-    const rect = anchors.hero?.getBoundingClientRect();
-    const hero = rect ? MathUtils.clamp(rect.bottom / vh, 0, 1) : 0;
-    const bandOnScreen = anchors.bands.some((band) => {
-      const r = band.getBoundingClientRect();
-      return r.bottom > 0 && r.top < vh;
-    });
-    return { hero, bandOnScreen };
-  }
+  let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [] };
+  /** Layers as of the last draw (also read by the debug hook). */
+  let mistPresence = 0;
+  let holeBlend = 1;
+  let stretch = 1;
 
   // Links slide along the path by `flow`. Offsetting the first link by a multiple of
   // two pitches keeps each link's orientation (flat / upright) as it travels.
@@ -217,7 +222,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     fog.color.copy(night.fog);
     fog.near = night.fogNear;
     fog.far = night.fogFar;
-    // The canvas clears to the fog colour, so the floor's far edge dissolves into it.
+    // The canvas clears to the fog colour, so far walls dissolve into it.
     renderer.setClearColor(night.fog, 1);
     renderer.toneMappingExposure = night.exposure;
     rim.color.copy(night.rimColor);
@@ -227,38 +232,65 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   }
 
   // ── RENDER ──
-  // The chain responds to scrolling only, never to the pointer or device orientation.
-  // - The camera follows an eased copy of the scroll position, so the view glides
-  //   after the page and settles instead of jumping with every wheel step.
-  // - Scrolling pulls the links along the chain like a hand hauling it: the pull
-  //   takes hold almost at once, and when it stops the heavy chain keeps sliding a
-  //   moment and coasts to a halt. Scrolling up pulls it back.
+  // The camera responds to scrolling only, never to the pointer or device orientation.
+  // - It follows an eased copy of the scroll position, so the view glides after the
+  //   page and settles instead of jumping with every wheel step. In the hero that
+  //   eased scroll plays the entrance: scroll fast and you fall fast, stop and you
+  //   float.
+  // - In the bands, scrolling pulls the links along the chain like a hand hauling it.
   let smoothScroll = window.scrollY;
   let lastScroll = smoothScroll;
   let pullSpeed = 0;
+  const cam: FallCamera = { y: 0, z: DIST, pitch: 0, fov: CAMERA_FOV };
+  let lastCameraY = Number.NaN;
 
-  /** `dt` advances the dust; 0 (reduced motion, redraws on scroll) keeps it still. */
+  /** `dt` advances the motes, the veils and the glint; 0 (reduced motion) keeps them still. */
   function draw(dt = 0): void {
-    const camY = cameraYFor(smoothScroll, pxToWorld(), parallax);
-    camera.position.set(0, camY, DIST);
-    if (path) {
-      // Floor and red mist belong to the hero window: they fade as it leaves and
-      // never show while a band is on screen.
-      const { hero, bandOnScreen } = heroPresence();
-      const inHero = atmosphereOn && !bandOnScreen;
-      floorPresence = inHero && camY > floor.y + 0.5 ? MathUtils.smoothstep(hero, 0.55, 0.9) : 0;
-      mistPresence = inHero ? MathUtils.smoothstep(hero, 0.3, 0.85) : 0;
-      floor.setPresence(floorPresence);
-      heroMist.setPresence(mistPresence);
-      heroMist.follow(camY, path.halfWidth, path.viewHeight);
-      heroMist.tick(dt);
-      particles.points.visible = atmosphereOn;
-      glow.setStrength(night.glow);
-      if (!atmosphereOn) glow.mesh.visible = false;
-      glow.follow(camY, path.halfWidth, path.viewHeight);
-      particles.update(dt, camY, path.halfWidth, path.viewHeight, renderer.domElement.height);
-      layoutLinks(path);
+    cameraForScroll(smoothScroll, map, view.wide, fallOverride, cam);
+    camera.position.set(0, cam.y, cam.z);
+    camera.rotation.set(cam.pitch, 0, 0);
+    if (Math.abs(camera.fov - cam.fov) > 1e-3) {
+      camera.fov = cam.fov;
+      camera.updateProjectionMatrix();
     }
+
+    // Fall speed: motes stretch into short streaks (capped, eased, never strobing)
+    const speed = dt > 0 && Number.isFinite(lastCameraY) ? Math.abs(cam.y - lastCameraY) / dt : 0;
+    lastCameraY = cam.y;
+    const target = 1 + Math.min(speed / STREAK_SPEED, 1) * (STREAK_MAX - 1);
+    stretch = dt > 0 ? stretch + (target - stretch) * (1 - Math.exp(-dt / 0.25)) : 1;
+
+    // In the narrow hole the motes gather around the axis; in the shaft they spread out
+    holeBlend = MathUtils.smoothstep(cam.y, WIDEN_FROM - 22, WIDEN_FROM);
+    // The rose veils belong to the open shaft, looking out across it
+    mistPresence = atmosphereOn
+      ? (1 - holeBlend) * (1 - MathUtils.smoothstep(Math.abs(cam.pitch), 0.08, 0.5))
+      : 0;
+
+    shaft.group.visible = fallSceneOn;
+    edge.group.visible = fallSceneOn;
+    shaft.update(cam.y);
+    edge.update(cam.y);
+    edge.tick(dt);
+    heroMist.setPresence(mistPresence);
+    heroMist.follow(cam.y, view.halfWidth, view.viewHeight);
+    heroMist.tick(dt);
+    particles.points.visible = atmosphereOn;
+    glow.setStrength(night.glow);
+    if (!atmosphereOn) glow.mesh.visible = false;
+    glow.follow(cam.y, view.halfWidth, view.viewHeight);
+    particles.update(
+      dt,
+      cam.y,
+      view.halfWidth,
+      view.viewHeight,
+      renderer.domElement.height,
+      holeBlend,
+      stretch,
+    );
+    // The chain only in the page view (looking out across the shaft)
+    if (path && cam.pitch === 0) layoutLinks(path);
+    else chain.count = 0;
     renderer.render(scene, camera);
   }
 
@@ -271,7 +303,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     const scroll = window.scrollY;
     smoothScroll += (scroll - smoothScroll) * (1 - Math.exp(-dt / SCROLL_EASE));
 
-    const target = ((scroll - lastScroll) / dt) * pxToWorld() * PULL;
+    const target = ((scroll - lastScroll) / dt) * view.pxToWorld * PULL;
     lastScroll = scroll;
     const tau = Math.abs(target) > Math.abs(pullSpeed) ? PULL_GRIP : PULL_COAST;
     pullSpeed += (target - pullSpeed) * (1 - Math.exp(-dt / tau));
@@ -286,10 +318,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     pullSpeed = 0;
   }
 
-  // ── LOOP ── only render while a window onto the chain is on screen.
+  // ── LOOP ── only render while a window (the hero or a band) is on screen.
   const showing = new Set<Element>();
   let running = false;
   let disposed = false;
+  let contextLost = false;
 
   function updateLoop(): void {
     if (disposed || contextLost) return;
@@ -342,22 +375,27 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     if (width === 0 || height === 0) return;
 
     anchors = options.getAnchors();
-    const { hero, bands } = anchors;
+    const { hero, bands, chainBands } = anchors;
     syncObserved(hero ? [hero, ...bands] : bands);
 
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    path = buildPath({
-      viewportWidth: width,
+    view = viewMetrics(width, height, tanHalfFov);
+    map = {
+      heroTop: hero ? docTop(hero) : 0,
+      heroHeight: hero?.offsetHeight ?? 0,
       viewportHeight: height,
-      tanHalfFov,
+      pxToWorld: view.pxToWorld,
       parallax,
-      bands: bands.map((band) => ({ top: docTop(band), height: band.offsetHeight })),
-    });
-    // Floor below the necklace: lower on tall screens, so the title and ring stay clear.
-    floor.y = -path.viewHeight * MathUtils.lerp(FLOOR_DROP_PORTRAIT, FLOOR_DROP_WIDE, path.wide);
-    floor.mesh.position.y = floor.y;
+    };
+    const currentMap = map;
+    path = buildChainPath(
+      view,
+      height,
+      chainBands.map((band) => ({ top: docTop(band), height: band.offsetHeight })),
+      (scroll) => pageCameraY(scroll, currentMap),
+    );
     if (!running) {
       syncScroll();
       draw();
@@ -370,7 +408,6 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   applyNight(options.night.get());
   // ── CONTEXT LOSS ── stop at once and let the owner rebuild on a fresh canvas.
   // preventDefault keeps the browser from treating the loss as final.
-  let contextLost = false;
   const onContextLost = (event: Event): void => {
     event.preventDefault();
     contextLost = true;
@@ -405,7 +442,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     options.onReady?.();
   });
 
-  // Development only: chain-colour measurement and frame timing (see debug.ts).
+  // Development only: steel colour measurement and frame timing (see debug.ts).
   const removeDebugHook = import.meta.env.DEV
     ? installDebugHook({
         renderer,
@@ -413,15 +450,18 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           syncScroll();
           draw();
         },
-        chain,
+        steel: { chain: [chain], watch: edge.watch.meshes },
         setAtmosphere: (on) => {
           atmosphereOn = on;
+        },
+        setFallScene: (on) => {
+          fallSceneOn = on;
         },
         setNight: (progress) => {
           appliedNight = -1;
           applyNight(progress);
         },
-        presence: () => ({ floor: floorPresence, mist: mistPresence }),
+        presence: () => ({ mist: mistPresence, inHole: holeBlend, stretch }),
         restoreNight: () => {
           appliedNight = -1;
           applyNight(options.night.get());
@@ -461,7 +501,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       chain.dispose();
       linkGeometry.dispose();
       steel.dispose();
-      floor.dispose();
+      edge.dispose();
+      shaft.dispose();
       heroMist.dispose();
       particles.dispose();
       glow.dispose();

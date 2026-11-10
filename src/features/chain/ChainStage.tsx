@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { FALL_OVERRIDE } from '../fall/fall';
 import { getNightProgress, subscribeNightProgress } from '../night/night';
 import { useChainAnchorRegistry } from './anchors/useChainAnchors';
 import type { ChainScene, ChainSceneOptions } from './types';
@@ -8,6 +9,8 @@ import './ChainStage.css';
 
 /** Set before first paint by the inline script in index.html when WebGL exists. */
 const HAS_3D_CLASS = 'has-3d';
+/** On <html> once the live scene has drawn: the hero's still crossfades away (Hero.css). */
+const LIVE_CLASS = 'chain-live';
 
 type Status = 'loading' | 'ready' | 'failed';
 
@@ -73,7 +76,7 @@ export function ChainStage() {
     let waitForVisible: (() => void) | undefined;
 
     const fail = () => {
-      document.documentElement.classList.remove(HAS_3D_CLASS);
+      document.documentElement.classList.remove(HAS_3D_CLASS, LIVE_CLASS);
       setStatus('failed');
     };
 
@@ -84,8 +87,10 @@ export function ChainStage() {
           getAnchors: registry.getAnchors,
           reducedMotion: reducedMotionRef.current,
           night: { get: getNightProgress, subscribe: subscribeNightProgress },
+          fall: FALL_OVERRIDE,
           onReady: () => {
             setStatus('ready');
+            document.documentElement.classList.add(LIVE_CLASS);
           },
           // The browser dropped the WebGL context (a phone backgrounding the tab, a GPU
           // reset): free the dead engine and build a new one on a fresh canvas once the
@@ -139,6 +144,7 @@ export function ChainStage() {
       engine?.dispose();
       engine = null;
       engineRef.current = null;
+      document.documentElement.classList.remove(LIVE_CLASS);
     };
   }, [registry]);
 

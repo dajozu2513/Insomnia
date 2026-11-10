@@ -53,9 +53,9 @@ export function HomePage() {
       <ErrorBoundary name="Pillars">
         <Pillars />
       </ErrorBoundary>
-      {/* Band 1 */}
+      {/* Band 1: the chain drapes across it, before the jewelry */}
       <ErrorBoundary name="Band 1">
-        <Band />
+        <Band chain />
       </ErrorBoundary>
       <HomeSection id="jewelry" lead={jewelry.lead} em={jewelry.em}>
         <ErrorBoundary name="Jewelry deck">

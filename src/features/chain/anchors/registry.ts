@@ -8,7 +8,8 @@ import type { ChainAnchors } from '../types';
 export interface ChainAnchorRegistry {
   setHero: (el: HTMLElement) => void;
   clearHero: (el: HTMLElement) => void;
-  addBand: (el: HTMLElement) => void;
+  /** chain: the chain drapes across this band. */
+  addBand: (el: HTMLElement, chain: boolean) => void;
   removeBand: (el: HTMLElement) => void;
   /** Current anchors, bands sorted in document order. */
   getAnchors: () => ChainAnchors;
@@ -24,6 +25,7 @@ function byDocumentOrder(a: Node, b: Node): number {
 export function createChainAnchorRegistry(): ChainAnchorRegistry {
   let hero: HTMLElement | null = null;
   const bands = new Set<HTMLElement>();
+  const chainBands = new Set<HTMLElement>();
   const listeners = new Set<() => void>();
   let pending = false;
 
@@ -50,16 +52,23 @@ export function createChainAnchorRegistry(): ChainAnchorRegistry {
       hero = null;
       notify();
     },
-    addBand(el) {
-      if (bands.has(el)) return;
+    addBand(el, chain) {
+      if (bands.has(el) && chainBands.has(el) === chain) return;
       bands.add(el);
+      if (chain) chainBands.add(el);
+      else chainBands.delete(el);
       notify();
     },
     removeBand(el) {
+      chainBands.delete(el);
       if (bands.delete(el)) notify();
     },
     getAnchors() {
-      return { hero, bands: [...bands].sort(byDocumentOrder) };
+      return {
+        hero,
+        bands: [...bands].sort(byDocumentOrder),
+        chainBands: [...chainBands].sort(byDocumentOrder),
+      };
     },
     subscribe(listener) {
       listeners.add(listener);

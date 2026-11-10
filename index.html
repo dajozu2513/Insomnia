@@ -60,6 +60,8 @@
       ) {
         document.documentElement.classList.add('has-3d');
       }
+      // The home page opens on the dark entrance: ink until the app mounts (global.css)
+      if (location.pathname === '/') document.documentElement.classList.add('home-route');
       // Intro splash: on the first visit to the home page in this tab, keep the page
       // ink until the splash mounts (IntroSplash.tsx uses the same key).
       try {
@@ -76,6 +78,23 @@
       }
     </script>
 
+    <!-- The first paint of the hero: the still of shot 1 (src/features/home/photo.css) -->
+    <link
+      rel="preload"
+      as="image"
+      href="/images/fall/edge-wide.avif"
+      type="image/avif"
+      media="(min-aspect-ratio: 4/5)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/fall/edge-tall.avif"
+      type="image/avif"
+      media="(max-aspect-ratio: 4/5)"
+      fetchpriority="high"
+    />
     <!-- Fonts are self-hosted (src/styles/fonts.css); the build preloads the title face. -->
   </head>
   <body>

@@ -1,36 +1,41 @@
-import { WebGLRenderTarget, type InstancedMesh, type WebGLRenderer } from 'three';
+import { WebGLRenderTarget, type Object3D, type WebGLRenderer } from 'three';
 
 /*
  * Development-only review tools, installed as window.__insomniaChain by the
  * engine when import.meta.env.DEV is true (never in production builds).
  *
- *   __insomniaChain.measure(progress)  chain colour at a night progress, for the
- *                                      view on screen (renders twice: with and
- *                                      without the chain; the chain's pixels are
- *                                      where the two frames differ)
- *   __insomniaChain.presence()         floor opacity and hero red-mist strength
- *                                      as of the last frame
- *   __insomniaChain.bench(frames)      CPU+GPU time per frame with and without
- *                                      the atmosphere layers, rendered into an
- *                                      offscreen target of the canvas's size so
- *                                      vsync does not cap the numbers
+ *   __insomniaChain.measure(progress, target)  colour of the steel ('chain' or
+ *                                      'watch') at a night progress, for the view on
+ *                                      screen (renders twice: with and without that
+ *                                      steel; its pixels are where the frames differ)
+ *   __insomniaChain.presence()         veil strength, how far the motes gather in
+ *                                      the hole, and the motes' streak, as of the
+ *                                      last frame
+ *   __insomniaChain.bench(frames)      CPU+GPU time per frame: everything, without
+ *                                      the atmosphere layers, and without the fall's
+ *                                      scene (walls, roots, stones, the edge), rendered
+ *                                      into an offscreen target of the canvas's size
+ *                                      so vsync does not cap the numbers
  */
 
 interface DebugTargets {
   renderer: WebGLRenderer;
   /** Draws the current view (camera at the real scroll position). */
   render: () => void;
-  chain: InstancedMesh;
-  /** Turns the floor, dust and glow on or off for the next draws. */
+  /** The steel that can be measured, by name. */
+  steel: Record<'chain' | 'watch', readonly Object3D[]>;
+  /** Turns the motes, glow and veils on or off for the next draws. */
   setAtmosphere: (on: boolean) => void;
+  /** Turns the fall's scene (walls, roots, stones, the edge of the hole) on or off. */
+  setFallScene: (on: boolean) => void;
   setNight: (progress: number) => void;
   restoreNight: () => void;
-  /** Hero-only layers as of the last draw: floor opacity and red-mist strength. */
-  presence: () => { floor: number; mist: number };
+  presence: () => { mist: number; inHole: number; stretch: number };
 }
 
 export interface ChainColour {
   progress: number;
+  target: 'chain' | 'watch';
   /** Chain pixels found. */
   pixels: number;
   /** Mean HSV saturation of the chain's pixels, 0..1. */
@@ -56,19 +61,21 @@ function linear(c: number): number {
 }
 
 export function installDebugHook(targets: DebugTargets): () => void {
-  const { renderer, render, chain, setAtmosphere, setNight, restoreNight, presence } = targets;
+  const { renderer, render, steel, setAtmosphere, setFallScene, setNight, restoreNight, presence } =
+    targets;
 
   const api = {
     presence,
 
-    measure(progress: number): ChainColour {
+    measure(progress: number, target: 'chain' | 'watch' = 'chain'): ChainColour {
+      const objects = steel[target];
       setNight(progress);
       render();
       const withChain = readFrame(renderer);
-      chain.visible = false;
+      objects.forEach((o) => (o.visible = false));
       render();
       const without = readFrame(renderer);
-      chain.visible = true;
+      objects.forEach((o) => (o.visible = true));
 
       let pixels = 0;
       let saturation = 0;
@@ -99,6 +106,7 @@ export function installDebugHook(targets: DebugTargets): () => void {
       const n = Math.max(pixels, 1);
       return {
         progress,
+        target,
         pixels,
         saturation: saturation / n,
         luminance: luminance / n,
@@ -106,7 +114,11 @@ export function installDebugHook(targets: DebugTargets): () => void {
       };
     },
 
-    bench(frames = 120): { withAtmosphere: number; withoutAtmosphere: number } {
+    bench(frames = 120): {
+      withAtmosphere: number;
+      withoutAtmosphere: number;
+      withoutFallScene: number;
+    } {
       const gl = renderer.getContext();
       const target = new WebGLRenderTarget(gl.drawingBufferWidth, gl.drawingBufferHeight, {
         samples: 4,
@@ -126,9 +138,12 @@ export function installDebugHook(targets: DebugTargets): () => void {
       setAtmosphere(false);
       const withoutAtmosphere = time();
       setAtmosphere(true);
+      setFallScene(false);
+      const withoutFallScene = time();
+      setFallScene(true);
       target.dispose();
       render();
-      return { withAtmosphere, withoutAtmosphere };
+      return { withAtmosphere, withoutAtmosphere, withoutFallScene };
     },
   };
 

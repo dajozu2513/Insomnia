@@ -90,7 +90,7 @@ export const RESIZE_DEBOUNCE_MS = 120;
 // docs/brand/design-direction.md, "Atmosphere" and "The night cycle". Every
 // value here is subordinate to one rule: the chain must read as silver steel.
 
-/** Chessboard floor under the hero necklace: plane size (world units). */
+/** Chessboard floor (kept for the landing in step 12; not in the scene since step 11): plane size (world units). */
 export const FLOOR_WIDTH = 140;
 export const FLOOR_DEPTH = 110;
 /** World size of one chessboard square. */
@@ -146,3 +146,46 @@ export const DRAPE_STYLE = 'centred' as 'legacy' | 'centred';
  * so a modest level costs less and looks the same.
  */
 export const FLOOR_ANISOTROPY = 4;
+
+// ── THE ENTRANCE AND THE FALL (step 11) ──
+// docs/brand/design-direction.md, "The entrance and the fall". World units; the
+// shaft's axis runs through the page camera (x = 0, z = DIST), so the fall ends
+// exactly where the page camera looks out across the bands.
+/** z of the shaft's vertical axis. */
+export const SHAFT_Z = DIST;
+/** Ground level at the mouth of the hole (world y). */
+export const GROUND_Y = 0;
+/** Radius of the hole's mouth, and of the narrow hole the visitor falls through. */
+export const HOLE_RADIUS = 2.6;
+/** Radius of the misty shaft the hole opens into (deep in the fog, so it reads as mist). */
+export const SHAFT_RADIUS = 30;
+/** The hole widens into the shaft between these heights. */
+export const WIDEN_FROM = -46;
+export const WIDEN_TO = -78;
+/** Depth below the ground where the entrance ends and the page camera takes over. */
+export const FALL_DEPTH = 70;
+/** Shot 1: eye height above the ground and horizontal distance from the axis. */
+export const EDGE_EYE = 5.2;
+export const EDGE_STAND = 4.4;
+/** Shot 1 pitch (down) and the falling pitch, in degrees. */
+export const EDGE_PITCH = -50;
+export const FALL_PITCH = -66;
+/** Shot 4: the brief look up at the mouth, in degrees. */
+export const MOUTH_PITCH = 78;
+/** Vertical field of view in the hole: wide screens, tall screens (the page uses CAMERA_FOV). */
+export const HOLE_FOV_WIDE = 58;
+export const HOLE_FOV_TALL = 74;
+/** Shaft segments: height, and how many are kept around the camera (desktop, small screens). */
+export const SEGMENT_HEIGHT = 5;
+export const SEGMENTS_DESKTOP = 12;
+export const SEGMENTS_SMALL = 9;
+/** Instanced roots and stones per segment (desktop, small screens). */
+export const ROOTS_PER_SEGMENT = 3;
+export const ROOTS_PER_SEGMENT_SMALL = 2;
+export const STONES_PER_SEGMENT = 12;
+export const STONES_PER_SEGMENT_SMALL = 7;
+/** Motes stretch into vertical streaks with the fall speed: world units/s for the full stretch, and its cap. */
+export const STREAK_SPEED = 40;
+export const STREAK_MAX = 3.2;
+/** The depth of the band chain's drape (world z; the camera is at DIST). */
+export const CHAIN_Z = 2.5;

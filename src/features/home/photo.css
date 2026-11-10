@@ -1,57 +1,59 @@
 /*
- * The fallback photo for the hero and the bands, used only without the 3D chain:
- * the rules that set it are scoped to html:not(.has-3d), so while the chain
- * runs the photo is never downloaded (ChainStage removes .has-3d on failure,
- * and the photo then loads). AVIF, then WebP, then JPEG; a portrait crop for
- * portrait screens and a smaller landscape file below 900 px.
+ * Stills of the 3D scene (generated from the scene itself; see README, "Stills
+ * of the fall"): shot 1 at the edge of the hole for the hero, the misty shaft
+ * for the bands. AVIF, then WebP, then JPEG; a tall crop for portrait screens.
+ *
+ * The hero's still is always set: it is the first paint, before the live scene
+ * crossfades in over it, and it stays without WebGL. The bands' still is set
+ * only under html:not(.has-3d), so while the 3D scene runs it is never
+ * downloaded (ChainStage removes .has-3d on failure, and it then loads).
  */
 :root {
-  --fallback-photo: url('/images/background/horizontal-768.jpg');
+  --edge-still: url('/images/fall/edge-wide.jpg');
+  --shaft-still: url('/images/fall/shaft-wide.jpg');
 }
 
 @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
   :root {
-    --fallback-photo: image-set(
-      url('/images/background/horizontal-768.avif') type('image/avif'),
-      url('/images/background/horizontal-768.webp') type('image/webp'),
-      url('/images/background/horizontal-768.jpg') type('image/jpeg')
+    --edge-still: image-set(
+      url('/images/fall/edge-wide.avif') type('image/avif'),
+      url('/images/fall/edge-wide.webp') type('image/webp'),
+      url('/images/fall/edge-wide.jpg') type('image/jpeg')
+    );
+    --shaft-still: image-set(
+      url('/images/fall/shaft-wide.avif') type('image/avif'),
+      url('/images/fall/shaft-wide.webp') type('image/webp'),
+      url('/images/fall/shaft-wide.jpg') type('image/jpeg')
     );
   }
 }
 
-@media (orientation: landscape) and (min-width: 900px) {
+@media (max-aspect-ratio: 4/5) {
   :root {
-    --fallback-photo: url('/images/background/horizontal-1308.jpg');
+    --edge-still: url('/images/fall/edge-tall.jpg');
+    --shaft-still: url('/images/fall/shaft-tall.jpg');
   }
 
   @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
     :root {
-      --fallback-photo: image-set(
-        url('/images/background/horizontal-1308.avif') type('image/avif'),
-        url('/images/background/horizontal-1308.webp') type('image/webp'),
-        url('/images/background/horizontal-1308.jpg') type('image/jpeg')
+      --edge-still: image-set(
+        url('/images/fall/edge-tall.avif') type('image/avif'),
+        url('/images/fall/edge-tall.webp') type('image/webp'),
+        url('/images/fall/edge-tall.jpg') type('image/jpeg')
+      );
+      --shaft-still: image-set(
+        url('/images/fall/shaft-tall.avif') type('image/avif'),
+        url('/images/fall/shaft-tall.webp') type('image/webp'),
+        url('/images/fall/shaft-tall.jpg') type('image/jpeg')
       );
     }
   }
 }
 
-@media (orientation: portrait) {
-  :root {
-    --fallback-photo: url('/images/background/vertical-736.jpg');
-  }
-
-  @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
-    :root {
-      --fallback-photo: image-set(
-        url('/images/background/vertical-736.avif') type('image/avif'),
-        url('/images/background/vertical-736.webp') type('image/webp'),
-        url('/images/background/vertical-736.jpg') type('image/jpeg')
-      );
-    }
-  }
+.hero-still {
+  background-image: var(--edge-still);
 }
 
-html:not(.has-3d) .hero-bg,
 html:not(.has-3d) .separator-bg {
-  background-image: var(--fallback-photo);
+  background-image: var(--shaft-still);
 }

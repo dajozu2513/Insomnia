@@ -27,6 +27,13 @@ body {
   overflow-x: hidden;
 }
 
+/* The home page opens on the dark entrance: until the app mounts, keep the page
+   ink, so the bone body never flashes before the hero's still (index.html sets
+   home-route before first paint) */
+.home-route body:has(> #root:empty) {
+  background: var(--ink);
+}
+
 #root {
   min-height: 100vh;
   display: flex;

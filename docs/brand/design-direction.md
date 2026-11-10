@@ -39,7 +39,7 @@ Derived tokens (added after the lab review, both AA on their side):
 - `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
 - `--tee-white`: `#f7f5f0`, the white T-shirt in the mockups (a garment colour, never text or a background); ink prints on it at 17.9:1, bone prints on the black tee at 15:1
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's rose mist, a soft, glowing rose light on ink (from `--accent` and `--accent-glow`, with a paler light inside it) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by rose light inside the 3D scene that rises into high, soft veils, behind the chain only. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's rose mist, a soft, glowing rose light on ink (from `--accent` and `--accent-glow`, with a paler light inside it) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by the rose light rising out of the hole from far below (step 11), and by a faint glow far behind the chain in band 1. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
 
 ## Typography
 
@@ -49,8 +49,8 @@ Accent rules: red is rare. Use it for a single focal point per screen at most: a
 
 ## Motifs
 
-- Chessboard: the direct bridge from Black & White. Used as a pattern, a card back and a perspective floor fading into mist behind the hero.
-- Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament.
+- Chessboard: the direct bridge from Black & White. Used as a pattern and a card back. The 3D chessboard floor left the hero in step 11; it returns as the floor of the landing at the bottom of the fall (step 12).
+- Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament. In the 3D scene, a small steel pocket watch lies on a root at the edge of the hole (step 11).
 - Playing cards: the format for presenting products (see Products).
 - Wrought-iron filigree: thin ornamental frames and section dividers.
 - Roses with thorns, keys, teacups: occasional small line ornaments.
@@ -59,9 +59,9 @@ Rules: all ornaments are thin line art in the same stroke weight as the pillar i
 
 ## Atmosphere
 
-Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles: tiny glowing motes, like fireflies or stardust. In the 3D scene: depth fog and the chessboard floor. Everything subtle; the steel chain must always read as silver steel.
+Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles: tiny glowing motes, like fireflies or stardust. In the 3D scene: depth fog, the earth of the hole and the misty shaft. Everything subtle; the steel (the chain and the pocket watch) must always read as silver steel.
 
-As built (steps 4 and 5): the chessboard floor belongs to the hero window alone: it fades out as the hero leaves the viewport and never shows while a band is on screen. It lies under the hero necklace in muted ink and dimmed bone squares, unlit and receding into the fog; there is no reflection. About 120 motes (60 on small screens) rise slowly through all three windows: warm white, softly glowing, their brightness breathing slowly. In the hero, the rose light rises into three high, soft veils with pools of paler light inside them; a faint rose glow lives far behind the chain at every hour, strongest at midnight, as light in the mist, never on the steel. The mist in the windows sits high, in veils, never as a dense band along the bottom (step 10: the low dense mist read as horror). The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
+As built (steps 4, 5 and 11): about 120 motes (60 on small screens) rise slowly through the hole and every window: warm white, softly glowing, their brightness breathing slowly; in the hole they gather around the visitor, and while falling fast they stretch into short vertical streaks (capped, never strobing). A faint rose glow lives far below in the hole and far behind the chain in band 1, strongest at midnight, as light in the mist, never on the steel. The high rose veils of step 10 now only show where the page looks straight ahead (the bands); in the hole the rose light comes from below. The mist in the windows sits high, in veils, never as a dense band along the bottom (step 10: the low dense mist read as horror). The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
 
 ## The night cycle
 
@@ -74,15 +74,34 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 ## Section map (home)
 
 1. Intro (6:00 PM): "Insomnia by Joel Soto", the hairline and the watch over the rose mist
-2. Hero, dream window: chain necklace around "Insomnia / by Joel Soto" (no other text), chessboard floor in mist
+2. Hero, the entrance: the edge of the hole with "Insomnia / by Joel Soto" floating above it (no other text), then the fall (see The entrance and the fall)
 3. Pillars, reality (bone)
-4. Band 1, dream: no text, a pure window; the chain drapes across its centre
+4. Band 1, dream: no text, a window onto the misty shaft; the steel chain drapes across its centre (the only window with the chain)
 5. Jewelry deck, reality
-6. Band 2, dream: no text, a pure window; the chain drapes across its centre
+6. Band 2, dream: no text, a window onto the misty shaft and its motes
 7. Printed T-shirts, reality
-8. Band 3, dream: no text, a pure window; the chain drapes across its centre
+8. Band 3, dream: no text, a window onto the misty shaft and its motes
 9. Readings
 10. Footer (6:00 AM, dawn)
+
+## The entrance and the fall (step 11)
+
+Not a book, a storybook or a paper theatre: the visitor stands at the edge of a hole in the earth, in first person, and falls in. Everything is real 3D, procedural (no image textures), lit by the Rosa atmosphere, with no characters.
+
+- **Shot 1, the edge (top of the page, 6:00 PM):** standing at the rim and looking down at about 50 degrees. Massive old roots frame the opening, dark bark rim-lit by the rose light rising from below; earth with a little moss around the mouth; the hole's walls going down in strata; a faint rose glow far below; motes drifting up out of it. The name floats above the hole. On the foreground root lies a small steel pocket watch (case, glass, crown and bow, a short chain, the lid open, the hands at 6:00) whose glass catches a soft glint every few seconds: a hint of who went first, without anyone in sight.
+- **Shot 2, over the edge (about 10 to 35% of the entrance):** the name rises and fades; the camera steps over the rim and tips down into the hole.
+- **Shot 3, the fall:** walls of earth, clay and rock in wavering strata, with cracks, damp patches, embedded stones and hanging roots, rushing past. The fall's speed follows the scroll; motes streak while falling fast. No shake and no roll, ever.
+- **Shot 4, the look back (about 60%):** a brief tilt up at the mouth, a small disc of dusk sky shrinking above.
+- **Shot 5, the shaft:** the walls widen and dissolve into mist; the camera levels and keeps descending for the rest of the page, so every band is a window onto the same fall. The chain hangs only in band 1.
+- **First paint:** a still of shot 1, rendered from the scene itself, shows until the live scene is ready and crossfades into it. The home page stays ink until then, so nothing bone flashes first. Without WebGL the stills stay (the edge in the hero, the shaft in the bands) and the hero has normal height. With reduced motion, only shot 1, static, at normal height: no fall.
+- The hero's name keeps AA over the scene: a soft, dark hush sits behind it, so even a passing mote leaves the text above 4.5:1.
+
+## Planned for step 12 (recorded, not built)
+
+- **Objects in the fall,** drifting past as the visitor falls: a "DRINK ME" bottle, an "EAT ME" cake, a teapot, teacups and saucers, pocket watches and clocks, playing cards, open books, a slowly falling piano, keys, roses. The bottle and cake labels follow the site language: Spanish "BÉBEME" / "CÓMEME", English "DRINK ME" / "EAT ME".
+- **Band 2:** floating letters.
+- **Band 3:** floating pages.
+- **The landing:** an upside-down room with doors, a small table with a key and the bottle, and the chessboard floor (the floor module is kept for it), which turns upright as the visitor lands at dawn, in the footer.
 
 ## Products (no photos)
 

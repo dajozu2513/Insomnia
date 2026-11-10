@@ -11,12 +11,14 @@ import {
 } from 'three';
 
 import {
+  HOLE_RADIUS,
   MOTE_COLOUR,
   MOTE_OPACITY,
   MOTE_SIZE,
   MOTE_TWINKLE,
   PARTICLE_RISE,
   PARTICLE_SWAY,
+  SHAFT_Z,
 } from './constants';
 import { rawColor } from './rawColor';
 
@@ -26,6 +28,9 @@ export interface Particles {
    * Moves the motes and keeps them in a box around the camera, so they are in
    * every window. `dt` 0 (reduced motion) only re-wraps them: no drift and no
    * twinkle. `pixelHeight` is the drawing buffer's height (the motes' size scale).
+   * `inHole` 1 gathers them in the narrow hole around the axis (around and below
+   * the camera), 0 spreads them across the page's view; `stretch` (1 and up)
+   * draws them as short vertical streaks while falling fast.
    */
   update: (
     dt: number,
@@ -33,6 +38,8 @@ export interface Particles {
     halfWidth: number,
     viewHeight: number,
     pixelHeight: number,
+    inHole: number,
+    stretch: number,
   ) => void;
   dispose: () => void;
 }
@@ -72,6 +79,8 @@ export function createParticles(count: number): Particles {
   const seeds = new Float32Array(count * 5);
   const phases = new Float32Array(count);
   const rates = new Float32Array(count);
+  // In the hole: an angle and a radius around the axis
+  const around = new Float32Array(count * 2);
   for (let i = 0; i < count; i++) {
     seeds[i * 5] = Math.random() * 2 - 1;
     seeds[i * 5 + 1] = Math.random() - 0.5;
@@ -80,6 +89,8 @@ export function createParticles(count: number): Particles {
     seeds[i * 5 + 4] = 0.6 + Math.random() * 0.8;
     phases[i] = Math.random() * Math.PI * 2;
     rates[i] = 0.5 + Math.random() * 1.1; // a breath every 3.5 to 12 s
+    around[i * 2] = Math.random() * Math.PI * 2;
+    around[i * 2 + 1] = Math.sqrt(Math.random()) * HOLE_RADIUS * 0.85;
   }
   geometry.setAttribute('position', new BufferAttribute(positions, 3));
   geometry.setAttribute('aPhase', new BufferAttribute(phases, 1));
@@ -96,6 +107,7 @@ export function createParticles(count: number): Particles {
         uScale: { value: 400 },
         uTime: { value: 0 },
         uTwinkle: { value: MOTE_TWINKLE },
+        uStretch: { value: 1 },
         uMap: { value: texture },
       },
     ]),
@@ -106,11 +118,12 @@ export function createParticles(count: number): Particles {
       uniform float uScale;
       uniform float uTime;
       uniform float uTwinkle;
+      uniform float uStretch;
       varying float vBrightness;
       varying float vDepth;
       void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = uSize * (uScale / -mvPosition.z);
+        gl_PointSize = uSize * (uScale / -mvPosition.z) * uStretch;
         gl_Position = projectionMatrix * mvPosition;
         // Breathing: a slow sine per mote, between 1 - uTwinkle and 1
         vBrightness = 1.0 - uTwinkle * (0.5 + 0.5 * sin(uTime * aRate + aPhase));
@@ -121,12 +134,16 @@ export function createParticles(count: number): Particles {
       uniform vec3 uColor;
       uniform float uOpacity;
       uniform sampler2D uMap;
+      uniform float uStretch;
       uniform float fogNear;
       uniform float fogFar;
       varying float vBrightness;
       varying float vDepth;
       void main() {
-        float a = texture2D(uMap, gl_PointCoord).a;
+        // Squeezed sideways by the stretch, so a falling mote reads as a short vertical streak
+        vec2 pc = vec2((gl_PointCoord.x - 0.5) * uStretch + 0.5, gl_PointCoord.y);
+        if (pc.x < 0.0 || pc.x > 1.0) discard;
+        float a = texture2D(uMap, pc).a / sqrt(uStretch);
         float fade = 1.0 - smoothstep(fogNear, fogFar, vDepth);
         gl_FragColor = vec4(uColor * a * uOpacity * vBrightness * fade, 1.0);
       }
@@ -145,11 +162,13 @@ export function createParticles(count: number): Particles {
 
   return {
     points,
-    update(dt, cameraY, halfWidth, viewHeight, pixelHeight) {
+    update(dt, cameraY, halfWidth, viewHeight, pixelHeight, inHole, stretch) {
       time += dt;
-      const { uTime, uScale } = material.uniforms;
+      const { uTime, uScale, uStretch } = material.uniforms;
       if (uTime) uTime.value = time;
       if (uScale) uScale.value = pixelHeight / 2;
+      if (uStretch) uStretch.value = stretch;
+      const holeHeight = 22;
       const boxHeight = viewHeight * 1.6;
       for (let i = 0; i < count; i++) {
         const s = i * 5;
@@ -160,9 +179,20 @@ export function createParticles(count: number): Particles {
         const baseY = (seeds[s + 1] ?? 0) * boxHeight + (rise[i] ?? 0);
         let y = baseY - cameraY;
         y = ((((y + boxHeight / 2) % boxHeight) + boxHeight) % boxHeight) - boxHeight / 2;
-        positions[i * 3] = (seeds[s] ?? 0) * halfWidth * 1.3 + sway;
-        positions[i * 3 + 1] = cameraY + y;
-        positions[i * 3 + 2] = seeds[s + 2] ?? 0;
+        const pageX = (seeds[s] ?? 0) * halfWidth * 1.3 + sway;
+        const pageY = cameraY + y;
+        const pageZ = seeds[s + 2] ?? 0;
+        // In the hole: around the axis, from a little above the camera to well below it
+        let hy = baseY * (holeHeight / boxHeight) - (cameraY - 8);
+        hy = ((((hy + holeHeight / 2) % holeHeight) + holeHeight) % holeHeight) - holeHeight / 2;
+        const angle = (around[i * 2] ?? 0) + sway * 0.2;
+        const radius = around[i * 2 + 1] ?? 0;
+        const holeX = Math.cos(angle) * radius;
+        const holeY = cameraY - 8 + hy;
+        const holeZ = SHAFT_Z + Math.sin(angle) * radius;
+        positions[i * 3] = pageX + (holeX - pageX) * inHole;
+        positions[i * 3 + 1] = pageY + (holeY - pageY) * inHole;
+        positions[i * 3 + 2] = pageZ + (holeZ - pageZ) * inHole;
       }
       const attribute = geometry.getAttribute('position');
       attribute.needsUpdate = true;

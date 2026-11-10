@@ -8,16 +8,16 @@ import './Band.css';
 import './photo.css';
 
 /**
- * A band: a pure dream window onto the chain (transparent under `has-3d`),
- * with mist, a soft vignette and the film grain, and no text. The chain drapes
- * alternate: it sags across the first band and hangs high across the second.
- * In the photo fallback, the photo drifts slower than the page and eases out
+ * A band: a pure window onto the fall (transparent under `has-3d`): the misty
+ * shaft the camera keeps descending, with mist, a soft vignette and the film
+ * grain, and no text. With `chain`, the steel chain drapes across it (band 1).
+ * In the fallback, the still of the shaft drifts slower than the page and eases out
  * of a 1.1x zoom as the band crosses the viewport (legacy main.js); static with
  * reduced motion. Never background-attachment: fixed (iOS ignores it).
  * Decorative, so hidden from assistive tech.
  */
-export function Band() {
-  const chainRef = useChainBandRef();
+export function Band({ chain = false }: { chain?: boolean }) {
+  const chainRef = useChainBandRef(chain);
   const bandRef = useRef<HTMLDivElement | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
