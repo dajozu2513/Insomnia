@@ -3,6 +3,7 @@ import { ChainAnchorsProvider, ChainStage } from '../features/chain';
 import { Deck } from '../features/deck/Deck';
 import { Band } from '../features/home/Band';
 import { Hero } from '../features/home/Hero';
+import { Landing } from '../features/home/Landing';
 import { HomeSection } from '../features/home/HomeSection';
 import { Pillars } from '../features/home/Pillars';
 import { IntroSplash } from '../features/intro/IntroSplash';
@@ -15,7 +16,8 @@ import { SITE_NAME } from '../lib/head';
 /*
  * Home: one night (docs/brand/design-direction.md, "Section map").
  * Intro > Hero (dream) > Pillars (reality) > Band 1 (dream) > Jewelry (reality)
- * > Band 2 (dream) > T-shirts (reality) > Band 3 (dream) > Readings > Footer.
+ * > Band 2 (dream) > T-shirts (reality) > Band 3 (dream) > Readings > Landing
+ * (dream: the hall at dawn) > Footer (over the landing's last frame).
  * The hero carries only the name; the bands carry no text at all. The engine
  * drapes the chain across however many bands are registered, in document order.
  *
@@ -80,6 +82,10 @@ export function HomePage() {
           <ReadingsIndex />
         </ErrorBoundary>
       </HomeSection>
+      {/* The landing: the fall ends in the hall; the footer sits over its last frame */}
+      <ErrorBoundary name="Landing">
+        <Landing />
+      </ErrorBoundary>
     </ChainAnchorsProvider>
   );
 }

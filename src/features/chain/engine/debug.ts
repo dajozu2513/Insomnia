@@ -45,11 +45,12 @@ interface DebugTargets {
     assembly: number;
     objects: boolean;
     cameraY: number;
+    landed: number;
     bandYs: number[];
   };
 }
 
-type SteelTarget = 'chain' | 'watch' | 'objects';
+type SteelTarget = 'chain' | 'watch' | 'objects' | 'landing';
 
 export interface ChainColour {
   progress: number;

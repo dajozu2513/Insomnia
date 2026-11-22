@@ -36,6 +36,10 @@ export const es = {
       sub: 'by Joel Soto',
     },
     // The objects of the fall (3D): the bottle's tag and the cake's currants
+    // The landing: the small door at the bottom of the page takes the visitor back to the top
+    landing: {
+      fallAgain: 'Volver a caer',
+    },
     fall: {
       drinkMe: 'BÉBEME',
       eatMe: 'CÓMEME',

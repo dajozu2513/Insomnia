@@ -49,7 +49,7 @@ Accent rules: red is rare. Use it for a single focal point per screen at most: a
 
 ## Motifs
 
-- Chessboard: the direct bridge from Black & White. Used as a pattern and a card back. The 3D chessboard floor left the hero in step 11; it returns as the floor of the landing at the bottom of the fall (step 13).
+- Chessboard: the direct bridge from Black & White. Used as a pattern and a card back. The 3D chessboard floor left the hero in step 11; it returns as the floor of the hall at the landing, at the bottom of the fall (step 13).
 - Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament. In the 3D scene, a small steel pocket watch lies on a root at the edge of the hole (step 11), and more watches and bare clock faces float down the shaft (step 12); every one shows the night's hour, in step with the header watch.
 - Playing cards: the format for presenting products (see Products); our deck also tumbles down the shaft (step 12).
 - Wrought-iron filigree: thin ornamental frames and section dividers.
@@ -69,7 +69,7 @@ The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clo
 
 ## Motion
 
-Calm and slow, as in Black & White. No pointer or device-orientation tracking. Nothing bouncy. Card flips and mist drift are slow. Every animation respects `prefers-reduced-motion`.
+Calm and slow, as in Black & White. No pointer or device-orientation tracking. Nothing bouncy. No camera roll, except the landing's one slow half turn, driven only by scroll. Card flips and mist drift are slow. Every animation respects `prefers-reduced-motion`.
 
 ## Section map (home)
 
@@ -82,7 +82,8 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 7. Printed T-shirts, reality
 8. Band 3, dream: no text, a window onto the misty shaft; loose pages flutter down and two open books turn their pages
 9. Readings
-10. Footer (6:00 AM, dawn)
+10. The landing, dream: the end of the fall, the hall at dawn (see The landing)
+11. Footer (6:00 AM, dawn), over the landing's last frame
 
 ## The entrance and the fall (step 11)
 
@@ -119,9 +120,15 @@ Choreography:
 - **Between the bands:** the other objects keep drifting, so the fall feels continuous whenever a window is open.
 - With reduced motion every object is placed and still. Without WebGL the stills stay; the shaft still for the bands shows a few objects.
 
-## Planned for step 13 (recorded, not built)
+## The landing (step 13)
 
-- **The landing:** an upside-down room with doors, a small table with a key and the bottle, and the chessboard floor (the floor module is kept for it), which turns upright as the visitor lands at dawn, in the footer.
+The fall ends at the bottom of the page, in a long, low hall built from Lewis Carroll's description, in our own design: everything in code, no characters, nothing copied from any film or game.
+
+- **The hall:** closed doors all around its walls, in dark wood with simple Victorian panels (four raised panels, a plain frame) and thin steel handles (neutral silver, measured; no brass); a dark wood skirting and picture rail; three lamps hanging from the ceiling, bone porcelain shades with a warm, soft light. A small three-legged glass table (the bottle's fake glass) with a tiny steel key on it, and the DRINK ME / BÉBEME bottle beside it, its tag in the site language. Low in the back wall, a small door, half hidden behind a short curtain on a steel rod, with a thin line of pale light under it and a faint pool of that light on the floor: a garden beyond. The floor is the chessboard, in its muted ink and bone.
+- **The sequence** (the landing's own scroll progress, 0 to 1, after the Readings): at 0 the visitor is still falling down the misty shaft and the hall appears below, upside down, its chessboard floor on top and its lamps pointing up, emerging from the mist; the fall slows as it approaches. Between about 0.3 and 0.7 the view turns over once, slowly and eased, driven only by scroll, never on its own: the room rights itself. This is the only roll in the site. Towards 1 the visitor glides in and settles on the chessboard floor at standing height, facing the small door. The night reaches dawn there: pale, slightly warm light, the rose glow almost gone, the motes thinning out, no veils.
+- **Fall again:** the small door is a real button over the 3D door ("Volver a caer" / "Fall again", shown on hover and focus, and always on touch screens): it takes the visitor back to the top of the page at once (no intro), to fall again.
+- **The footer** sits over the landing's last frame, transparent over a soft scrim of ink so its text stays AA over the scene; the header watch reaches 6:00 AM at the very end.
+- With reduced motion there is no turn: the landing shows the hall upright, the visitor already on the floor, still; Fall again still works. Without WebGL, a still of the last frame shows behind the footer, with the same door button.
 
 ## Products (no photos)
 

@@ -53,3 +53,21 @@ function readWord(): string | null {
 }
 
 export const WORD_OVERRIDE: string | null = import.meta.env.DEV ? readWord() : null;
+
+/**
+ * Review hook, development only: `?land=0..1` holds the landing at that progress
+ * while it is on screen (scroll to the bottom of the page to see it). Production
+ * builds compile this to null.
+ */
+function readLand(): number | null {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('land');
+    if (raw === null || raw.trim() === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.min(Math.max(value, 0), 1) : null;
+  } catch {
+    return null;
+  }
+}
+
+export const LAND_OVERRIDE: number | null = import.meta.env.DEV ? readLand() : null;

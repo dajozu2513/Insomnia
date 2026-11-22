@@ -13,10 +13,12 @@ import {
 } from 'three';
 
 import type { FallLabels, FallObjectsData } from '../../types';
+import type { LandingMap } from '../landing';
 import { SHAFT_Z } from '../constants';
 import { seeded } from '../fallGeometry';
 import { createPocketWatch, type PocketWatch3D } from '../pocketWatch';
 import { createLetters } from './letters';
+import { createHall } from './hall';
 import { createCards, createPaper } from './paper';
 import { createPropKit } from './props';
 import { createCardAtlas, createPageTexture, loadFaces } from './textures';
@@ -56,6 +58,9 @@ export interface FallFrame {
   bandWindow: number;
   /** Band 2's word: 0 scattered, 1 spelled. */
   assembly: number;
+  /** The landing at the bottom of the page (step 13), and its progress (-1 before it). */
+  landing: LandingMap | null;
+  landed: number;
 }
 
 export interface FallObjects {
@@ -64,6 +69,8 @@ export interface FallObjects {
   setLabels: (labels: FallLabels) => void;
   /** Steel meshes of the floating watches, clock faces and keys (steel measurement). */
   steelMeshes: () => Mesh[];
+  /** Steel of the landing: the door handles, the curtain rod and the key on the table. */
+  landingSteel: () => Mesh[];
   /** Roses inside the camera's view (never more than three). */
   rosesOnScreen: (camera: PerspectiveCamera) => number;
   /**
@@ -340,6 +347,11 @@ export async function createFallObjects(
     group.add(book);
   });
 
+  // ── THE LANDING ── the hall at the bottom of the page
+  const hall = createHall(kit, steel, small);
+  hall.group.visible = false;
+  group.add(hall.group);
+
   // ── BAND 2 LETTERS ──
   const letters = createLetters(data.word, small);
   group.add(letters.mesh);
@@ -396,7 +408,9 @@ export async function createFallObjects(
         // Kept clear around bands 2 and 3; only small things, far behind the chain, in band 1
         const near = (b: number | undefined) =>
           b !== undefined && Math.abs(params.y - b) < BAND_CLEAR;
-        if (near(band2) || near(band3) || params.y > LATTICE_TOP) d = -1;
+        // Nothing drifts into the hall at the landing
+        const inHall = frame.landing !== null && params.y < frame.landing.y0 + 6;
+        if (near(band2) || near(band3) || inHall || params.y > LATTICE_TOP) d = -1;
         else if (near(band1)) d = spec.smallKind && d > 0 ? Math.max(d, 25) : -1;
         const object = lattice.objects[slot];
         if (d < 0) {
@@ -555,6 +569,11 @@ export async function createFallObjects(
       });
     }
 
+    // The landing's hall, once the visitor is near it
+    const landing = frame.landing;
+    hall.group.visible = landing !== null && camY < landing.y0 + 16;
+    if (landing && hall.group.visible) hall.update(camera, landing);
+
     paper.setTime(time);
     paper.commit();
     cards.commit();
@@ -574,7 +593,11 @@ export async function createFallObjects(
     setLabels(labels) {
       kit.setLabels(labels);
     },
-    steelMeshes: () => [...watches.flatMap((w) => w.meshes), ...kit.steelMeshes],
+    steelMeshes: () => [
+      ...watches.flatMap((w) => w.meshes),
+      ...kit.steelMeshes.filter((k) => !hall.steel.includes(k)),
+    ],
+    landingSteel: () => hall.steel,
     debugCells(kind, top, bottom) {
       const lattice = lattices.find((l) => l.name === kind);
       if (!lattice) return [];
@@ -608,6 +631,7 @@ export async function createFallObjects(
       disposers.forEach((dispose) => {
         dispose();
       });
+      hall.dispose();
       kit.dispose();
       cards.dispose();
       paper.dispose();

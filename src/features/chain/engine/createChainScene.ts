@@ -51,10 +51,17 @@ import {
 } from './constants';
 import { installDebugHook } from './debug';
 import { createEdge } from './edge';
-import { cameraForScroll, pageCameraY, type FallCamera, type ScrollMap } from './entrance';
+import {
+  cameraForScroll,
+  landingAt,
+  pageCameraY,
+  type FallCamera,
+  type ScrollMap,
+} from './entrance';
 import { createLinkGeometry, createSteelMaterial } from './geometry';
 import { createGlow } from './glow';
 import { createHeroMist } from './heroMist';
+import { landingCamera, landingDrop, roomToWorld, SMALL_DOOR, type LandingMap } from './landing';
 import { createNightState, sampleNight } from './nightCycle';
 import type { FallObjects } from './objects/fallObjects';
 import { createParticles } from './particles';
@@ -93,6 +100,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let reducedMotion = options.reducedMotion;
   let parallax = reducedMotion ? 1 : PARALLAX;
   const fallOverride = options.fall ?? null;
+  const landOverride = options.land ?? null;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
   renderer.setClearColor(FOG_COLOR, 1);
@@ -174,9 +182,10 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     pxToWorld: 1,
     parallax,
     scrollMax: 0,
+    landing: null,
   };
   /** The windows, as of the last rebuild. */
-  let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [] };
+  let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [], landing: null };
   /** Layers as of the last draw (also read by the debug hook). */
   let mistPresence = 0;
   let holeBlend = 1;
@@ -254,14 +263,17 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let smoothScroll = window.scrollY;
   let lastScroll = smoothScroll;
   let pullSpeed = 0;
-  const cam: FallCamera = { y: 0, z: DIST, pitch: 0, fov: CAMERA_FOV };
+  const cam: FallCamera = { y: 0, z: DIST, pitch: 0, fov: CAMERA_FOV, roll: 0 };
+  /** Landing progress as of the last draw, or -1 before the landing. */
+  let landT = -1;
   let lastCameraY = Number.NaN;
 
   /** `dt` advances the motes, the veils and the glint; 0 (reduced motion) keeps them still. */
   function draw(dt = 0): void {
-    cameraForScroll(smoothScroll, map, view.wide, fallOverride, cam);
+    cameraForScroll(smoothScroll, map, view.wide, fallOverride, cam, landOverride);
+    landT = landingAt(smoothScroll, map, landOverride) ?? -1;
     camera.position.set(0, cam.y, cam.z);
-    camera.rotation.set(cam.pitch, 0, 0);
+    camera.rotation.set(cam.pitch, 0, cam.roll);
     if (Math.abs(camera.fov - cam.fov) > 1e-3) {
       camera.fov = cam.fov;
       camera.updateProjectionMatrix();
@@ -280,7 +292,13 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       ? (1 - holeBlend) * (1 - MathUtils.smoothstep(Math.abs(cam.pitch), 0.08, 0.5))
       : 0;
 
-    shaft.group.visible = fallSceneOn;
+    // At dawn in the hall: the rose glow almost gone, the motes thinning out, no veils.
+    // The shaft's walls are hidden near the hall, which reaches past their radius.
+    const landed = Math.max(landT, 0);
+    const nearHall = map.landing !== null && cam.y < map.landing.y0 + 14;
+    mistPresence *= 1 - MathUtils.smoothstep(landed, 0, 0.3);
+    particles.setOpacity(1 - 0.75 * MathUtils.smoothstep(landed, 0.2, 1));
+    shaft.group.visible = fallSceneOn && !nearHall;
     edge.group.visible = fallSceneOn;
     shaft.update(cam.y);
     edge.update(cam.y);
@@ -289,7 +307,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     heroMist.follow(cam.y, view.halfWidth, view.viewHeight);
     heroMist.tick(dt);
     particles.points.visible = atmosphereOn;
-    glow.setStrength(night.glow);
+    glow.setStrength(night.glow, 1 - 0.85 * MathUtils.smoothstep(landed, 0, 0.6));
     if (!atmosphereOn) glow.mesh.visible = false;
     glow.follow(cam.y, view.halfWidth, view.viewHeight);
     particles.update(
@@ -325,6 +343,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
         bandYs,
         bandWindow,
         assembly,
+        landing: map.landing,
+        landed: landT,
       });
     }
     renderer.render(scene, camera);
@@ -337,6 +357,9 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     if (dt <= 0) return;
 
     const scroll = window.scrollY;
+    // The page jumping several screens between two frames (Fall again, an anchor) is
+    // taken at once, not eased; fast scrolling, however fast, stays eased
+    if (Math.abs(scroll - lastScroll) > map.viewportHeight * 2.5) syncScroll();
     smoothScroll += (scroll - smoothScroll) * (1 - Math.exp(-dt / SCROLL_EASE));
 
     const target = ((scroll - lastScroll) / dt) * view.pxToWorld * PULL;
@@ -404,6 +427,52 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   const docTop = (el: Element) => el.getBoundingClientRect().top + window.scrollY;
 
+  // Where the small door shows on screen once the visitor stands in the hall: the
+  // Landing component puts its "Fall again" button there (CSS custom properties).
+  const doorCamera = new PerspectiveCamera();
+  const doorCam: FallCamera = { y: 0, z: 0, pitch: 0, fov: CAMERA_FOV, roll: 0 };
+  const corner = new Vector3();
+  function placeDoor(el: HTMLElement, landing: LandingMap, width: number, height: number): void {
+    landingCamera(1, landing, view.wide, doorCam);
+    doorCamera.fov = doorCam.fov;
+    doorCamera.aspect = width / height;
+    doorCamera.near = CAMERA_NEAR;
+    doorCamera.far = CAMERA_FAR;
+    doorCamera.rotation.order = 'YXZ';
+    doorCamera.position.set(0, doorCam.y, doorCam.z);
+    doorCamera.rotation.set(doorCam.pitch, 0, doorCam.roll);
+    doorCamera.updateMatrixWorld();
+    doorCamera.updateProjectionMatrix();
+    let left = Infinity;
+    let right = -Infinity;
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (const [dx, dy] of [
+      [-0.5, 0],
+      [0.5, 0],
+      [-0.5, 1],
+      [0.5, 1],
+    ] as const) {
+      roomToWorld(
+        landing,
+        SMALL_DOOR.x + dx * SMALL_DOOR.width,
+        SMALL_DOOR.y + (dy - 0.5) * SMALL_DOOR.height,
+        SMALL_DOOR.z,
+        corner,
+      ).project(doorCamera);
+      const x = ((corner.x + 1) / 2) * width;
+      const y = ((1 - corner.y) / 2) * height;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+    el.style.setProperty('--door-x', `${((left + right) / 2).toFixed(1)}px`);
+    el.style.setProperty('--door-y', `${((top + bottom) / 2).toFixed(1)}px`);
+    el.style.setProperty('--door-w', `${(right - left).toFixed(1)}px`);
+    el.style.setProperty('--door-h', `${(bottom - top).toFixed(1)}px`);
+  }
+
   function rebuild(): void {
     if (disposed) return;
     const width = container.clientWidth;
@@ -411,8 +480,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     if (width === 0 || height === 0) return;
 
     anchors = options.getAnchors();
-    const { hero, bands, chainBands } = anchors;
-    syncObserved(hero ? [hero, ...bands] : bands);
+    const { hero, bands, chainBands, landing } = anchors;
+    const windows: Element[] = [...bands];
+    if (hero) windows.unshift(hero);
+    if (landing) windows.push(landing);
+    syncObserved(windows);
 
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -425,8 +497,21 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       pxToWorld: view.pxToWorld,
       parallax,
       scrollMax: Math.max(document.documentElement.scrollHeight - height, 0),
+      landing: null,
     };
     const currentMap = map;
+    if (landing) {
+      const start = docTop(landing);
+      const length = Math.max(map.scrollMax - start, 0);
+      const landingMap: LandingMap = {
+        start,
+        length,
+        y0: pageCameraY(start, currentMap),
+        drop: landingDrop(length, view.pxToWorld * parallax),
+      };
+      map.landing = landingMap;
+      placeDoor(landing, landingMap, width, height);
+    }
     bandYs = bands.map((band) =>
       pageCameraY(docTop(band) + band.offsetHeight / 2 - height / 2, currentMap),
     );
@@ -525,6 +610,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           chain: () => [chain],
           watch: () => edge.watch.meshes,
           objects: () => objects?.steelMeshes() ?? [],
+          landing: () => objects?.landingSteel() ?? [],
         },
         setObjects: (on) => {
           objectsOn = on;
@@ -548,6 +634,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           assembly,
           objects: objects !== null,
           cameraY: cam.y,
+          landed: landT,
           bandYs: [...bandYs],
         }),
         restoreNight: () => {

@@ -1,7 +1,7 @@
 /*
  * Stills of the 3D scene (generated from the scene itself; see README, "Stills
  * of the fall"): shot 1 at the edge of the hole for the hero, the misty shaft
- * for the bands. AVIF, then WebP, then JPEG; a tall crop for portrait screens.
+ * for the bands, the hall at dawn for the landing. AVIF, then WebP, then JPEG; a tall crop for portrait screens.
  *
  * The hero's still is always set: it is the first paint, before the live scene
  * crossfades in over it, and it stays without WebGL. The bands' still is set
@@ -11,6 +11,7 @@
 :root {
   --edge-still: url('/images/fall/edge-wide.jpg');
   --shaft-still: url('/images/fall/shaft-wide.jpg');
+  --landing-still: url('/images/fall/landing-wide.jpg');
 }
 
 @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
@@ -25,6 +26,11 @@
       url('/images/fall/shaft-wide.webp') type('image/webp'),
       url('/images/fall/shaft-wide.jpg') type('image/jpeg')
     );
+    --landing-still: image-set(
+      url('/images/fall/landing-wide.avif') type('image/avif'),
+      url('/images/fall/landing-wide.webp') type('image/webp'),
+      url('/images/fall/landing-wide.jpg') type('image/jpeg')
+    );
   }
 }
 
@@ -32,6 +38,7 @@
   :root {
     --edge-still: url('/images/fall/edge-tall.jpg');
     --shaft-still: url('/images/fall/shaft-tall.jpg');
+    --landing-still: url('/images/fall/landing-tall.jpg');
   }
 
   @supports (background-image: image-set(url('/x.avif') type('image/avif'))) {
@@ -46,6 +53,11 @@
         url('/images/fall/shaft-tall.webp') type('image/webp'),
         url('/images/fall/shaft-tall.jpg') type('image/jpeg')
       );
+      --landing-still: image-set(
+        url('/images/fall/landing-tall.avif') type('image/avif'),
+        url('/images/fall/landing-tall.webp') type('image/webp'),
+        url('/images/fall/landing-tall.jpg') type('image/jpeg')
+      );
     }
   }
 }
@@ -56,4 +68,9 @@
 
 html:not(.has-3d) .separator-bg {
   background-image: var(--shaft-still);
+}
+
+/* The landing's last frame (the hall at dawn), only without WebGL */
+html:not(.has-3d) .landing-still {
+  background-image: var(--landing-still);
 }

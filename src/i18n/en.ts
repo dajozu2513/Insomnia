@@ -37,6 +37,10 @@ export const en: Dictionary = {
       sub: 'by Joel Soto',
     },
     // The objects of the fall (3D): the bottle's tag and the cake's currants
+    // The landing: the small door at the bottom of the page takes the visitor back to the top
+    landing: {
+      fallAgain: 'Fall again',
+    },
     fall: {
       drinkMe: 'DRINK ME',
       eatMe: 'EAT ME',

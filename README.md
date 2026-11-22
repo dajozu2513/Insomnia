@@ -6,7 +6,7 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: in progress. The entrance and the fall (a first-person 3D descent into a hole in the earth) and the objects that float down it, the 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
+> Status: in progress. The entrance and the fall (a first-person 3D descent into a hole in the earth) and the objects that float down it, the landing at the bottom of the page, the 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
 
 ## Highlights
 
@@ -17,6 +17,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Accessible shell.** Semantic landmarks, a skip link, labelled controls and `aria-pressed` on the language toggle.
 - **A first-person fall.** The hero is a tall, scroll-driven 3D sequence: the visitor stands at the edge of a hole framed by old roots, with a small steel pocket watch lying on one of them, steps over the rim and falls down a shaft of earth and rock that widens into mist for the rest of the page. Walls, roots, stones and bark are procedural (layered noise in shaders, recycled wall segments, instanced roots and stones), with no image textures.
 - **Objects of the fall.** A black grand piano falling slowly and turning, a DRINK ME bottle and an EAT ME cake whose tag and currants follow the site language, porcelain, pocket watches whose hands show the night's hour, cards from the jewelry deck, open books, keys and a few roses, all built in code, tumble past as the visitor falls. In one window, letters drift together to spell one of the T-shirt words (signed distance field text made at runtime from the site's own font); in another, pages flutter down. Their code loads in its own chunk once the browser is idle.
+- **The landing.** At the bottom of the page the fall ends in a long, low hall that appears below upside down, turns over once (the only roll in the site, driven by scroll) and lets the visitor settle on its chessboard floor at dawn, facing a small door with a line of pale light under it. The door is a real button, "Fall again", back to the top.
 - **A 3D steel chain in the first window.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page shows stills rendered from the scene itself.
 - **A night atmosphere in 3D.** Glowing motes drift through the hole and every window and streak while falling fast, a rose light rises from far below, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
 - **A night that follows the scroll.** A line-art pocket watch, the emblem beside the name in the header, turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React. The intro opens on the full name over a slow red mist.
@@ -97,12 +98,12 @@ The icons use `/brand-assets/icon?stroke=<line width in drawing units>` at `--wi
 
 ## Stills of the fall
 
-The hero's first paint and the no-WebGL fallback are stills rendered from the 3D scene itself (`public/images/fall/`): `edge-wide` and `edge-tall` (shot 1 at the edge of the hole), `shaft-wide` and `shaft-tall` (the misty shaft with a few of the objects of the fall, for the bands). They are captured from the dev server with a headless Chromium browser on a real GPU, at `?fall=0` and at a `?fall=` between 1 and 2 that frames some objects (1.9712 for the current stills), once the objects are built (`__insomniaChain.presence().objects`), with every DOM element hidden except the canvas, then encoded as AVIF, WebP and JPEG:
+The hero's first paint and the no-WebGL fallback are stills rendered from the 3D scene itself (`public/images/fall/`): `edge-wide` and `edge-tall` (shot 1 at the edge of the hole), `shaft-wide` and `shaft-tall` (the misty shaft with a few of the objects of the fall, for the bands), `landing-wide` and `landing-tall` (the landing's last frame, at `?land=1` with the page scrolled to the bottom). They are captured from the dev server with a headless Chromium browser on a real GPU, at `?fall=0` and at a `?fall=` between 1 and 2 that frames some objects (1.9712 for the current stills), once the objects are built (`__insomniaChain.presence().objects`), with every DOM element hidden except the canvas, then encoded as AVIF, WebP and JPEG:
 
 - wide: a 1920 x 800 viewport at device scale 1.25 (the edge) or 1 (the shaft), clipped to the canvas. Every screen wider than 1.3:1 uses the same vertical field of view, so the still lines up with the live frame exactly.
 - tall: a 540 x 900 viewport at device scale 2 (the edge) or 1.5 (the shaft). Phones are slightly narrower, so their field of view differs by a few percent; the 2-second crossfade hides it.
 
-Re-render them after changing anything in shot 1, the shaft's look or the objects of the fall (the scene, the camera, the atmosphere constants, the props).
+Clip to the canvas in viewport pixels (screenshot the viewport, then crop): puppeteer's `clip` is in document coordinates, which matters once the page is scrolled. The landing stills also give the door's place for the no-WebGL door button (`Landing.css`). Re-render them after changing anything in shot 1, the shaft's look, the objects of the fall or the hall (the scene, the camera, the atmosphere constants, the props).
 
 ## Headers on Render
 
@@ -128,7 +129,7 @@ After saving, check a response (`curl -I https://insomnia-js.onrender.com/assets
 - [ ] Paste the live URL and an article URL into the Facebook Sharing Debugger, the LinkedIn Post Inspector and a WhatsApp chat to see the preview; re-scrape if an old preview is cached.
 - [ ] Add the site to Google Search Console, submit `https://insomnia-js.onrender.com/sitemap.xml` and inspect the home page and one article.
 - [ ] Run Lighthouse on the live site (mobile and desktop, home and one article).
-- [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the entrance and the fall (slow and fast scrolling), the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
+- [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the entrance and the fall (slow and fast scrolling), the landing's turn and the Fall again door, the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
 - [ ] Test in Firefox (not covered by the automated checks).
 - [ ] Remaining placeholders: none in the site copy; see the step 9 report for internal ones.
 

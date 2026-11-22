@@ -22,8 +22,15 @@ export interface Floor {
   dispose: () => void;
 }
 
-/** A 2 x 2 chessboard tile drawn on a canvas: no image files. */
-function chessboardTexture(maxAnisotropy: number): CanvasTexture {
+/**
+ * A 2 x 2 chessboard tile drawn on a canvas: no image files. Also the hall's
+ * floor at the landing (objects/hall.ts), with its own repeat.
+ */
+export function chessboardTexture(
+  maxAnisotropy: number,
+  repeatX = FLOOR_WIDTH / (2 * FLOOR_SQUARE),
+  repeatY = FLOOR_DEPTH / (2 * FLOOR_SQUARE),
+): CanvasTexture {
   const size = 128;
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
@@ -39,7 +46,7 @@ function chessboardTexture(maxAnisotropy: number): CanvasTexture {
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.wrapS = texture.wrapT = RepeatWrapping;
-  texture.repeat.set(FLOOR_WIDTH / (2 * FLOOR_SQUARE), FLOOR_DEPTH / (2 * FLOOR_SQUARE));
+  texture.repeat.set(repeatX, repeatY);
   // Mipmaps and anisotropy blur the far squares into an even grey: no moire.
   texture.anisotropy = maxAnisotropy;
   return texture;

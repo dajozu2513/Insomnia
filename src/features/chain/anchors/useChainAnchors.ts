@@ -48,3 +48,21 @@ export function useChainBandRef(chain = false): RefCallback<HTMLElement> {
     [registry, chain],
   );
 }
+
+/**
+ * Ref for the landing at the bottom of the page: the fall ends in the hall while
+ * it scrolls, and the engine writes the small door's place on screen to it.
+ */
+export function useChainLandingRef(): RefCallback<HTMLElement> {
+  const registry = useChainAnchorRegistry();
+  return useCallback(
+    (el: HTMLElement | null) => {
+      if (!el) return;
+      registry.setLanding(el);
+      return () => {
+        registry.clearLanding(el);
+      };
+    },
+    [registry],
+  );
+}

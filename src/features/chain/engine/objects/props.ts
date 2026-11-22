@@ -88,6 +88,8 @@ export interface PropKit {
   makeRose: () => Group;
   makeBook: () => Group;
   makePiano: () => Group;
+  /** A small three-legged glass table (the landing). */
+  makeTable: () => Group;
   /** Steel meshes made so far (keys), for the steel measurement. */
   steelMeshes: Mesh[];
   /** Redraws the bottle's tag and rebuilds the cake's currants in the site language. */
@@ -494,6 +496,24 @@ export function createPropKit(steel: Material, small: boolean): PropKit {
       new BoxGeometry(0.16, 0.5, 0.04).translate(0.7, -0.25, -0.12),
     ]),
   );
+  // ── GLASS TABLE ── a round top on three slender, slightly splayed legs, a ring low down
+  const tableGeometry = keep(
+    merge([
+      new CylinderGeometry(0.3, 0.3, 0.018, lathe).translate(0, 0.71, 0),
+      ...[0, 1, 2].map((i) => {
+        const a = Math.PI / 2 + (i * Math.PI * 2) / 3;
+        const leg = new CylinderGeometry(0.011, 0.016, 0.71, 10).translate(0, 0.355, 0);
+        leg.applyMatrix4(
+          new Matrix4().makeRotationAxis(new Vector3(-Math.sin(a), 0, Math.cos(a)), 0.06),
+        );
+        return leg.translate(Math.cos(a) * 0.18, 0, Math.sin(a) * 0.18);
+      }),
+      baked(
+        new TorusGeometry(0.17, 0.006, 6, lathe),
+        m.makeRotationX(Math.PI / 2).setPosition(0, 0.24, 0),
+      ),
+    ]),
+  );
   const pianoIvory = keep(new BoxGeometry(1.3, 0.04, 0.17).translate(0.7, 0.225, 0.085));
   const pianoSteel = keep(
     merge([
@@ -597,6 +617,12 @@ export function createPropKit(steel: Material, small: boolean): PropKit {
       const centred = new Group();
       centred.add(g);
       return centred;
+    },
+
+    makeTable() {
+      const g = new Group();
+      add(g, tableGeometry, glass).renderOrder = 2;
+      return g;
     },
 
     setLabels(labels) {

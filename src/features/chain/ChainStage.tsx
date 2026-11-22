@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { FALL_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
+import { FALL_OVERRIDE, LAND_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
 import { loadFallObjects } from '../fall/objectData';
 import { useI18n } from '../../i18n';
 import { getNightProgress, subscribeNightProgress } from '../night/night';
@@ -100,6 +100,7 @@ export function ChainStage() {
           night: { get: getNightProgress, subscribe: subscribeNightProgress },
           fall: FALL_OVERRIDE,
           holdWord: WORD_OVERRIDE !== null,
+          land: LAND_OVERRIDE,
           objects: () => loadFallObjects(labelsRef.current),
           onReady: () => {
             setStatus('ready');

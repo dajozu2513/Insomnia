@@ -41,6 +41,8 @@ export interface Particles {
     inHole: number,
     stretch: number,
   ) => void;
+  /** Scales the motes' brightness (1 as built; the landing thins them out at dawn). */
+  setOpacity: (fraction: number) => void;
   dispose: () => void;
 }
 
@@ -196,6 +198,10 @@ export function createParticles(count: number): Particles {
       }
       const attribute = geometry.getAttribute('position');
       attribute.needsUpdate = true;
+    },
+    setOpacity(fraction) {
+      const uniform = material.uniforms.uOpacity;
+      if (uniform) uniform.value = MOTE_OPACITY * fraction;
     },
     dispose() {
       geometry.dispose();

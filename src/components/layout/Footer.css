@@ -36,3 +36,24 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
+
+/*
+ * Home page: the footer sits over the landing's last frame (the hall at dawn).
+ * Transparent, over a soft scrim of ink that keeps its text AA over the scene;
+ * pulled up by its own height, so the page ends on the landing. It takes no
+ * pointer events: the small door's button may sit under its upper edge.
+ */
+.site-footer--over-scene {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--site-footer-height, 0px));
+  padding-top: 5rem;
+  background: linear-gradient(
+    to top,
+    rgb(var(--ink-rgb) / 0.9) 0%,
+    rgb(var(--ink-rgb) / 0.78) 55%,
+    rgb(var(--ink-rgb) / 0) 100%
+  );
+  text-shadow: 0 1px 10px rgb(var(--ink-rgb) / 0.9);
+  pointer-events: none;
+}

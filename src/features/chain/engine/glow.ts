@@ -9,7 +9,8 @@ const GLOW_Z = -14;
 export interface Glow {
   mesh: Mesh;
   /** The night cycle's glow, 0..1 (strongest at midnight). */
-  setStrength: (nightGlow: number) => void;
+  /** `fade` (0..1) scales it down (the landing, at dawn). */
+  setStrength: (nightGlow: number, fade?: number) => void;
   /** Keeps the glow centred on the camera and sized to the view at its depth. */
   follow: (cameraY: number, halfWidth: number, viewHeight: number) => void;
   dispose: () => void;
@@ -57,8 +58,8 @@ export function createGlow(): Glow {
 
   return {
     mesh,
-    setStrength(nightGlow) {
-      const strength = GLOW_BASE + nightGlow * GLOW_GAIN;
+    setStrength(nightGlow, fade = 1) {
+      const strength = (GLOW_BASE + nightGlow * GLOW_GAIN) * fade;
       const uniform = material.uniforms.uStrength;
       if (uniform) uniform.value = strength;
       mesh.visible = strength > 0.002;

@@ -11,6 +11,8 @@ export interface ChainAnchorRegistry {
   /** chain: the chain drapes across this band. */
   addBand: (el: HTMLElement, chain: boolean) => void;
   removeBand: (el: HTMLElement) => void;
+  setLanding: (el: HTMLElement) => void;
+  clearLanding: (el: HTMLElement) => void;
   /** Current anchors, bands sorted in document order. */
   getAnchors: () => ChainAnchors;
   /** Called (once per batch of changes) whenever an anchor mounts or unmounts. */
@@ -24,6 +26,7 @@ function byDocumentOrder(a: Node, b: Node): number {
 
 export function createChainAnchorRegistry(): ChainAnchorRegistry {
   let hero: HTMLElement | null = null;
+  let landing: HTMLElement | null = null;
   const bands = new Set<HTMLElement>();
   const chainBands = new Set<HTMLElement>();
   const listeners = new Set<() => void>();
@@ -63,9 +66,20 @@ export function createChainAnchorRegistry(): ChainAnchorRegistry {
       chainBands.delete(el);
       if (bands.delete(el)) notify();
     },
+    setLanding(el) {
+      if (landing === el) return;
+      landing = el;
+      notify();
+    },
+    clearLanding(el) {
+      if (landing !== el) return;
+      landing = null;
+      notify();
+    },
     getAnchors() {
       return {
         hero,
+        landing,
         bands: [...bands].sort(byDocumentOrder),
         chainBands: [...chainBands].sort(byDocumentOrder),
       };

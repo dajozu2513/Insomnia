@@ -17,6 +17,7 @@ import {
   WIDEN_FROM,
   WIDEN_TO,
 } from './constants';
+import { landingCamera, landingProgress, type LandingMap } from './landing';
 
 /*
  * The entrance and the fall, as camera keyframes (pure functions, no scene).
@@ -42,6 +43,8 @@ export interface FallCamera {
   pitch: number;
   /** Vertical field of view in degrees. */
   fov: number;
+  /** Rotation about the view axis, in radians (only the landing turns). */
+  roll: number;
 }
 
 const ss = MathUtils.smoothstep;
@@ -50,6 +53,7 @@ const lerp = MathUtils.lerp;
 /** Shot keyframes for entrance progress `p` (0..1); `wide` 0 on tall screens, 1 on wide ones. */
 export function entranceCamera(p: number, wide: number, out: FallCamera): FallCamera {
   const t = MathUtils.clamp(p, 0, 1);
+  out.roll = 0;
   // Forward over the edge, to the axis
   out.z = SHAFT_Z + EDGE_STAND * (1 - ss(t, 0.1, 0.3));
   // The drop: still at the edge, then accelerating into the fall, then steady
@@ -84,6 +88,8 @@ export interface ScrollMap {
   parallax: number;
   /** The page's largest scroll position (document height minus the viewport). */
   scrollMax: number;
+  /** The landing at the bottom of the page, when there is one. */
+  landing: LandingMap | null;
 }
 
 /** Scroll length of the entrance sequence (0 when the hero has normal height). */
@@ -101,7 +107,9 @@ export function pageCameraY(scroll: number, map: ScrollMap): number {
  * The camera for a page scroll position. While the hero is on screen it plays
  * the entrance at the hero's own progress (`override`, development only,
  * freezes it); a hero of normal height (no sequence) holds shot 1. After it,
- * the page camera.
+ * the page camera, until the landing at the bottom of the page takes over
+ * (`land`, development only, freezes it; a landing with no sequence, with
+ * reduced motion, holds its last frame).
  */
 export function cameraForScroll(
   scroll: number,
@@ -109,7 +117,10 @@ export function cameraForScroll(
   wide: number,
   override: number | null,
   out: FallCamera,
+  land: number | null = null,
 ): FallCamera {
+  const landed = landingAt(scroll, map, land);
+  if (map.landing && landed !== null) return landingCamera(landed, map.landing, wide, out);
   const length = sequenceLength(map);
   const heroEnd = map.heroTop + map.heroHeight;
   if (scroll < heroEnd && override !== null && override > 1) {
@@ -118,6 +129,7 @@ export function cameraForScroll(
     out.y = pageCameraY(end + (override - 1) * Math.max(map.scrollMax - end, 0), map);
     out.z = SHAFT_Z;
     out.pitch = 0;
+    out.roll = 0;
     out.fov = CAMERA_FOV;
     return out;
   }
@@ -129,8 +141,27 @@ export function cameraForScroll(
   out.y = pageCameraY(scroll, map);
   out.z = SHAFT_Z;
   out.pitch = 0;
+  out.roll = 0;
   out.fov = CAMERA_FOV;
   return out;
+}
+
+/**
+ * Landing progress at a page scroll, or null while the page camera still falls
+ * down the shaft. `land` (development only) freezes it while the landing is on
+ * screen; a landing with no sequence (reduced motion) holds its last frame once
+ * it is halfway up the screen.
+ */
+export function landingAt(
+  scroll: number,
+  map: ScrollMap,
+  land: number | null = null,
+): number | null {
+  const landing = map.landing;
+  if (!landing) return null;
+  if (land !== null && scroll >= landing.start - map.viewportHeight) return land;
+  if (landing.length < 1) return scroll >= landing.start - map.viewportHeight * 0.5 ? 1 : null;
+  return scroll >= landing.start ? landingProgress(scroll, landing) : null;
 }
 
 /** True while the camera is still in the narrow hole (shots 1 to 4), not in the open shaft. */

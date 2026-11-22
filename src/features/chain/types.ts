@@ -12,6 +12,12 @@ export interface ChainAnchors {
   bands: readonly HTMLElement[];
   /** The bands the chain drapes across (band 1 only, for now), in document order. */
   chainBands: readonly HTMLElement[];
+  /**
+   * The landing at the bottom of the page: the fall ends in the hall while it
+   * scrolls. The engine writes the small door's place on screen to it as CSS
+   * custom properties (--door-x, --door-y, --door-w, --door-h, in px).
+   */
+  landing: HTMLElement | null;
 }
 
 /** The words on the bottle's tag and spelled in currants on the cake, in the site language. */
@@ -62,6 +68,8 @@ export interface ChainSceneOptions {
   objects?: () => Promise<FallObjectsData>;
   /** Development only (?word=): hold band 2's word assembled, for screenshots. */
   holdWord?: boolean;
+  /** Development only (?land=0..1): freezes the landing at that progress while it is on screen. */
+  land?: number | null;
   /** Called once, on the frame after the first draw (fades the canvas in). */
   onReady?: () => void;
   /**

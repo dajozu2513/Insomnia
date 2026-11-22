@@ -1,0 +1,126 @@
+/*
+ * The landing: a window onto the 3D scene at the bottom of the page
+ * (transparent under has-3d). Tall, with a sticky full-viewport pin, so its own
+ * progress plays the end of the fall; one screen high without WebGL or with
+ * reduced motion, where it shows its last frame (a still without WebGL).
+ * The footer is pulled up over its last frame (Footer.css).
+ */
+.landing {
+  position: relative;
+  height: 100svh;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .has-3d .landing {
+    height: 200svh;
+  }
+}
+
+.landing-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Without WebGL: the last frame, rendered from the scene (photo.css). Fit to the
+   height, centred, as the 3D camera frames it, so the door button lines up. */
+.landing-still {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ink);
+  background-position: center;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+}
+
+.has-3d .landing-still {
+  display: none;
+}
+
+/* Without WebGL: where the small door is on the stills (rendered by the engine,
+   which writes these on the section when the scene runs) */
+html:not(.has-3d) .landing {
+  --door-x: 50%;
+  --door-y: 58.6%;
+  --door-w: 12.3svh;
+  --door-h: 14.9svh;
+}
+
+@media (max-aspect-ratio: 4/5) {
+  html:not(.has-3d) .landing {
+    --door-y: 55.8%;
+    --door-w: 8.4svh;
+    --door-h: 10.1svh;
+  }
+}
+
+/* The small door: a real button over the 3D door */
+.landing-door {
+  position: absolute;
+  left: var(--door-x, 50%);
+  top: var(--door-y, 58.6%);
+  width: max(var(--door-w, 12.3svh), 44px);
+  height: max(var(--door-h, 14.9svh), 44px);
+  translate: -50% -50%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.landing-door.is-open,
+.landing-door:focus-visible,
+html:not(.has-3d) .landing-door {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.landing-door:focus-visible {
+  outline: 1px solid var(--text-on-dark);
+  outline-offset: 4px;
+}
+
+/* "Volver a caer / Fall again": shown on hover and focus (and always on touch
+   screens, where there is no hover) */
+.landing-door-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0.7rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgb(var(--ink-rgb) / 0.78);
+  color: var(--text-on-dark);
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.landing-door:hover .landing-door-label,
+.landing-door:focus-visible .landing-door-label {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .landing-door.is-open .landing-door-label,
+  html:not(.has-3d) .landing-door .landing-door-label {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-door,
+  .landing-door-label {
+    transition: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { Outlet, ScrollRestoration } from 'react-router-dom';
+import { Outlet, ScrollRestoration, useMatch } from 'react-router-dom';
 
 import { useI18n } from '../../i18n';
 import { Footer } from './Footer';
@@ -6,6 +6,8 @@ import { Header } from './Header';
 
 export function Layout() {
   const { t } = useI18n();
+  // On the home page the footer sits over the landing's last frame
+  const home = useMatch('/') !== null;
 
   return (
     <>
@@ -16,7 +18,7 @@ export function Layout() {
       <main id="main" tabIndex={-1}>
         <Outlet />
       </main>
-      <Footer />
+      <Footer overScene={home} />
       <ScrollRestoration />
     </>
   );
