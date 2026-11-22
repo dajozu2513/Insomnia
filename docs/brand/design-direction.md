@@ -79,7 +79,7 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 4. Band 1, dream: no text, a window onto the misty shaft; the steel chain drapes across its centre (the only window with the chain)
 5. Jewelry deck, reality
 6. Band 2, dream: no text, a window onto the misty shaft; letters tumble in it and, as the band reaches the middle of the screen, spell one of the T-shirt words
-7. Printed T-shirts, reality
+7. Printed T-shirts, dream: a window onto the shaft right after band 2, where the ten tees hang on a floating clothing rack (see The clothing rack); the grid on bone without WebGL
 8. Band 3, dream: no text, a window onto the misty shaft; loose pages flutter down and two open books turn their pages
 9. Readings
 10. The landing, dream: the end of the fall, the hall at dawn (see The landing)
@@ -130,6 +130,17 @@ The fall ends at the bottom of the page, in a long, low hall built from Lewis Ca
 - **The footer** sits over the landing's last frame, transparent over a soft scrim of ink so its text stays AA over the scene; the header watch reaches 6:00 AM at the very end.
 - With reduced motion there is no turn: the landing shows the hall upright, the visitor already on the floor, still; Fall again still works. Without WebGL, a still of the last frame shows behind the footer, with the same door button.
 
+## The clothing rack (step 14)
+
+The T-shirt section is a dream window onto the shaft, right after band 2, so the letters that spell a word there lead straight into the tees that carry those words.
+
+- **The rack:** a circular clothing rack floating in the mist with no visible support: a thin steel ring (neutral silver, measured), ten steel hangers, one tee on each, black and white alternating. It leans a little towards the visitor, so the ring reads as a ring. It turns very slowly on its own (pausing while the pointer or focus is on it, and for a few seconds after the visitor turns it), the tees sway gently in the air of the fall, motes drift around it, and a faint rose halo glows beneath the ring (light, never a fill).
+- **The tees:** cloth, cut to the step 6 mockup's silhouette, printed with the step 6 compositions exactly as the dialog draws them (front view, the word and its meaning, the meaning in the site language), redrawn when the language changes. Their backs are plain fabric.
+- **Turning it:** drag (mouse) or swipe (touch) sideways, with gentle inertia; it eases to rest with the nearest tee facing the visitor. Vertical swipes and the wheel scroll the page as usual. Two round arrow buttons step to the previous or next tee; Left and Right arrows do the same while the rack has focus.
+- **The facing tee** is a little brighter; its name shows under the rack in Cormorant small capitals with a short rose rule under it: on dark the red is light (the rose of the glow, solid, as a hairline), and it is the only red on screen. Selecting it (click, tap, Enter) opens the T-shirt dialog, its mockup flying out of the 3D tee. Clicking a tee that is not facing first turns the rack to it.
+- **The names:** a quiet row of the ten names under the rack is the accessible list: each turns the rack to its tee, and opens its dialog when activated again. The heading, the names and the credit line stay legible over the scene (AA).
+- With reduced motion the rack does not turn on its own and the tees do not sway; drags, buttons and names step straight to the next tee. Without WebGL, or if the rack cannot be built, the section is the step 7 grid on bone, unchanged.
+
 ## Products (no photos)
 
 - Jewelry is a system, not a fixed list: link type x form x size. Links are the current nine (Void, Star, Monolith, Static, Together, Meridian, Heart, Echo, Snake), each with a line illustration of a single link, its name and its poetic text. Forms: necklace, bracelet, anklet, ring, head piece, waist piece, other. In Spanish the head piece is "Cadena de cabeza" (not "Tocado"). Size: standard or made to measure. The WhatsApp message is composed from the choices.
@@ -143,7 +154,7 @@ The fall ends at the bottom of the page, in a long, low hall built from Lewis Ca
 - Print rules: monochrome only (ink on the white tee, bone on the black one); the word in Cormorant Garamond capitals, the meaning in EB Garamond in the chosen print language, and a small, quiet "INSOMNIA by Joel Soto" mark at the bottom of every print. Print-safe: flat tints at most (never a gradient, never below 20%), fades made with knocked-out specks or lines, no line finer than about 1 mm at print size. Placement: Front or Back prints the word and meaning on that side; Front and back prints the word large on the front and the word with its meaning on the back.
 - The mockup is a flat line-art tee (seams only, no photos), the print at a realistic chest or back position and size. The section shows the ten black tees from the front (5 x 2, two columns on phones) with the name in Cormorant small capitals; nothing is red at rest, and a short rule under the hovered or focused name is the one red. The credit line sits under the grid: "Palabras de The Dictionary of Obscure Sorrows, de John Koenig. Los significados están escritos con nuestras propias palabras." / "Words from The Dictionary of Obscure Sorrows by John Koenig. Meanings written in our own words."
 - Selecting a tee opens the same dialog as the cards: the mockup flies in with a Front/Back toggle, the word and its meaning, and the configurator (colour, size XS to XL, print language, placement); the mockup follows every choice. A tee can be linked directly with `?tee=<id>`.
-- Grid crop (step 7): the T-shirt grid shows each black tee as a close crop on the chest print (the same frame for all ten, with the collar, shoulder line and seams in view so it reads as fabric), so long words read at grid size; the dialog keeps the whole tee at realistic print scale, and the tee opens out from the crop.
+- Grid crop (step 7): the T-shirt grid shows each black tee as a close crop on the chest print (the same frame for all ten, with the collar, shoulder line and seams in view so it reads as fabric), so long words read at grid size; the dialog keeps the whole tee at realistic print scale, and the tee opens out from the crop. Since step 14 the grid is the fallback (no WebGL); the tees hang on the clothing rack.
 - Readings (step 7): an editorial index in the Readings section (one row per article between thin rules: number, the pillar's line icon and category; italic title and excerpt; "Leer / Read"), and one reading page per article on paper: the pillar icon, the category, the title in Cormorant italic, six paragraphs in EB Garamond at a reading measure. The header hairline and the pocket watch follow the reading, from 6:00 PM at the start of the text to 6:00 AM at its end. No 3D chain on reading pages. The index title morphs into the article's heading (View Transitions); the header stays put.
 - Phase 2: a 3D preview that repeats the chosen link along the silhouette of the chosen form, reusing the chain engine.
 

@@ -14,7 +14,7 @@ import {
   WebGLRenderer,
 } from 'three';
 
-import type { ChainAnchors, ChainScene, ChainSceneOptions, FallLabels } from '../types';
+import type { ChainAnchors, ChainScene, ChainSceneOptions, FallLabels, TeeAtlas } from '../types';
 import { buildChainPath, viewMetrics, type ChainPath, type ViewMetrics } from './buildPath';
 import {
   CAMERA_FAR,
@@ -185,7 +185,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     landing: null,
   };
   /** The windows, as of the last rebuild. */
-  let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [], landing: null };
+  let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [], landing: null, rack: null };
+  /** Camera height when the rack's stage is centred on screen (step 14), or null. */
+  let rackY: number | null = null;
+  /** Prints that arrived before the objects were built. */
+  let pendingAtlas: TeeAtlas | null = null;
   /** Layers as of the last draw (also read by the debug hook). */
   let mistPresence = 0;
   let holeBlend = 1;
@@ -345,6 +349,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
         assembly,
         landing: map.landing,
         landed: landT,
+        rackY,
+        wide: view.wide,
       });
     }
     renderer.render(scene, camera);
@@ -480,10 +486,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     if (width === 0 || height === 0) return;
 
     anchors = options.getAnchors();
-    const { hero, bands, chainBands, landing } = anchors;
+    const { hero, bands, chainBands, landing, rack } = anchors;
     const windows: Element[] = [...bands];
     if (hero) windows.unshift(hero);
     if (landing) windows.push(landing);
+    if (rack) windows.push(rack.section);
     syncObserved(windows);
 
     renderer.setSize(width, height, false);
@@ -517,6 +524,9 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     );
     const first = bands[0];
     if (first) bandWindow = first.offsetHeight / height;
+    rackY = rack
+      ? pageCameraY(docTop(rack.stage) + rack.stage.offsetHeight / 2 - height / 2, currentMap)
+      : null;
     path = buildChainPath(
       view,
       height,
@@ -577,7 +587,10 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       // Their code is a chunk of its own, fetched only now
       Promise.all([load(), import('./objects/fallObjects')])
         .then(([data, { createFallObjects }]) =>
-          createFallObjects(steel, linkGeometry, small, data),
+          createFallObjects(steel, linkGeometry, small, data, {
+            onFacing: (index) => options.rack?.onFacing(index),
+            hold: options.rackHold ?? null,
+          }),
         )
         .then((built) => {
           if (disposed) {
@@ -586,11 +599,28 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           }
           objects = built;
           if (labels) built.setLabels(labels);
+          if (pendingAtlas) built.setTeeAtlas(pendingAtlas);
+          pendingAtlas = null;
           scene.add(built.group);
           if (!running) draw();
+          // The rack is driven from the DOM (features/rack)
+          if (built.rack) {
+            options.rack?.onReady(
+              built.rack.controller({
+                reduced: () => reducedMotion,
+                redraw: () => {
+                  if (!running && !disposed) draw();
+                },
+                viewport: () => ({ width: container.clientWidth, height: container.clientHeight }),
+              }),
+            );
+          } else {
+            options.rack?.onFailed();
+          }
         })
         .catch((error: unknown) => {
           console.error('Objects of the fall could not be built', error);
+          options.rack?.onFailed();
         });
     };
     if ('requestIdleCallback' in window)
@@ -611,6 +641,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           watch: () => edge.watch.meshes,
           objects: () => objects?.steelMeshes() ?? [],
           landing: () => objects?.landingSteel() ?? [],
+          rack: () => objects?.rack?.steel ?? [],
         },
         setObjects: (on) => {
           objectsOn = on;
@@ -653,6 +684,16 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       parallax = reduced ? 1 : PARALLAX;
       rebuild(); // the band stretches depend on the parallax factor
       updateLoop();
+    },
+
+    setTeeAtlas(atlas: TeeAtlas): void {
+      if (disposed) return;
+      if (!objects) {
+        pendingAtlas = atlas;
+        return;
+      }
+      objects.setTeeAtlas(atlas);
+      if (!running) draw();
     },
 
     setLabels(next: FallLabels): void {

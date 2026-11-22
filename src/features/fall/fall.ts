@@ -71,3 +71,18 @@ function readLand(): number | null {
 }
 
 export const LAND_OVERRIDE: number | null = import.meta.env.DEV ? readLand() : null;
+
+/**
+ * Review hook, development only: `?rack=<tee id>` holds the clothing rack still,
+ * facing that tee, for screenshots. Production builds compile this to null.
+ */
+function readRack(): string | null {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('rack');
+    return raw === null || raw.trim() === '' ? null : raw.trim().toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+export const RACK_OVERRIDE: string | null = import.meta.env.DEV ? readRack() : null;

@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { FALL_OVERRIDE, LAND_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
-import { loadFallObjects } from '../fall/objectData';
+import { TEES } from '../../data/tees';
+import { FALL_OVERRIDE, LAND_OVERRIDE, RACK_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
+import { loadFallObjects, teeAtlasCell } from '../fall/objectData';
+import { rackHooks, resetRack } from '../rack/rackBridge';
+import { renderTeeAtlas } from '../rack/teeAtlas';
 import { useI18n } from '../../i18n';
 import { getNightProgress, subscribeNightProgress } from '../night/night';
 import { useChainAnchorRegistry } from './anchors/useChainAnchors';
@@ -57,9 +60,10 @@ export function ChainStage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<ChainScene | null>(null);
   const reducedMotionRef = useRef(reducedMotion);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const labels: FallLabels = t.home.fall;
   const labelsRef = useRef(labels);
+  const langRef = useRef(lang);
   const [status, setStatus] = useState<Status>(() => (has3d() ? 'loading' : 'failed'));
 
   useEffect(() => {
@@ -72,6 +76,23 @@ export function ChainStage() {
     labelsRef.current = labels;
     engineRef.current?.setLabels(labels);
   }, [labels]);
+
+  // The rack's prints carry the meaning in the site language: redrawn when it changes
+  useEffect(() => {
+    if (langRef.current === lang) return;
+    langRef.current = lang;
+    let cancelled = false;
+    renderTeeAtlas(lang, teeAtlasCell())
+      .then((atlas) => {
+        if (!cancelled) engineRef.current?.setTeeAtlas(atlas);
+      })
+      .catch((error: unknown) => {
+        console.error('The prints for the rack could not be redrawn', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -89,6 +110,8 @@ export function ChainStage() {
     const fail = () => {
       document.documentElement.classList.remove(HAS_3D_CLASS, LIVE_CLASS);
       setStatus('failed');
+      // No scene, no rack: the T-shirt section shows its grid
+      rackHooks.onFailed();
     };
 
     const start = (createChainScene: CreateChainScene) => {
@@ -101,7 +124,15 @@ export function ChainStage() {
           fall: FALL_OVERRIDE,
           holdWord: WORD_OVERRIDE !== null,
           land: LAND_OVERRIDE,
-          objects: () => loadFallObjects(labelsRef.current),
+          objects: () => loadFallObjects(labelsRef.current, langRef.current),
+          rack: rackHooks,
+          rackHold:
+            RACK_OVERRIDE === null
+              ? null
+              : Math.max(
+                  TEES.findIndex((tee) => tee.id === RACK_OVERRIDE),
+                  0,
+                ),
           onReady: () => {
             setStatus('ready');
             document.documentElement.classList.add(LIVE_CLASS);
@@ -113,6 +144,7 @@ export function ChainStage() {
             engine?.dispose();
             engine = null;
             engineRef.current = null;
+            resetRack();
             losses += 1;
             if (losses > MAX_CONTEXT_LOSSES) {
               fail();
@@ -158,6 +190,7 @@ export function ChainStage() {
       engine?.dispose();
       engine = null;
       engineRef.current = null;
+      resetRack();
       document.documentElement.classList.remove(LIVE_CLASS);
     };
   }, [registry]);

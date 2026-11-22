@@ -8,6 +8,7 @@ import {
   TEE_SIDES,
   TEE_SIZES,
   type Tee,
+  type TeeColour,
   type TeeSide,
 } from '../../data/tees';
 import { useI18n } from '../../i18n';
@@ -15,13 +16,20 @@ import { ChipGroup } from '../product/ChipGroup';
 import { ProductDialog } from '../product/ProductDialog';
 import { WhatsAppButton } from '../product/WhatsAppButton';
 import { buildTeeMessage, EMPTY_TEE_CONFIGURATION, type TeeConfiguration } from './teeMessage';
-import { GRID_CROP_FRACTION } from './teeGeometry';
+import { GRID_CROP_FRACTION, type Frame } from './teeGeometry';
 import { TeeMockup } from './TeeMockup';
 
 interface TeeDialogProps {
   tee: Tee;
   /** The grid mockup, the FLIP starting point (null for deep links). */
   source: HTMLElement | null;
+  /**
+   * The part of the tee the source shows: the grid's crop by default; null for
+   * the whole tee (the rack's 3D tee, step 14).
+   */
+  sourceCrop?: Frame | null;
+  /** The colour previewed until the visitor chooses one (black by default; the rack's tee). */
+  previewColour?: TeeColour;
   onClose: () => void;
 }
 
@@ -32,14 +40,20 @@ interface TeeDialogProps {
  * until the visitor chooses, it previews the grid's black tee, printed front
  * and back, with the meaning in the site language.
  */
-export function TeeDialog({ tee, source, onClose }: TeeDialogProps) {
+export function TeeDialog({
+  tee,
+  source,
+  sourceCrop = GRID_CROP_FRACTION,
+  previewColour = PREVIEW_DEFAULTS.colour,
+  onClose,
+}: TeeDialogProps) {
   const { t, lang } = useI18n();
   const copy = t.home.tees;
   const [config, setConfig] = useState<TeeConfiguration>(EMPTY_TEE_CONFIGURATION);
   const [side, setSide] = useState<TeeSide>('front');
   const titleId = useId();
 
-  const colour = config.colour ?? PREVIEW_DEFAULTS.colour;
+  const colour = config.colour ?? previewColour;
   const placement = config.placement ?? PREVIEW_DEFAULTS.placement;
   const printLanguage = config.printLanguage ?? lang;
   const hasPrint = placement === 'both' || placement === side;
@@ -60,7 +74,7 @@ export function TeeDialog({ tee, source, onClose }: TeeDialogProps) {
       className="product-dialog--tee"
       labelledBy={titleId}
       source={source}
-      sourceCrop={GRID_CROP_FRACTION}
+      {...(sourceCrop ? { sourceCrop } : {})}
       onClose={onClose}
       media={
         <TeeMockup

@@ -8,7 +8,7 @@ import { HomeSection } from '../features/home/HomeSection';
 import { Pillars } from '../features/home/Pillars';
 import { IntroSplash } from '../features/intro/IntroSplash';
 import { ReadingsIndex } from '../features/readings/ReadingsIndex';
-import { TeeGrid } from '../features/tees/TeeGrid';
+import { TeeRack } from '../features/rack/TeeRack';
 import { useHead } from '../hooks/useHead';
 import { useI18n } from '../i18n';
 import { SITE_NAME } from '../lib/head';
@@ -37,7 +37,7 @@ function dropChain(): void {
 
 export function HomePage() {
   const { t, lang } = useI18n();
-  const { jewelry, tshirts, readings } = t.home;
+  const { jewelry, readings } = t.home;
   useHead({ title: SITE_NAME, description: t.meta.description, path: '/', type: 'website', lang });
 
   return (
@@ -68,11 +68,11 @@ export function HomePage() {
       <ErrorBoundary name="Band 2">
         <Band />
       </ErrorBoundary>
-      <HomeSection id="tshirts" lead={tshirts.lead} em={tshirts.em}>
-        <ErrorBoundary name="T-shirts">
-          <TeeGrid />
-        </ErrorBoundary>
-      </HomeSection>
+      {/* The T-shirts: a window onto the shaft where the tees hang on a floating rack
+          (the grid on bone without WebGL) */}
+      <ErrorBoundary name="T-shirt rack">
+        <TeeRack />
+      </ErrorBoundary>
       {/* Band 3: separates the T-shirts from the readings */}
       <ErrorBoundary name="Band 3">
         <Band />

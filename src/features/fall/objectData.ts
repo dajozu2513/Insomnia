@@ -5,7 +5,9 @@ import { createRoot } from 'react-dom/client';
 import { LINKS } from '../../data/links';
 import { TEES, findTee } from '../../data/tees';
 import type { FallCard, FallLabels, FallObjectsData } from '../chain/types';
+import type { Lang } from '../../i18n';
 import { LINK_ART } from '../deck/linkArtMap';
+import { renderTeeAtlas } from '../rack/teeAtlas';
 import { WORD_OVERRIDE } from './fall';
 
 /*
@@ -42,7 +44,17 @@ function cardsFromDeck(): FallCard[] {
   return cards;
 }
 
-export function loadFallObjects(labels: FallLabels): Promise<FallObjectsData> {
+/** The rack's prints: a cell's width in pixels (smaller on small screens). */
+export function teeAtlasCell(): number {
+  return window.innerWidth <= 700 ? 300 : 420;
+}
+
+export async function loadFallObjects(labels: FallLabels, lang: Lang): Promise<FallObjectsData> {
   visitWord ??= pickWord();
-  return Promise.resolve({ labels, cards: cardsFromDeck(), word: visitWord });
+  // Without the prints there is no rack: the T-shirt section shows its grid
+  const tees = await renderTeeAtlas(lang, teeAtlasCell()).catch((error: unknown) => {
+    console.error('The prints for the rack could not be drawn', error);
+    return null;
+  });
+  return { labels, cards: cardsFromDeck(), word: visitWord, tees };
 }

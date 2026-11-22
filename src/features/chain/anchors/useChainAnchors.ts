@@ -1,4 +1,4 @@
-import { useCallback, useContext, type RefCallback } from 'react';
+import { useCallback, useContext, useEffect, type RefCallback } from 'react';
 
 import { ChainAnchorsContext } from './ChainAnchorsContext';
 import type { ChainAnchorRegistry } from './registry';
@@ -65,4 +65,20 @@ export function useChainLandingRef(): RefCallback<HTMLElement> {
     },
     [registry],
   );
+}
+
+/**
+ * Registers the T-shirt section's floating rack (step 14): the section is a
+ * window onto the shaft and the rack floats centred on its stage. Pass both
+ * elements once mounted; null clears it (the section showing its grid).
+ */
+export function useChainRack(section: HTMLElement | null, stage: HTMLElement | null): void {
+  const registry = useChainAnchorRegistry();
+  useEffect(() => {
+    if (!section || !stage) return;
+    registry.setRack(section, stage);
+    return () => {
+      registry.clearRack(section);
+    };
+  }, [registry, section, stage]);
 }

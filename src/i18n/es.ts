@@ -94,6 +94,12 @@ export const es = {
     // The T-shirt grid and its configurator. Words and meanings live in src/data/tees.ts,
     // with the colours, sizes, print languages and placements.
     tees: {
+      // The floating clothing rack (step 14): its region and its arrow buttons
+      rack: {
+        label: 'Perchero de camisetas',
+        previous: 'Camiseta anterior',
+        next: 'Camiseta siguiente',
+      },
       listLabel: 'Camisetas',
       /** Accessible name of a grid tee: "Sonder, camiseta". */
       item: 'camiseta',

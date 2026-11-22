@@ -92,6 +92,12 @@ export const en: Dictionary = {
       em: 'T-shirts',
     },
     tees: {
+      // The floating clothing rack (step 14): its region and its arrow buttons
+      rack: {
+        label: 'T-shirt rack',
+        previous: 'Previous T-shirt',
+        next: 'Next T-shirt',
+      },
       listLabel: 'T-shirts',
       item: 'T-shirt',
       colour: 'Color',

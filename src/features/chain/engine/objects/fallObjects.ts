@@ -12,7 +12,7 @@ import {
   Vector3,
 } from 'three';
 
-import type { FallLabels, FallObjectsData } from '../../types';
+import type { FallLabels, FallObjectsData, TeeAtlas } from '../../types';
 import type { LandingMap } from '../landing';
 import { SHAFT_Z } from '../constants';
 import { seeded } from '../fallGeometry';
@@ -20,6 +20,7 @@ import { createPocketWatch, type PocketWatch3D } from '../pocketWatch';
 import { createLetters } from './letters';
 import { createHall } from './hall';
 import { createCards, createPaper } from './paper';
+import { createRack, type Rack } from './rack';
 import { createPropKit } from './props';
 import { createCardAtlas, createPageTexture, loadFaces } from './textures';
 
@@ -61,6 +62,10 @@ export interface FallFrame {
   /** The landing at the bottom of the page (step 13), and its progress (-1 before it). */
   landing: LandingMap | null;
   landed: number;
+  /** The clothing rack (step 14): the camera height when its stage is centred, or null. */
+  rackY: number | null;
+  /** 0 on tall screens, 1 on wide ones. */
+  wide: number;
 }
 
 export interface FallObjects {
@@ -71,6 +76,10 @@ export interface FallObjects {
   steelMeshes: () => Mesh[];
   /** Steel of the landing: the door handles, the curtain rod and the key on the table. */
   landingSteel: () => Mesh[];
+  /** The clothing rack (null when the app gave no tees). */
+  rack: Rack | null;
+  /** New prints for the rack's tees (a language change). */
+  setTeeAtlas: (atlas: TeeAtlas) => void;
   /** Roses inside the camera's view (never more than three). */
   rosesOnScreen: (camera: PerspectiveCamera) => number;
   /**
@@ -132,6 +141,10 @@ export async function createFallObjects(
   linkGeometry: BufferGeometry,
   small: boolean,
   data: FallObjectsData,
+  rackOptions: { onFacing: (index: number) => void; hold: number | null } = {
+    onFacing: () => undefined,
+    hold: null,
+  },
 ): Promise<FallObjects> {
   await loadFaces(
     `${data.labels.drinkMe}${data.labels.eatMe}${data.word.toUpperCase()}ABCDEFGHIJKLMNOPQRSTUVWXYZ`,
@@ -352,6 +365,15 @@ export async function createFallObjects(
   hall.group.visible = false;
   group.add(hall.group);
 
+  // ── THE CLOTHING RACK ── in the T-shirt section's window (step 14)
+  const rack = data.tees
+    ? createRack(steel, data.tees, small, rackOptions.onFacing, rackOptions.hold)
+    : null;
+  if (rack) {
+    rack.group.visible = false;
+    group.add(rack.group);
+  }
+
   // ── BAND 2 LETTERS ──
   const letters = createLetters(data.word, small);
   group.add(letters.mesh);
@@ -410,7 +432,9 @@ export async function createFallObjects(
           b !== undefined && Math.abs(params.y - b) < BAND_CLEAR;
         // Nothing drifts into the hall at the landing
         const inHall = frame.landing !== null && params.y < frame.landing.y0 + 6;
-        if (near(band2) || near(band3) || inHall || params.y > LATTICE_TOP) d = -1;
+        // Nor around the clothing rack
+        const atRack = frame.rackY !== null && Math.abs(params.y - frame.rackY) < 5.5;
+        if (near(band2) || near(band3) || inHall || atRack || params.y > LATTICE_TOP) d = -1;
         else if (near(band1)) d = spec.smallKind && d > 0 ? Math.max(d, 25) : -1;
         const object = lattice.objects[slot];
         if (d < 0) {
@@ -569,6 +593,13 @@ export async function createFallObjects(
       });
     }
 
+    // The clothing rack, while its window is near
+    if (rack) {
+      rack.group.visible = frame.rackY !== null && Math.abs(camY - frame.rackY) < 10;
+      if (frame.rackY !== null)
+        rack.update({ dt: frame.dt, camera, y: frame.rackY, wide: frame.wide });
+    }
+
     // The landing's hall, once the visitor is near it
     const landing = frame.landing;
     hall.group.visible = landing !== null && camY < landing.y0 + 16;
@@ -598,6 +629,10 @@ export async function createFallObjects(
       ...kit.steelMeshes.filter((k) => !hall.steel.includes(k)),
     ],
     landingSteel: () => hall.steel,
+    rack,
+    setTeeAtlas(atlas) {
+      rack?.setAtlas(atlas);
+    },
     debugCells(kind, top, bottom) {
       const lattice = lattices.find((l) => l.name === kind);
       if (!lattice) return [];
@@ -632,6 +667,7 @@ export async function createFallObjects(
         dispose();
       });
       hall.dispose();
+      rack?.dispose();
       kit.dispose();
       cards.dispose();
       paper.dispose();

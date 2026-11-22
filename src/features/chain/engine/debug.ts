@@ -50,7 +50,7 @@ interface DebugTargets {
   };
 }
 
-type SteelTarget = 'chain' | 'watch' | 'objects' | 'landing';
+type SteelTarget = 'chain' | 'watch' | 'objects' | 'landing' | 'rack';
 
 export interface ChainColour {
   progress: number;
