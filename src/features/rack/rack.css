@@ -26,6 +26,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* On tall screens the rack is narrower than the screen is tall: a shorter stage keeps it right under the heading */
+@media (max-aspect-ratio: 4/5) {
+  .rack-stage {
+    height: clamp(400px, 54svh, 600px);
+  }
+}
+
 .rack-stage:active {
   cursor: grabbing;
 }

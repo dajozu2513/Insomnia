@@ -30,6 +30,7 @@
   /* Channels for translucent overlays: rgb(var(--ink-rgb) / 0.55) */
   --ink-rgb: 13 12 14;
   --bone-rgb: 232 225 211;
+  --bone-deep-rgb: 214 205 187;
   --text-on-dark-rgb: 235 230 220;
   --steel-rgb: 184 187 193;
   --accent-rgb: 158 42 58;

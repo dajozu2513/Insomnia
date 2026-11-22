@@ -188,6 +188,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [], landing: null, rack: null };
   /** Camera height when the rack's stage is centred on screen (step 14), or null. */
   let rackY: number | null = null;
+  /** Document y of the middle of the rack's stage, px. */
+  let rackCentre = 0;
   /** Prints that arrived before the objects were built. */
   let pendingAtlas: TeeAtlas | null = null;
   /** Layers as of the last draw (also read by the debug hook). */
@@ -350,6 +352,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
         landing: map.landing,
         landed: landT,
         rackY,
+        rackOffset: rackCentre - window.scrollY - map.viewportHeight / 2,
+        viewportHeight: map.viewportHeight,
         wide: view.wide,
       });
     }
@@ -524,9 +528,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     );
     const first = bands[0];
     if (first) bandWindow = first.offsetHeight / height;
-    rackY = rack
-      ? pageCameraY(docTop(rack.stage) + rack.stage.offsetHeight / 2 - height / 2, currentMap)
-      : null;
+    rackCentre = rack ? docTop(rack.stage) + rack.stage.offsetHeight / 2 : 0;
+    rackY = rack ? pageCameraY(rackCentre - height / 2, currentMap) : null;
     path = buildChainPath(
       view,
       height,

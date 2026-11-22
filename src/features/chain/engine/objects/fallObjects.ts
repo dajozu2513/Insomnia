@@ -64,6 +64,9 @@ export interface FallFrame {
   landed: number;
   /** The clothing rack (step 14): the camera height when its stage is centred, or null. */
   rackY: number | null;
+  /** How far the rack's stage is below the middle of the viewport, px. */
+  rackOffset: number;
+  viewportHeight: number;
   /** 0 on tall screens, 1 on wide ones. */
   wide: number;
 }
@@ -597,7 +600,13 @@ export async function createFallObjects(
     if (rack) {
       rack.group.visible = frame.rackY !== null && Math.abs(camY - frame.rackY) < 10;
       if (frame.rackY !== null)
-        rack.update({ dt: frame.dt, camera, y: frame.rackY, wide: frame.wide });
+        rack.update({
+          dt: frame.dt,
+          camera,
+          offset: frame.rackOffset,
+          viewportHeight: frame.viewportHeight,
+          wide: frame.wide,
+        });
     }
 
     // The landing's hall, once the visitor is near it

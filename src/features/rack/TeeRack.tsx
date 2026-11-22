@@ -289,6 +289,7 @@ function RackSection() {
           source={dialog.open.source}
           sourceCrop={null}
           previewColour={rackColour(TEES.findIndex((tee) => tee.id === dialog.open?.item.id))}
+          previewPlacement="front"
           onClose={dialog.closeItem}
         />
       )}

@@ -9,6 +9,7 @@ import {
   TEE_SIZES,
   type Tee,
   type TeeColour,
+  type Placement,
   type TeeSide,
 } from '../../data/tees';
 import { useI18n } from '../../i18n';
@@ -30,6 +31,11 @@ interface TeeDialogProps {
   sourceCrop?: Frame | null;
   /** The colour previewed until the visitor chooses one (black by default; the rack's tee). */
   previewColour?: TeeColour;
+  /**
+   * The placement previewed until the visitor chooses one (front and back by
+   * default; the rack's tee shows the front print, so the flight shows it too).
+   */
+  previewPlacement?: Placement;
   onClose: () => void;
 }
 
@@ -45,6 +51,7 @@ export function TeeDialog({
   source,
   sourceCrop = GRID_CROP_FRACTION,
   previewColour = PREVIEW_DEFAULTS.colour,
+  previewPlacement = PREVIEW_DEFAULTS.placement,
   onClose,
 }: TeeDialogProps) {
   const { t, lang } = useI18n();
@@ -54,7 +61,7 @@ export function TeeDialog({
   const titleId = useId();
 
   const colour = config.colour ?? previewColour;
-  const placement = config.placement ?? PREVIEW_DEFAULTS.placement;
+  const placement = config.placement ?? previewPlacement;
   const printLanguage = config.printLanguage ?? lang;
   const hasPrint = placement === 'both' || placement === side;
   const mockupLabel = [

@@ -218,6 +218,11 @@
   width: min(400px, 100%);
 }
 
+/* Fades in with the close button, after the tee has started its flight */
+.tee-view {
+  animation: dialogFade 0.5s 0.35s ease both;
+}
+
 .tee-view .configurator-group {
   flex-direction: row;
   align-items: center;

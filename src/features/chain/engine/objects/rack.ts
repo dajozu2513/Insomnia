@@ -54,8 +54,12 @@ const DAMPING = 2 * Math.sqrt(SPRING);
 export interface RackFrame {
   dt: number;
   camera: PerspectiveCamera;
-  /** World height of the camera when the rack's stage is centred on screen. */
-  y: number;
+  /**
+   * How far the rack's stage is below the middle of the viewport, in px (the
+   * real scroll, so the rack follows the stage exactly, with no parallax).
+   */
+  offset: number;
+  viewportHeight: number;
   /** 0 on tall screens, 1 on wide ones (the rack stands further back on phones). */
   wide: number;
 }
@@ -312,9 +316,22 @@ export function createRack(
       }
     }
     spinner.rotation.y = theta;
-    // Placed on the camera's height when the stage is centred; further back on phones
+    // Pinned to its stage on screen: standing this close, the shaft's parallax would
+    // carry it faster than the page and open a gap under the heading. Further back on phones
     depth = 7.2 - 2.4 * frame.wide;
-    group.position.set(0, frame.y + 0.7, frame.camera.position.z - depth);
+    const perPx =
+      (2 * depth * Math.tan((Math.PI / 360) * frame.camera.fov)) /
+      Math.max(frame.viewportHeight, 1);
+    group.position.set(
+      0,
+      frame.camera.position.y + 0.7 - frame.offset * perPx,
+      frame.camera.position.z - depth,
+    );
+    // Seen from above when low on the screen (and from below when high), the ring's far
+    // side would climb into the heading: lean it back by that angle, so it keeps the
+    // shape it has when centred wherever the stage is
+    const below = frame.camera.position.y - group.position.y;
+    group.rotation.x = TILT - (Math.atan2(below, depth) - Math.atan2(-0.7, depth));
     // The facing tee a little brighter
     tees.forEach((tee, i) => {
       const offset = Math.abs(
