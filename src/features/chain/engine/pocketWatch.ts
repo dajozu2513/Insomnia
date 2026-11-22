@@ -1,10 +1,13 @@
 import {
   AdditiveBlending,
+  BoxGeometry,
   CanvasTexture,
   CircleGeometry,
   CylinderGeometry,
+  Euler,
   Group,
   type Material,
+  Matrix4,
   Mesh,
   MeshStandardMaterial,
   ShaderMaterial,
@@ -13,23 +16,40 @@ import {
   TorusGeometry,
   type BufferGeometry,
 } from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /** Seconds between two glints across the glass. */
 const GLINT_PERIOD = 5.5;
+
+export interface WatchOptions {
+  /** How far the lid stands open, in radians; null for no lid (a bare clock face). */
+  lid: number | null;
+  /** A short length of chain trailing from the bow. */
+  chain: boolean;
+  /** Crown and bow at 12 o'clock. */
+  crown: boolean;
+  /** Seconds the glint is offset by, so floating watches do not glint together. */
+  glintOffset?: number;
+}
+
+/** The watch at the edge of the hole: lid open past upright, crown, bow and a short chain. */
+export const EDGE_WATCH: WatchOptions = { lid: 1.95, chain: true, crown: true };
 
 export interface PocketWatch3D {
   group: Group;
   /** Advances the glint (0 with reduced motion: the glass stays still). */
   tick: (dt: number) => void;
+  /** Sets the hands to the night's hour (progress 0..1), in step with the header watch. */
+  setNight: (progress: number) => void;
   /**
-   * The watch's steel meshes (case, rim, crown, bow, lid and chain), for the
-   * steel measurement; the dial and the glass are left out.
+   * The watch's steel meshes (case, rim, crown, bow, lid and chain, merged), for
+   * the steel measurement; the dial, the hands and the glass are left out.
    */
   meshes: Mesh[];
   dispose: () => void;
 }
 
-/** The dial: bone, twelve ticks, the hands at 6:00 (the start of the night), drawn on a canvas. */
+/** The dial: bone with twelve ticks, longer at the quarters; the hands are meshes. */
 function dialTexture(): CanvasTexture {
   const size = 256;
   const canvas = document.createElement('canvas');
@@ -52,52 +72,80 @@ function dialTexture(): CanvasTexture {
       ctx.lineTo(c + Math.sin(a) * r1, c - Math.cos(a) * r1);
       ctx.stroke();
     }
-    // 6:00: the hour hand down, the minute hand up
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.moveTo(c, c);
-    ctx.lineTo(c, c + c * 0.5);
-    ctx.stroke();
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(c, c);
-    ctx.lineTo(c, c - c * 0.74);
-    ctx.stroke();
-    ctx.fillStyle = '#141215';
-    ctx.beginPath();
-    ctx.arc(c, c, 9, 0, Math.PI * 2);
-    ctx.fill();
   }
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   return texture;
 }
 
-/**
- * A small pocket watch lying on a root at the edge of the hole: a hint of who
- * went down first, without showing anyone. Case, crown and bow, an open lid
- * and a short length of chain in the site's steel (neutral silver, measured),
- * a bone dial at 6:00 under a glass whose soft glint crosses it every few
- * seconds. Local units: the case is 0.6 across.
- */
-export function createPocketWatch(steel: Material, linkGeometry: BufferGeometry): PocketWatch3D {
-  const group = new Group();
-  const geometries: BufferGeometry[] = [];
-  const meshes: Mesh[] = [];
-  const add = (geometry: BufferGeometry, material: Material): Mesh => {
-    geometries.push(geometry);
-    const mesh = new Mesh(geometry, material);
-    if (material === steel) meshes.push(mesh);
-    group.add(mesh);
-    return mesh;
-  };
+/** A geometry with a transform baked in (for merging the steel into one mesh). */
+function placed(geometry: BufferGeometry, matrix: Matrix4): BufferGeometry {
+  geometry.applyMatrix4(matrix);
+  return geometry;
+}
 
-  // Case: a shallow drum with a rounded rim
-  add(new CylinderGeometry(0.3, 0.29, 0.07, 48), steel).position.y = 0;
-  add(new TorusGeometry(0.295, 0.028, 12, 48), steel).rotation.x = Math.PI / 2;
-  // Dial and glass
+/**
+ * A pocket watch in the site's steel (neutral silver, measured), with a bone
+ * dial under a glass whose soft glint crosses it every few seconds. Its hands
+ * show the night's hour, as the header watch does (hour hand 180 + 360p
+ * degrees, minute hand 4320p, clockwise from 12; see
+ * features/clock/watchGeometry.ts). One lies on a root at the edge of the
+ * hole, a hint of who went down first, without showing anyone; more float down
+ * the shaft, and bare clock faces (no lid, crown or chain) with them.
+ * Local units: the case is 0.6 across, the dial faces +y, 12 o'clock is -z.
+ */
+export function createPocketWatch(
+  steel: Material,
+  linkGeometry: BufferGeometry,
+  options: WatchOptions = EDGE_WATCH,
+): PocketWatch3D {
+  const group = new Group();
+  const m = new Matrix4();
+  const r = new Matrix4();
+  const e = new Euler();
+
+  // ── STEEL ── case, rim, crown, bow, lid and chain merged into one mesh
+  const parts: BufferGeometry[] = [
+    new CylinderGeometry(0.3, 0.29, 0.07, 48),
+    placed(new TorusGeometry(0.295, 0.028, 12, 48), m.makeRotationX(Math.PI / 2)),
+  ];
+  if (options.crown) {
+    parts.push(
+      placed(
+        new CylinderGeometry(0.035, 0.035, 0.07, 16),
+        m.makeRotationX(Math.PI / 2).setPosition(0, 0, -0.335),
+      ),
+      placed(new TorusGeometry(0.06, 0.012, 8, 24), m.makeTranslation(0, 0, -0.42)),
+    );
+  }
+  if (options.lid !== null) {
+    // Hinged at 9 o'clock (-x): the disc is turned about the hinge
+    const lid = new CylinderGeometry(0.295, 0.3, 0.02, 48);
+    lid.translate(0.3, 0, 0);
+    parts.push(placed(lid, m.makeRotationZ(options.lid).setPosition(-0.3, 0.05, 0)));
+  }
+  if (options.chain) {
+    for (let i = 0; i < 7; i++) {
+      const t = i / 6;
+      // Every other link turned a quarter, so neighbours interlock
+      r.makeRotationFromEuler(
+        e.set(i % 2 ? Math.PI / 2 : 0, Math.PI / 2 + Math.sin(t * 2.4) * 0.4, 0),
+      );
+      m.makeScale(0.07, 0.07, 0.07)
+        .premultiply(r)
+        .setPosition(-0.08 * Math.sin(t * 2.4), -0.01, -0.5 - i * 0.075);
+      parts.push(placed(linkGeometry.clone(), m));
+    }
+  }
+  const steelGeometry = mergeGeometries(parts);
+  parts.forEach((g) => {
+    g.dispose();
+  });
+  const steelMesh = new Mesh(steelGeometry, steel);
+  group.add(steelMesh);
+
+  // ── DIAL ── aged bone, darkened so it never glares in the dim light
   const dialMap = dialTexture();
-  // An aged bone dial in the dim light of the edge: darkened, so it never glares
   const dialMaterial = new MeshStandardMaterial({
     map: dialMap,
     color: 0x7a766e,
@@ -105,11 +153,25 @@ export function createPocketWatch(steel: Material, linkGeometry: BufferGeometry)
     metalness: 0,
     envMapIntensity: 0.35,
   });
-  const dial = add(new CircleGeometry(0.265, 48), dialMaterial);
+  const dialGeometry = new CircleGeometry(0.265, 48);
+  const dial = new Mesh(dialGeometry, dialMaterial);
   dial.rotation.x = -Math.PI / 2;
   dial.position.y = 0.037;
+  group.add(dial);
+
+  // ── HANDS ── slender, dark, turning about the dial's centre (pointing to 12 at rest)
+  const handMaterial = new MeshStandardMaterial({ color: 0x141215, roughness: 0.5 });
+  const hourGeometry = new BoxGeometry(0.022, 0.006, 0.15).translate(0, 0, -0.06);
+  const minuteGeometry = new BoxGeometry(0.014, 0.006, 0.22).translate(0, 0, -0.095);
+  const hour = new Mesh(hourGeometry, handMaterial);
+  const minute = new Mesh(minuteGeometry, handMaterial);
+  hour.position.y = 0.041;
+  minute.position.y = 0.045;
+  group.add(hour, minute);
+
+  // ── GLASS ── a shallow cap; the glint is additive light, never a fill
   const glassMaterial = new ShaderMaterial({
-    uniforms: { uTime: { value: 0 } },
+    uniforms: { uTime: { value: options.glintOffset ?? 0 } },
     vertexShader: /* glsl */ `
       varying vec2 vXZ;
       void main() {
@@ -133,50 +195,34 @@ export function createPocketWatch(steel: Material, linkGeometry: BufferGeometry)
     blending: AdditiveBlending,
     depthWrite: false,
   });
-  const glass = add(new SphereGeometry(0.62, 32, 8, 0, Math.PI * 2, 0, 0.45), glassMaterial);
+  const glassGeometry = new SphereGeometry(0.62, 32, 8, 0, Math.PI * 2, 0, 0.45);
+  const glass = new Mesh(glassGeometry, glassMaterial);
   glass.position.y = 0.037 - 0.62 * Math.cos(0.45) + 0.012;
-  // Crown and bow at 12 o'clock (-z)
-  const crown = add(new CylinderGeometry(0.035, 0.035, 0.07, 16), steel);
-  crown.rotation.x = Math.PI / 2;
-  crown.position.set(0, 0, -0.335);
-  const bow = add(new TorusGeometry(0.06, 0.012, 8, 24), steel);
-  bow.position.set(0, 0, -0.42);
-  // Lid, hinged at 9 o'clock (-x), standing open past upright
-  const lid = new Group();
-  const lidDisc = new Mesh(new CylinderGeometry(0.295, 0.3, 0.02, 48), steel);
-  geometries.push(lidDisc.geometry);
-  meshes.push(lidDisc);
-  lidDisc.position.set(0.3, 0, 0);
-  lid.add(lidDisc);
-  lid.position.set(-0.3, 0.05, 0);
-  lid.rotation.z = 1.95;
-  group.add(lid);
-  // A short length of chain trailing from the bow
-  for (let i = 0; i < 7; i++) {
-    const link = new Mesh(linkGeometry, steel);
-    meshes.push(link);
-    link.scale.setScalar(0.07);
-    const t = i / 6;
-    link.position.set(-0.08 * Math.sin(t * 2.4), -0.01, -0.5 - i * 0.075);
-    link.rotation.set(i % 2 ? Math.PI / 2 : 0, Math.PI / 2 + Math.sin(t * 2.4) * 0.4, 0);
-    group.add(link);
-  }
+  group.add(glass);
 
-  let time = 0;
+  let time = options.glintOffset ?? 0;
   return {
     group,
-    meshes,
+    meshes: [steelMesh],
     tick(dt) {
       time += dt;
       const uniform = glassMaterial.uniforms.uTime;
       if (uniform) uniform.value = time;
     },
+    setNight(progress) {
+      // Clockwise seen from above (+y) is a negative turn about y
+      hour.rotation.y = -((180 + 360 * progress) * Math.PI) / 180;
+      minute.rotation.y = -(360 * 12 * progress * Math.PI) / 180;
+    },
     dispose() {
-      geometries.forEach((g) => {
-        g.dispose();
-      });
+      steelGeometry.dispose();
+      dialGeometry.dispose();
+      hourGeometry.dispose();
+      minuteGeometry.dispose();
+      glassGeometry.dispose();
       dialMap.dispose();
       dialMaterial.dispose();
+      handMaterial.dispose();
       glassMaterial.dispose();
     },
   };

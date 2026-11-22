@@ -82,6 +82,8 @@ export interface ScrollMap {
   /** World units per CSS pixel at the page camera's distance, and the parallax factor. */
   pxToWorld: number;
   parallax: number;
+  /** The page's largest scroll position (document height minus the viewport). */
+  scrollMax: number;
 }
 
 /** Scroll length of the entrance sequence (0 when the hero has normal height). */
@@ -110,6 +112,15 @@ export function cameraForScroll(
 ): FallCamera {
   const length = sequenceLength(map);
   const heroEnd = map.heroTop + map.heroHeight;
+  if (scroll < heroEnd && override !== null && override > 1) {
+    // Beyond the entrance (development only): 1 to 2 runs down the rest of the page
+    const end = map.heroTop + length;
+    out.y = pageCameraY(end + (override - 1) * Math.max(map.scrollMax - end, 0), map);
+    out.z = SHAFT_Z;
+    out.pitch = 0;
+    out.fov = CAMERA_FOV;
+    return out;
+  }
   if (scroll < heroEnd && override !== null) return entranceCamera(override, wide, out);
   if (length >= 1 && scroll < map.heroTop + length) {
     return entranceCamera((scroll - map.heroTop) / length, wide, out);

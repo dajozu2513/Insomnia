@@ -39,7 +39,7 @@ Derived tokens (added after the lab review, both AA on their side):
 - `--text-on-dark-muted`: `#8f8a83` (5.70:1 on ink, 5.02:1 on ink-raised)
 - `--tee-white`: `#f7f5f0`, the white T-shirt in the mockups (a garment colour, never text or a background); ink prints on it at 17.9:1, bone prints on the black tee at 15:1
 
-Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's rose mist, a soft, glowing rose light on ink (from `--accent` and `--accent-glow`, with a paler light inside it) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by the rose light rising out of the hole from far below (step 11), and by a faint glow far behind the chain in band 1. It is a glow, never a fill or text, and it never tints the steel. All text must meet WCAG AA.
+Accent rules: red is rare. Use it for a single focal point per screen at most: a hover state, an ornament detail, a glow in the 3D scene around midnight, the active state of a control. Red text only on light backgrounds (contrast); on dark it is light or glow, never text. Never large red fills. Red never appears in persistent UI (header, footer, language toggle); the toggle stays neutral. The one allowed large use of red is the threshold into the night: the intro's rose mist, a soft, glowing rose light on ink (from `--accent` and `--accent-glow`, with a paler light inside it) gathered in the bottom and the lower corners so the upper half and the centre stay clean ink, continued in the hero by the rose light rising out of the hole from far below (step 11), and by a faint glow far behind the chain in band 1. It is a glow, never a fill or text, and it never tints the steel. In the 3D scene the roses (step 12) are the only red objects, never more than two or three on screen. All text must meet WCAG AA.
 
 ## Typography
 
@@ -49,9 +49,9 @@ Accent rules: red is rare. Use it for a single focal point per screen at most: a
 
 ## Motifs
 
-- Chessboard: the direct bridge from Black & White. Used as a pattern and a card back. The 3D chessboard floor left the hero in step 11; it returns as the floor of the landing at the bottom of the fall (step 12).
-- Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament. In the 3D scene, a small steel pocket watch lies on a root at the edge of the hole (step 11).
-- Playing cards: the format for presenting products (see Products).
+- Chessboard: the direct bridge from Black & White. Used as a pattern and a card back. The 3D chessboard floor left the hero in step 11; it returns as the floor of the landing at the bottom of the fall (step 13).
+- Clocks: the scroll clock (a pocket watch, see The night cycle) is the main one; clock-face linework may appear as ornament. In the 3D scene, a small steel pocket watch lies on a root at the edge of the hole (step 11), and more watches and bare clock faces float down the shaft (step 12); every one shows the night's hour, in step with the header watch.
+- Playing cards: the format for presenting products (see Products); our deck also tumbles down the shaft (step 12).
 - Wrought-iron filigree: thin ornamental frames and section dividers.
 - Roses with thorns, keys, teacups: occasional small line ornaments.
 
@@ -59,7 +59,7 @@ Rules: all ornaments are thin line art in the same stroke weight as the pillar i
 
 ## Atmosphere
 
-Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles: tiny glowing motes, like fireflies or stardust. In the 3D scene: depth fog, the earth of the hole and the misty shaft. Everything subtle; the steel (the chain and the pocket watch) must always read as silver steel.
+Film grain (already present), soft vignette, layered mist in the dream windows, a few slow floating particles: tiny glowing motes, like fireflies or stardust. In the 3D scene: depth fog, the earth of the hole and the misty shaft. Everything subtle; the steel (the chain, the pocket watches and the keys) must always read as silver steel.
 
 As built (steps 4, 5 and 11): about 120 motes (60 on small screens) rise slowly through the hole and every window: warm white, softly glowing, their brightness breathing slowly; in the hole they gather around the visitor, and while falling fast they stretch into short vertical streaks (capped, never strobing). A faint rose glow lives far below in the hole and far behind the chain in band 1, strongest at midnight, as light in the mist, never on the steel. The high rose veils of step 10 now only show where the page looks straight ahead (the bands); in the hole the rose light comes from below. The mist in the windows sits high, in veils, never as a dense band along the bottom (step 10: the low dense mist read as horror). The bands are pure windows, so every drape hangs as a gentle catenary centred in its band. The 2D mist in the windows stays put relative to its window as the page scrolls; its only motion is a very slow sideways drift, independent of scroll and still with reduced motion.
 
@@ -78,9 +78,9 @@ Calm and slow, as in Black & White. No pointer or device-orientation tracking. N
 3. Pillars, reality (bone)
 4. Band 1, dream: no text, a window onto the misty shaft; the steel chain drapes across its centre (the only window with the chain)
 5. Jewelry deck, reality
-6. Band 2, dream: no text, a window onto the misty shaft and its motes
+6. Band 2, dream: no text, a window onto the misty shaft; letters tumble in it and, as the band reaches the middle of the screen, spell one of the T-shirt words
 7. Printed T-shirts, reality
-8. Band 3, dream: no text, a window onto the misty shaft and its motes
+8. Band 3, dream: no text, a window onto the misty shaft; loose pages flutter down and two open books turn their pages
 9. Readings
 10. Footer (6:00 AM, dawn)
 
@@ -92,15 +92,35 @@ Not a book, a storybook or a paper theatre: the visitor stands at the edge of a 
 - **Shot 2, over the edge (about 10 to 35% of the entrance):** the name rises and fades; the camera steps over the rim and tips down into the hole.
 - **Shot 3, the fall:** walls of earth, clay and rock in wavering strata, with cracks, damp patches, embedded stones and hanging roots, rushing past. The fall's speed follows the scroll; motes streak while falling fast. No shake and no roll, ever.
 - **Shot 4, the look back (about 60%):** a brief tilt up at the mouth, a small disc of dusk sky shrinking above.
-- **Shot 5, the shaft:** the walls widen and dissolve into mist; the camera levels and keeps descending for the rest of the page, so every band is a window onto the same fall. The chain hangs only in band 1.
+- **Shot 5, the shaft:** the walls widen and dissolve into mist; the camera levels and keeps descending for the rest of the page, so every band is a window onto the same fall. The chain hangs only in band 1. A black grand piano falls slowly through shot 5, turning, and the visitor passes it (see The objects of the fall).
 - **First paint:** a still of shot 1, rendered from the scene itself, shows until the live scene is ready and crossfades into it. The home page stays ink until then, so nothing bone flashes first. Without WebGL the stills stay (the edge in the hero, the shaft in the bands) and the hero has normal height. With reduced motion, only shot 1, static, at normal height: no fall.
 - The hero's name keeps AA over the scene: a soft, dark hush sits behind it, so even a passing mote leaves the text above 4.5:1.
 
-## Planned for step 12 (recorded, not built)
+## The objects of the fall (step 12)
 
-- **Objects in the fall,** drifting past as the visitor falls: a "DRINK ME" bottle, an "EAT ME" cake, a teapot, teacups and saucers, pocket watches and clocks, playing cards, open books, a slowly falling piano, keys, roses. The bottle and cake labels follow the site language: Spanish "BÉBEME" / "CÓMEME", English "DRINK ME" / "EAT ME".
-- **Band 2:** floating letters.
-- **Band 3:** floating pages.
+All built in code (lathes, tubes, boxes, extruded outlines, canvas textures): no model or image files, designed for this site, nothing copied from any film or game, and no characters. They live in the misty shaft below the walls, fixed in place, so as the visitor falls they pass upward at different depths, tumbling slowly; near ones are rare and never fill more than about a third of the frame, far ones fade into the fog.
+
+- **The DRINK ME bottle:** a small glass bottle (faked glass: clear at its centre, catching the studio's reflections at its edges), a cork, and a paper tag on a string. The tag reads "BÉBEME" in Spanish and "DRINK ME" in English, set in Cormorant capitals, and changes with the language.
+- **The EAT ME cake:** a small round cake on a little plate, "CÓMEME" / "EAT ME" spelled on top in currants (small dark beads), following the language.
+- **Teapot, teacups and saucers:** bone porcelain with a soft sheen and a thin dark glazed line at the rims. Drops of tea float out of one tilted cup.
+- **Pocket watches and clock faces:** steel cases (neutral silver, measured) with bone dials; their hands show the night's hour, as the header watch does.
+- **Playing cards:** our deck, step 5's cards: faces with the jewelry link drawings, names, ranks and suit marks; backs with the steel chessboard. They tumble slowly. Nothing on them is red.
+- **Open books:** pages fanning slowly about the spine.
+- **Keys:** small antique steel keys (neutral silver).
+- **Roses:** a few red roses, the only red objects in the scene, never more than two or three on screen (measured: at most one).
+- **The piano:** a black lacquered grand, lid propped open, falling slowly and turning in shot 5 of the entrance, so every visitor passes it: the signature moment.
+
+Choreography:
+
+- **The hero's end:** after the piano, the first scattered objects: the bottle, the cake, a cup with its drops of tea, a watch, and two cards (Void and Heart).
+- **Band 1:** the chain, as before; at most a small key or card far behind it.
+- **Band 2 (before the T-shirts):** letters in bone and silver, a little thick, tumble in the mist. As the band reaches the middle of the screen they drift together and spell one of the T-shirt words (chosen once per visit), hold it, then drift apart. With reduced motion the word is already spelled.
+- **Band 3 (before the Readings):** loose pages with faint, unreadable lines of text flutter as they fall; two open books turn their pages slowly.
+- **Between the bands:** the other objects keep drifting, so the fall feels continuous whenever a window is open.
+- With reduced motion every object is placed and still. Without WebGL the stills stay; the shaft still for the bands shows a few objects.
+
+## Planned for step 13 (recorded, not built)
+
 - **The landing:** an upside-down room with doors, a small table with a key and the bottle, and the chessboard floor (the floor module is kept for it), which turns upright as the visitor lands at dawn, in the footer.
 
 ## Products (no photos)

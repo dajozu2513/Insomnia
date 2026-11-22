@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { FALL_OVERRIDE } from '../fall/fall';
+import { FALL_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
+import { loadFallObjects } from '../fall/objectData';
+import { useI18n } from '../../i18n';
 import { getNightProgress, subscribeNightProgress } from '../night/night';
 import { useChainAnchorRegistry } from './anchors/useChainAnchors';
-import type { ChainScene, ChainSceneOptions } from './types';
+import type { ChainScene, ChainSceneOptions, FallLabels } from './types';
 import './ChainStage.css';
 
 /** Set before first paint by the inline script in index.html when WebGL exists. */
@@ -55,12 +57,21 @@ export function ChainStage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<ChainScene | null>(null);
   const reducedMotionRef = useRef(reducedMotion);
+  const { t } = useI18n();
+  const labels: FallLabels = t.home.fall;
+  const labelsRef = useRef(labels);
   const [status, setStatus] = useState<Status>(() => (has3d() ? 'loading' : 'failed'));
 
   useEffect(() => {
     reducedMotionRef.current = reducedMotion;
     engineRef.current?.setReducedMotion(reducedMotion);
   }, [reducedMotion]);
+
+  // The bottle's tag and the cake's currants follow the site language
+  useEffect(() => {
+    labelsRef.current = labels;
+    engineRef.current?.setLabels(labels);
+  }, [labels]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -88,6 +99,8 @@ export function ChainStage() {
           reducedMotion: reducedMotionRef.current,
           night: { get: getNightProgress, subscribe: subscribeNightProgress },
           fall: FALL_OVERRIDE,
+          holdWord: WORD_OVERRIDE !== null,
+          objects: () => loadFallObjects(labelsRef.current),
           onReady: () => {
             setStatus('ready');
             document.documentElement.classList.add(LIVE_CLASS);

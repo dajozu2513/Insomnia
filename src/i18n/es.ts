@@ -35,6 +35,11 @@ export const es = {
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
+    // The objects of the fall (3D): the bottle's tag and the cake's currants
+    fall: {
+      drinkMe: 'BÉBEME',
+      eatMe: 'CÓMEME',
+    },
     pillarsLabel: 'Pilares',
     // Order matters: icons are a chain link, an open quotation mark and a crescent moon.
     pillars: [

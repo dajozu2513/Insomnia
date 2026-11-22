@@ -14,7 +14,7 @@ import {
   WebGLRenderer,
 } from 'three';
 
-import type { ChainAnchors, ChainScene, ChainSceneOptions } from '../types';
+import type { ChainAnchors, ChainScene, ChainSceneOptions, FallLabels } from '../types';
 import { buildChainPath, viewMetrics, type ChainPath, type ViewMetrics } from './buildPath';
 import {
   CAMERA_FAR,
@@ -56,6 +56,7 @@ import { createLinkGeometry, createSteelMaterial } from './geometry';
 import { createGlow } from './glow';
 import { createHeroMist } from './heroMist';
 import { createNightState, sampleNight } from './nightCycle';
+import type { FallObjects } from './objects/fallObjects';
 import { createParticles } from './particles';
 import { createShaft } from './shaft';
 import { createStudioEnvironment } from './studioEnvironment';
@@ -143,9 +144,19 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   scene.add(glow.mesh);
   const heroMist = createHeroMist();
   scene.add(heroMist.mesh);
-  /** Debug switches (bench): draw the atmosphere layers, and the fall's scene, or not. */
+  /** Debug switches (bench): draw the atmosphere layers, the fall's scene and its objects, or not. */
   let atmosphereOn = true;
   let fallSceneOn = true;
+  let objectsOn = true;
+
+  // ── OBJECTS OF THE FALL ── built once the scene has drawn and the browser is idle
+  let objects: FallObjects | null = null;
+  let labels: FallLabels | null = null;
+  /** World y of the page camera when each band is centred, and a band's share of the viewport. */
+  let bandYs: number[] = [];
+  let bandWindow = 0.575;
+  /** Band 2's word, as of the last draw (0 scattered, 1 spelled). */
+  let assembly = 0;
 
   // ── LINKS ──
   const chain = new InstancedMesh(linkGeometry, steel, MAX_LINKS);
@@ -162,6 +173,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     viewportHeight: 1,
     pxToWorld: 1,
     parallax,
+    scrollMax: 0,
   };
   /** The windows, as of the last rebuild. */
   let anchors: ChainAnchors = { hero: null, bands: [], chainBands: [] };
@@ -228,6 +240,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     rim.color.copy(night.rimColor);
     rim.intensity = night.rimIntensity;
     glow.setStrength(night.glow);
+    edge.watch.setNight(progress);
     return true;
   }
 
@@ -291,6 +304,29 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     // The chain only in the page view (looking out across the shaft)
     if (path && cam.pitch === 0) layoutLinks(path);
     else chain.count = 0;
+
+    // Band 2's word: spelled while the band is near the middle of the screen
+    const band2 = bandYs[1];
+    if (options.holdWord || reducedMotion) assembly = 1;
+    else if (band2 === undefined) assembly = 0;
+    else {
+      const screens =
+        Math.abs(cam.y - band2) / Math.max(map.viewportHeight * map.pxToWorld * map.parallax, 1e-6);
+      assembly = 1 - MathUtils.smoothstep(screens, 0.1, 0.36);
+    }
+    if (objects) objects.group.visible = objectsOn;
+    if (objects && objectsOn) {
+      objects.update({
+        dt,
+        camera,
+        tanHalfFov,
+        aspect: camera.aspect,
+        night: Math.max(appliedNight, 0),
+        bandYs,
+        bandWindow,
+        assembly,
+      });
+    }
     renderer.render(scene, camera);
   }
 
@@ -388,8 +424,14 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       viewportHeight: height,
       pxToWorld: view.pxToWorld,
       parallax,
+      scrollMax: Math.max(document.documentElement.scrollHeight - height, 0),
     };
     const currentMap = map;
+    bandYs = bands.map((band) =>
+      pageCameraY(docTop(band) + band.offsetHeight / 2 - height / 2, currentMap),
+    );
+    const first = bands[0];
+    if (first) bandWindow = first.offsetHeight / height;
     path = buildChainPath(
       view,
       height,
@@ -438,8 +480,37 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   rebuild();
   updateLoop();
 
+  // The objects are built after the first frame, when the browser is idle, so they
+  // never delay the first paint or the hero's entrance; their code loads only then.
+  let idle: number | undefined;
+  let idleTimer: ReturnType<typeof setTimeout> | undefined;
   const readyFrame = requestAnimationFrame(() => {
     options.onReady?.();
+    const load = options.objects;
+    if (!load) return;
+    const build = (): void => {
+      // Their code is a chunk of its own, fetched only now
+      Promise.all([load(), import('./objects/fallObjects')])
+        .then(([data, { createFallObjects }]) =>
+          createFallObjects(steel, linkGeometry, small, data),
+        )
+        .then((built) => {
+          if (disposed) {
+            built.dispose();
+            return;
+          }
+          objects = built;
+          if (labels) built.setLabels(labels);
+          scene.add(built.group);
+          if (!running) draw();
+        })
+        .catch((error: unknown) => {
+          console.error('Objects of the fall could not be built', error);
+        });
+    };
+    if ('requestIdleCallback' in window)
+      idle = window.requestIdleCallback(build, { timeout: 1500 });
+    else idleTimer = setTimeout(build, 300);
   });
 
   // Development only: steel colour measurement and frame timing (see debug.ts).
@@ -450,7 +521,15 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           syncScroll();
           draw();
         },
-        steel: { chain: [chain], watch: edge.watch.meshes },
+        steel: {
+          chain: () => [chain],
+          watch: () => edge.watch.meshes,
+          objects: () => objects?.steelMeshes() ?? [],
+        },
+        setObjects: (on) => {
+          objectsOn = on;
+        },
+        cells: (kind, top, bottom) => objects?.debugCells(kind, top, bottom) ?? [],
         setAtmosphere: (on) => {
           atmosphereOn = on;
         },
@@ -461,7 +540,16 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           appliedNight = -1;
           applyNight(progress);
         },
-        presence: () => ({ mist: mistPresence, inHole: holeBlend, stretch }),
+        presence: () => ({
+          mist: mistPresence,
+          inHole: holeBlend,
+          stretch,
+          roses: objects?.rosesOnScreen(camera) ?? 0,
+          assembly,
+          objects: objects !== null,
+          cameraY: cam.y,
+          bandYs: [...bandYs],
+        }),
         restoreNight: () => {
           appliedNight = -1;
           applyNight(options.night.get());
@@ -480,12 +568,21 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       updateLoop();
     },
 
+    setLabels(next: FallLabels): void {
+      labels = next;
+      if (disposed || !objects) return;
+      objects.setLabels(next);
+      if (!running) draw();
+    },
+
     dispose(): void {
       if (disposed) return;
       disposed = true;
       running = false;
       renderer.setAnimationLoop(null);
       cancelAnimationFrame(readyFrame);
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      clearTimeout(idleTimer);
       clearTimeout(resizeTimer);
       removeDebugHook?.();
 
@@ -503,6 +600,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       steel.dispose();
       edge.dispose();
       shaft.dispose();
+      objects?.dispose();
+      objects = null;
       heroMist.dispose();
       particles.dispose();
       glow.dispose();

@@ -36,6 +36,11 @@ export const en: Dictionary = {
       title: 'Insomnia',
       sub: 'by Joel Soto',
     },
+    // The objects of the fall (3D): the bottle's tag and the cake's currants
+    fall: {
+      drinkMe: 'DRINK ME',
+      eatMe: 'EAT ME',
+    },
     pillarsLabel: 'Pillars',
     // Order matters: icons are a chain link, an open quotation mark and a crescent moon.
     pillars: [

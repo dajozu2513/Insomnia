@@ -14,6 +14,29 @@ export interface ChainAnchors {
   chainBands: readonly HTMLElement[];
 }
 
+/** The words on the bottle's tag and spelled in currants on the cake, in the site language. */
+export interface FallLabels {
+  drinkMe: string;
+  eatMe: string;
+}
+
+/** One playing card of our deck (src/data/links.ts), with its link drawn as an SVG string. */
+export interface FallCard {
+  id: string;
+  name: string;
+  rank: string;
+  /** Standalone SVG markup of the link's line art (currentColor strokes). */
+  svg: string;
+}
+
+/** What the objects of the fall need from the app, gathered after first paint. */
+export interface FallObjectsData {
+  labels: FallLabels;
+  cards: readonly FallCard[];
+  /** The T-shirt word band 2's letters spell on this visit (src/data/tees.ts). */
+  word: string;
+}
+
 export interface ChainSceneOptions {
   /** Read on every rebuild, so the path always follows the live layout. */
   getAnchors: () => ChainAnchors;
@@ -32,6 +55,13 @@ export interface ChainSceneOptions {
    * screenshots. null in normal browsing; production builds never pass it.
    */
   fall?: number | null;
+  /**
+   * The objects of the fall (step 12): called once the scene has drawn and the
+   * browser is idle, so building them never delays the first paint.
+   */
+  objects?: () => Promise<FallObjectsData>;
+  /** Development only (?word=): hold band 2's word assembled, for screenshots. */
+  holdWord?: boolean;
   /** Called once, on the frame after the first draw (fades the canvas in). */
   onReady?: () => void;
   /**
@@ -46,6 +76,8 @@ export interface ChainScene {
   /** Re-measure the stage and anchors and rebuild the path. */
   rebuild: () => void;
   setReducedMotion: (reduced: boolean) => void;
+  /** The site language changed: redraw the bottle's tag and the cake's currants. */
+  setLabels: (labels: FallLabels) => void;
   /** Stops everything and frees every GPU resource. Safe to call twice. */
   dispose: () => void;
 }
