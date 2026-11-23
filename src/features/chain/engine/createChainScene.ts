@@ -67,6 +67,7 @@ import { createNightState, sampleNight } from './nightCycle';
 import type { FallObjects } from './objects/fallObjects';
 import { createParticles } from './particles';
 import { createShaft } from './shaft';
+import { createNoiseTexture } from './tableNoise';
 import { createStudioEnvironment } from './studioEnvironment';
 
 /**
@@ -146,9 +147,11 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   // ── THE FALL ── the edge of the hole (shot 1) and the shaft of recycled segments.
   const small = container.clientWidth <= SMALL_SCREEN_MAX;
-  const edge = createEdge(steel, linkGeometry);
+  // The earth's table noise, shared by the edge and the shaft (see tableNoise.ts)
+  const earthNoise = createNoiseTexture();
+  const edge = createEdge(steel, linkGeometry, small, earthNoise);
   scene.add(edge.group);
-  const shaft = createShaft(small);
+  const shaft = createShaft(small, earthNoise);
   scene.add(shaft.group);
 
   // ── ATMOSPHERE ──
@@ -679,6 +682,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           objects: () => objects?.steelMeshes() ?? [],
           landing: () => objects?.landingSteel() ?? [],
           rack: () => objects?.rack?.steel ?? [],
+          walls: () => [shaft.walls],
+          roots: () => [shaft.roots, ...edge.roots],
         },
         setObjects: (on) => {
           objectsOn = on;
@@ -779,6 +784,7 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       steel.dispose();
       edge.dispose();
       shaft.dispose();
+      earthNoise.dispose();
       objects?.dispose();
       objects = null;
       heroMist.dispose();

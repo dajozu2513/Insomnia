@@ -3,26 +3,44 @@ import {
   CanvasTexture,
   CircleGeometry,
   type BufferGeometry,
+  Euler,
   Group,
+  InstancedMesh,
   type Material,
+  Matrix4,
   Mesh,
+  Quaternion,
   RingGeometry,
   ShaderMaterial,
   Sprite,
   SpriteMaterial,
   SRGBColorSpace,
+  type Texture,
   Vector3,
 } from 'three';
 
 import { FALL_DEPTH, GROUND_Y, HOLE_RADIUS, SHAFT_Z } from './constants';
-import { createBarkMaterial, createGroundMaterial } from './fallMaterials';
-import { taperedTube } from './fallGeometry';
+import {
+  createBarkMaterial,
+  createGrassMaterial,
+  createGroundMaterial,
+  createStoneMaterial,
+} from './fallMaterials';
+import {
+  edgeRootHairs,
+  grassTuftGeometry,
+  seeded,
+  stoneGeometry,
+  taperedTube,
+} from './fallGeometry';
 import { createPocketWatch, type PocketWatch3D } from './pocketWatch';
 import { rawColor } from './rawColor';
 
 export interface Edge {
   group: Group;
   watch: PocketWatch3D;
+  /** The big roots at the rim (development measurements). */
+  roots: readonly Mesh[];
   /** Hides what is above once the camera is deep in the shaft, and fades the deep glow. */
   update: (cameraY: number) => void;
   tick: (dt: number) => void;
@@ -101,8 +119,19 @@ const ROOTS: readonly { points: Vector3[]; r0: number; r1: number }[] = [
   },
 ];
 
+/** The rose light far down the hole: smaller, dimmer and greyer than the shaft's rose. */
+const DEEP_GLOW_COLOUR = '#a98390';
+const DEEP_GLOW_OPACITY = 0.2;
+const DEEP_GLOW_SIZE = 22;
+
 /** Where the watch lies: on the foreground root, near the rim, in frame on every screen. */
 const WATCH_POSITION = at(1.05, 0.5, 2.93);
+
+/** Tufts of dry grass and loose pebbles around the mouth (desktop, small screens). */
+const TUFTS = 420;
+const TUFTS_SMALL = 220;
+const PEBBLES = 70;
+const PEBBLES_SMALL = 40;
 
 /** A soft round glow drawn on a canvas, for the rose light far down the hole. */
 function glowTexture(): CanvasTexture {
@@ -124,11 +153,18 @@ function glowTexture(): CanvasTexture {
 }
 
 /**
- * The edge of the hole (shot 1) and what belongs to its mouth: the earth with
- * a little moss, the big roots, the pocket watch, the small disc of dusk sky
- * seen from inside the hole, and a faint rose glow far below.
+ * The edge of the hole (shot 1) and what belongs to its mouth: dry soil with a
+ * little moss, tufts of grass and loose pebbles, the big roots of the tree
+ * (root hairs where they dive in), the pocket watch, the small disc of pale
+ * dusk sky seen from inside the hole, and a small, dim rose light far below.
  */
-export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge {
+/** `noise` is the table noise texture (tableNoise.ts), shared with the shaft; the scene owns it. */
+export function createEdge(
+  steel: Material,
+  linkGeometry: BufferGeometry,
+  small: boolean,
+  noise: Texture,
+): Edge {
   const group = new Group();
   const geometries: BufferGeometry[] = [];
 
@@ -137,16 +173,60 @@ export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge 
   groundGeometry.rotateX(-Math.PI / 2);
   groundGeometry.translate(0, GROUND_Y, SHAFT_Z);
   geometries.push(groundGeometry);
-  const groundMaterial = createGroundMaterial();
+  const groundMaterial = createGroundMaterial(noise);
   group.add(new Mesh(groundGeometry, groundMaterial));
 
-  // The big roots
-  const bark = createBarkMaterial();
-  for (const root of ROOTS) {
-    const geometry = taperedTube(root.points, root.r0, root.r1, 64, 14);
+  // The big roots: rough, fibrous bark, with root hairs where they dive into the hole
+  const bark = createBarkMaterial(noise);
+  const roots = ROOTS.map((root, i) => {
+    const geometry = taperedTube(root.points, root.r0, root.r1, 96, 18, 1.5);
     geometries.push(geometry);
-    group.add(new Mesh(geometry, bark));
+    const mesh = new Mesh(geometry, bark);
+    group.add(mesh);
+    const hairs = edgeRootHairs(root.points, 31 + i * 17);
+    geometries.push(hairs);
+    group.add(new Mesh(hairs, bark));
+    return mesh;
+  });
+
+  // Grass and pebbles scattered around the mouth, never in it
+  const random = seeded(9157);
+  const m = new Matrix4();
+  const q = new Quaternion();
+  const e = new Euler();
+  const p = new Vector3();
+  const s = new Vector3();
+  const around = (near: number, far: number, power: number): void => {
+    const a = random() * Math.PI * 2;
+    const d = HOLE_RADIUS + near + random() ** power * (far - near);
+    p.set(Math.cos(a) * d, GROUND_Y, SHAFT_Z + Math.sin(a) * d);
+  };
+  const tuftGeometry = grassTuftGeometry();
+  geometries.push(tuftGeometry);
+  const grassMaterial = createGrassMaterial(noise);
+  const tufts = small ? TUFTS_SMALL : TUFTS;
+  const grass = new InstancedMesh(tuftGeometry, grassMaterial, tufts);
+  for (let i = 0; i < tufts; i++) {
+    around(0.45, 9, 0.8);
+    p.y -= 0.01;
+    e.set((random() - 0.5) * 0.2, random() * Math.PI * 2, (random() - 0.5) * 0.2);
+    const k = 0.9 + random() * 1.2;
+    grass.setMatrixAt(i, m.compose(p, q.setFromEuler(e), s.set(k, k * (0.8 + random() * 0.5), k)));
   }
+  group.add(grass);
+  const pebbleGeometry = stoneGeometry();
+  geometries.push(pebbleGeometry);
+  const pebbleMaterial = createStoneMaterial(noise);
+  const pebbleCount = small ? PEBBLES_SMALL : PEBBLES;
+  const pebbles = new InstancedMesh(pebbleGeometry, pebbleMaterial, pebbleCount);
+  for (let i = 0; i < pebbleCount; i++) {
+    around(0.15, 6, 1.4);
+    const k = 0.03 + random() ** 2 * 0.11;
+    p.y -= k * 0.35;
+    e.set(random() * 6.28, random() * 6.28, random() * 6.28);
+    pebbles.setMatrixAt(i, m.compose(p, q.setFromEuler(e), s.set(k, k, k)));
+  }
+  group.add(pebbles);
 
   // The watch on its root, tilted to the root's curve
   const watch = createPocketWatch(steel, linkGeometry);
@@ -155,16 +235,16 @@ export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge 
   watch.group.scale.setScalar(0.62);
   group.add(watch.group);
 
-  // The mouth seen from below: a small disc of dusk sky, facing down (so from
-  // above, where it would cover the hole, it is never drawn)
+  // The mouth seen from below: a small disc of pale dusk sky, the hole's light,
+  // facing down (so from above, where it would cover the hole, it is never drawn)
   const skyGeometry = new CircleGeometry(HOLE_RADIUS * 1.04, 64);
   skyGeometry.rotateX(Math.PI / 2);
   skyGeometry.translate(0, GROUND_Y + 0.02, SHAFT_Z);
   geometries.push(skyGeometry);
   const skyMaterial = new ShaderMaterial({
     uniforms: {
-      uCentre: { value: rawColor('#34324a') },
-      uRim: { value: rawColor('#5e3e4c') },
+      uCentre: { value: rawColor('#9ea6b8') },
+      uRim: { value: rawColor('#6a7282') },
       uAxisZ: { value: SHAFT_Z },
       uRadius: { value: HOLE_RADIUS },
     },
@@ -190,21 +270,22 @@ export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge 
   });
   group.add(new Mesh(skyGeometry, skyMaterial));
 
-  // The rose glow far below, seen down the hole (not fogged: it is the light itself)
+  // The rose far below, seen down the hole: a small, dim, greyed light at the
+  // bottom (not fogged: it is the light itself). It lights nothing.
   const glowMap = glowTexture();
   const glowMaterial = new SpriteMaterial({
     map: glowMap,
-    color: rawColor('#d65470'),
+    color: rawColor(DEEP_GLOW_COLOUR),
     blending: AdditiveBlending,
     depthWrite: false,
     fog: false,
     transparent: true,
-    opacity: 0.32,
+    opacity: DEEP_GLOW_OPACITY,
     toneMapped: false,
   });
   const deepGlow = new Sprite(glowMaterial);
   deepGlow.position.set(0, GROUND_Y - FALL_DEPTH - 30, SHAFT_Z);
-  deepGlow.scale.setScalar(40);
+  deepGlow.scale.setScalar(DEEP_GLOW_SIZE);
   const deepGlowGroup = new Group();
   deepGlowGroup.add(deepGlow);
 
@@ -216,10 +297,11 @@ export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge 
   return {
     group: root,
     watch,
+    roots,
     update(cameraY) {
       group.visible = cameraY > GROUND_Y - 45;
       const distance = Math.abs(cameraY - deepGlow.position.y);
-      glowMaterial.opacity = 0.32 * Math.min(Math.max((distance - 8) / 32, 0), 1);
+      glowMaterial.opacity = DEEP_GLOW_OPACITY * Math.min(Math.max((distance - 8) / 32, 0), 1);
       deepGlow.visible = glowMaterial.opacity > 0.01 && cameraY > deepGlow.position.y;
     },
     tick(dt) {
@@ -231,6 +313,10 @@ export function createEdge(steel: Material, linkGeometry: BufferGeometry): Edge 
       });
       groundMaterial.dispose();
       bark.dispose();
+      grassMaterial.dispose();
+      grass.dispose();
+      pebbleMaterial.dispose();
+      pebbles.dispose();
       skyMaterial.dispose();
       glowMap.dispose();
       glowMaterial.dispose();

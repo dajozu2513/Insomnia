@@ -53,7 +53,7 @@ interface DebugTargets {
   };
 }
 
-type SteelTarget = 'chain' | 'watch' | 'objects' | 'landing' | 'rack';
+type SteelTarget = 'chain' | 'watch' | 'objects' | 'landing' | 'rack' | 'walls' | 'roots';
 
 export interface ChainColour {
   progress: number;
@@ -66,6 +66,23 @@ export interface ChainColour {
   luminance: number;
   /** Mean R, G, B of the chain's pixels, 0..255. */
   rgb: [number, number, number];
+  /** Hue of the mean colour, degrees (0 red, 30 brown and ochre, 60 yellow). */
+  hue: number;
+  /** Share of the pixels with a pink or red cast: hue 300 to 15 degrees, saturation above 0.12. */
+  pinkShare: number;
+  /**
+   * Where the pink pixels are, by the brightest channel (below 8, 8 to 15, 16 to 23,
+   * 24 and up), as shares of all the pixels: on near-black pixels a hue means nothing.
+   */
+  pinkByBrightness: [number, number, number, number];
+  /** The same for the visibly lit pixels only (brightest channel 24 or more), where a cast shows. */
+  lit: {
+    pixels: number;
+    saturation: number;
+    rgb: [number, number, number];
+    hue: number;
+    pinkShare: number;
+  };
 }
 
 function readFrame(renderer: WebGLRenderer): { data: Uint8Array; width: number; height: number } {
@@ -80,6 +97,16 @@ function readFrame(renderer: WebGLRenderer): { data: Uint8Array; width: number; 
 function linear(c: number): number {
   const s = c / 255;
   return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+}
+
+/** HSV hue in degrees. */
+function hueOf(r: number, g: number, b: number, max: number, min: number): number {
+  const d = max - min;
+  let h: number;
+  if (max === r) h = ((g - b) / d) % 6;
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return (h * 60 + 360) % 360;
 }
 
 export function installDebugHook(targets: DebugTargets): () => void {
@@ -103,6 +130,9 @@ export function installDebugHook(targets: DebugTargets): () => void {
 
     measure(progress: number, target: SteelTarget = 'chain'): ChainColour {
       const objects = steel[target]();
+      // The earth (walls, roots) is measured without the motes and veils in front of it
+      const earth = target === 'walls' || target === 'roots';
+      if (earth) setAtmosphere(false);
       setNight(progress);
       render();
       const withChain = readFrame(renderer);
@@ -112,6 +142,12 @@ export function installDebugHook(targets: DebugTargets): () => void {
       objects.forEach((o) => (o.visible = true));
 
       let pixels = 0;
+      let pink = 0;
+      const pinkBuckets = [0, 0, 0, 0];
+      let litPixels = 0;
+      let litPink = 0;
+      let litSaturation = 0;
+      const litSum = [0, 0, 0];
       let saturation = 0;
       let luminance = 0;
       const sum = [0, 0, 0];
@@ -129,22 +165,71 @@ export function installDebugHook(targets: DebugTargets): () => void {
         const max = Math.max(r, g, bl);
         const min = Math.min(r, g, bl);
         pixels++;
-        saturation += max > 0 ? (max - min) / max : 0;
+        const sat = max > 0 ? (max - min) / max : 0;
+        saturation += sat;
+        const pinkish =
+          sat > 0.12 && max > min && ((h) => h >= 300 || h <= 15)(hueOf(r, g, bl, max, min));
+        if (pinkish) {
+          pink++;
+          const bucket = max < 8 ? 0 : max < 16 ? 1 : max < 24 ? 2 : 3;
+          pinkBuckets[bucket] = (pinkBuckets[bucket] ?? 0) + 1;
+        }
+        if (max >= 24) {
+          litPixels++;
+          litSaturation += sat;
+          if (pinkish) litPink++;
+          litSum[0] = (litSum[0] ?? 0) + r;
+          litSum[1] = (litSum[1] ?? 0) + g;
+          litSum[2] = (litSum[2] ?? 0) + bl;
+        }
         luminance += 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(bl);
         sum[0] = (sum[0] ?? 0) + r;
         sum[1] = (sum[1] ?? 0) + g;
         sum[2] = (sum[2] ?? 0) + bl;
       }
+      if (earth) setAtmosphere(true);
       restoreNight();
       render();
       const n = Math.max(pixels, 1);
+      const rgb: [number, number, number] = [
+        (sum[0] ?? 0) / n,
+        (sum[1] ?? 0) / n,
+        (sum[2] ?? 0) / n,
+      ];
+      const hi = Math.max(...rgb);
+      const lo = Math.min(...rgb);
       return {
         progress,
         target,
         pixels,
         saturation: saturation / n,
         luminance: luminance / n,
-        rgb: [(sum[0] ?? 0) / n, (sum[1] ?? 0) / n, (sum[2] ?? 0) / n],
+        rgb,
+        hue: hi > lo ? hueOf(rgb[0], rgb[1], rgb[2], hi, lo) : 0,
+        pinkShare: pink / n,
+        pinkByBrightness: [
+          (pinkBuckets[0] ?? 0) / n,
+          (pinkBuckets[1] ?? 0) / n,
+          (pinkBuckets[2] ?? 0) / n,
+          (pinkBuckets[3] ?? 0) / n,
+        ],
+        lit: (() => {
+          const ln = Math.max(litPixels, 1);
+          const lrgb: [number, number, number] = [
+            (litSum[0] ?? 0) / ln,
+            (litSum[1] ?? 0) / ln,
+            (litSum[2] ?? 0) / ln,
+          ];
+          const lhi = Math.max(...lrgb);
+          const llo = Math.min(...lrgb);
+          return {
+            pixels: litPixels,
+            saturation: litSaturation / ln,
+            rgb: lrgb,
+            hue: lhi > llo ? hueOf(lrgb[0], lrgb[1], lrgb[2], lhi, llo) : 0,
+            pinkShare: litPink / ln,
+          };
+        })(),
       };
     },
 

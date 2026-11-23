@@ -171,10 +171,10 @@ export const SEGMENT_HEIGHT = 5;
 export const SEGMENTS_DESKTOP = 12;
 export const SEGMENTS_SMALL = 9;
 /** Instanced roots and stones per segment (desktop, small screens). */
-export const ROOTS_PER_SEGMENT = 3;
-export const ROOTS_PER_SEGMENT_SMALL = 2;
-export const STONES_PER_SEGMENT = 12;
-export const STONES_PER_SEGMENT_SMALL = 7;
+export const ROOTS_PER_SEGMENT = 5;
+export const ROOTS_PER_SEGMENT_SMALL = 3;
+export const STONES_PER_SEGMENT = 16;
+export const STONES_PER_SEGMENT_SMALL = 9;
 /** Motes stretch into vertical streaks with the fall speed: world units/s for the full stretch, and its cap. */
 export const STREAK_SPEED = 40;
 export const STREAK_MAX = 3.2;

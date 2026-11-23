@@ -46,6 +46,12 @@ export interface Particles {
   dispose: () => void;
 }
 
+/** In the hole the motes are dust and grains of soil: earth coloured, dim, not glowing. */
+const DUST_COLOUR = '#8a7d6c';
+const GRAIN_COLOUR = '#6e6256';
+const DUST_BRIGHTNESS = 0.32;
+const GRAIN_BRIGHTNESS = 0.55;
+
 /** A glowing sprite drawn on a canvas (a bright core and a wide halo): no image files. */
 function spriteTexture(): CanvasTexture {
   const size = 64;
@@ -81,6 +87,8 @@ export function createParticles(count: number): Particles {
   const seeds = new Float32Array(count * 5);
   const phases = new Float32Array(count);
   const rates = new Float32Array(count);
+  // In the hole one mote in four is a grain of soil falling with the visitor
+  const grains = new Float32Array(count);
   // In the hole: an angle and a radius around the axis
   const around = new Float32Array(count * 2);
   for (let i = 0; i < count; i++) {
@@ -93,10 +101,12 @@ export function createParticles(count: number): Particles {
     rates[i] = 0.5 + Math.random() * 1.1; // a breath every 3.5 to 12 s
     around[i * 2] = Math.random() * Math.PI * 2;
     around[i * 2 + 1] = Math.sqrt(Math.random()) * HOLE_RADIUS * 0.85;
+    grains[i] = i % 4 === 0 ? 1 : 0;
   }
   geometry.setAttribute('position', new BufferAttribute(positions, 3));
   geometry.setAttribute('aPhase', new BufferAttribute(phases, 1));
   geometry.setAttribute('aRate', new BufferAttribute(rates, 1));
+  geometry.setAttribute('aGrain', new BufferAttribute(grains, 1));
 
   const texture = spriteTexture();
   const material = new ShaderMaterial({
@@ -111,43 +121,68 @@ export function createParticles(count: number): Particles {
         uTwinkle: { value: MOTE_TWINKLE },
         uStretch: { value: 1 },
         uMap: { value: texture },
+        uDust: { value: 0 },
+        uDustColor: { value: rawColor(DUST_COLOUR) },
+        uGrainColor: { value: rawColor(GRAIN_COLOUR) },
       },
     ]),
     vertexShader: /* glsl */ `
       attribute float aPhase;
       attribute float aRate;
+      attribute float aGrain;
       uniform float uSize;
       uniform float uScale;
       uniform float uTime;
       uniform float uTwinkle;
       uniform float uStretch;
+      uniform float uDust;
       varying float vBrightness;
       varying float vDepth;
+      varying float vStretch;
+      varying float vGrain;
       void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = uSize * (uScale / -mvPosition.z) * uStretch;
+        // Grains fall with the visitor, so they never streak; dust and grains are smaller than motes
+        vGrain = aGrain * uDust;
+        vStretch = mix(uStretch, 1.0, vGrain);
+        float size = uSize * mix(1.0, mix(0.55, 0.8, aGrain), uDust);
+        gl_PointSize = size * (uScale / -mvPosition.z) * vStretch;
+        // Dust right in front of the eye would be a large soft blot: capped, and faded out up close
+        gl_PointSize = min(gl_PointSize, mix(1.0e4, uScale * 0.025 * vStretch, uDust));
         gl_Position = projectionMatrix * mvPosition;
-        // Breathing: a slow sine per mote, between 1 - uTwinkle and 1
-        vBrightness = 1.0 - uTwinkle * (0.5 + 0.5 * sin(uTime * aRate + aPhase));
+        // Breathing: a slow sine per mote, between 1 - uTwinkle and 1 (dust does not breathe)
+        float twinkle = uTwinkle * (1.0 - uDust);
+        vBrightness = 1.0 - twinkle * (0.5 + 0.5 * sin(uTime * aRate + aPhase));
+        // In the hole only part of the dust shows: a thin haze, not a swarm
+        vBrightness *= mix(1.0, step(fract(aPhase * 7.31), 0.6) * ${DUST_BRIGHTNESS.toFixed(2)}, uDust * (1.0 - aGrain));
+        vBrightness *= mix(1.0, ${GRAIN_BRIGHTNESS.toFixed(2)}, vGrain);
+        vBrightness *= mix(1.0, smoothstep(0.6, 1.6, -mvPosition.z), uDust);
         vDepth = -mvPosition.z;
       }
     `,
     fragmentShader: /* glsl */ `
       uniform vec3 uColor;
+      uniform vec3 uDustColor;
+      uniform vec3 uGrainColor;
       uniform float uOpacity;
+      uniform float uDust;
       uniform sampler2D uMap;
-      uniform float uStretch;
       uniform float fogNear;
       uniform float fogFar;
       varying float vBrightness;
       varying float vDepth;
+      varying float vStretch;
+      varying float vGrain;
       void main() {
         // Squeezed sideways by the stretch, so a falling mote reads as a short vertical streak
-        vec2 pc = vec2((gl_PointCoord.x - 0.5) * uStretch + 0.5, gl_PointCoord.y);
+        vec2 pc = vec2((gl_PointCoord.x - 0.5) * vStretch + 0.5, gl_PointCoord.y);
         if (pc.x < 0.0 || pc.x > 1.0) discard;
-        float a = texture2D(uMap, pc).a / sqrt(uStretch);
+        float a = texture2D(uMap, pc).a / sqrt(vStretch);
+        // Dust and grains have no halo: they are specks, not lights
+        a = pow(a, mix(1.0, 2.6, uDust));
         float fade = 1.0 - smoothstep(fogNear, fogFar, vDepth);
-        gl_FragColor = vec4(uColor * a * uOpacity * vBrightness * fade, 1.0);
+        vec3 colour = mix(uColor, mix(uDustColor, uGrainColor, vGrain), uDust);
+        gl_FragColor = vec4(colour * a * uOpacity * vBrightness * fade, 1.0);
       }
     `,
     transparent: true,
@@ -166,10 +201,11 @@ export function createParticles(count: number): Particles {
     points,
     update(dt, cameraY, halfWidth, viewHeight, pixelHeight, inHole, stretch) {
       time += dt;
-      const { uTime, uScale, uStretch } = material.uniforms;
+      const { uTime, uScale, uStretch, uDust } = material.uniforms;
       if (uTime) uTime.value = time;
       if (uScale) uScale.value = pixelHeight / 2;
       if (uStretch) uStretch.value = stretch;
+      if (uDust) uDust.value = inHole;
       const holeHeight = 22;
       const boxHeight = viewHeight * 1.6;
       for (let i = 0; i < count; i++) {
@@ -184,8 +220,13 @@ export function createParticles(count: number): Particles {
         const pageX = (seeds[s] ?? 0) * halfWidth * 1.3 + sway;
         const pageY = cameraY + y;
         const pageZ = seeds[s + 2] ?? 0;
-        // In the hole: around the axis, from a little above the camera to well below it
-        let hy = baseY * (holeHeight / boxHeight) - (cameraY - 8);
+        // In the hole: around the axis, from a little above the camera to well below it.
+        // Dust hangs in the air (the visitor falls past it) and settles slowly; grains
+        // of soil fall with the visitor, a little faster.
+        const seedY = (seeds[s + 1] ?? 0) * holeHeight;
+        const settle = (rise[i] ?? 0) * (holeHeight / boxHeight);
+        const grain = grains[i] === 1;
+        let hy = grain ? seedY - settle * 3 : seedY - settle * 0.5 - (cameraY - 8);
         hy = ((((hy + holeHeight / 2) % holeHeight) + holeHeight) % holeHeight) - holeHeight / 2;
         const angle = (around[i * 2] ?? 0) + sway * 0.2;
         const radius = around[i * 2 + 1] ?? 0;
