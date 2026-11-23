@@ -172,5 +172,5 @@ In the jewelry dialog the card opens as dealt. As soon as the visitor chooses a 
 ## Edges of the site (step 9)
 
 - 404: on ink, the pocket watch large and stopped at 3:47 in steel line art, "Esta hora no existe." / "This hour doesn't exist." in Cormorant italic, "Te perdiste en la niebla." / "You got lost in the mist." below, and the way home.
-- Share image (1200 x 630): the intro itself (ink, the rose mist low at the bottom, "INSOMNIA" with "by Joel Soto" in the intro's type, the hairline and the watch at 6:00), set larger so it reads as a small preview; no film grain.
+- Share image (1200 x 630): the opening, shot 1 at the edge of the hole (the hero's still: the dry ground, the roots of the tree, the watch on its root, the hole going down), with "INSOMNIA" and "by Joel Soto" set larger than in the hero and placed above the hole, over the same dark hush, so both read in a 300 px wide link preview (step 16.5; before, the share image was the intro over the rose mist).
 - Favicon: the pocket watch at 6:00 in line art, ink on light browser themes and bone on dark ones; the app icons show it in bone on ink.

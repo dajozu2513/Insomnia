@@ -5,7 +5,8 @@ import { useHead } from '../../hooks/useHead';
 import { useI18n } from '../../i18n';
 import { NotFoundPage } from '../NotFoundPage';
 import '../../features/home/byline.css';
-import '../../features/intro/IntroSplash.css';
+import '../../features/home/Hero.css';
+import '../../features/home/photo.css';
 import './BrandAssetPage.css';
 
 /*
@@ -13,9 +14,9 @@ import './BrandAssetPage.css';
  * browser (see README, "Share image and icons"); not linked, not indexed,
  * outside the site layout.
  *
- *   /brand-assets/og    1200 x 630: the intro itself (ink, the red mist low, the
- *                       name and by-line in the intro's type, the hairline, the
- *                       watch at 6:00), larger so it reads as a small preview.
+ *   /brand-assets/og    1200 x 630: the opening, shot 1 at the edge of the hole
+ *                       (the hero's still), with the name and by-line set larger
+ *                       and higher so they read in a small link preview.
  *   /brand-assets/icon  the pocket watch at 6:00 on ink, filling a square window;
  *                       ?stroke=<units> thickens the line for small sizes.
  */
@@ -34,17 +35,17 @@ export function BrandAssetPage() {
 
   if (asset === 'og') {
     return (
-      // No film grain: invisible at preview size, and the noise alone tripled the
-      // PNG (513 KB against 94 KB), past the ~300 KB some messaging apps accept.
-      <div className="intro-screen brand-og" aria-hidden="true">
-        <div className="intro-red-mist" />
-        <div className="atmo-vignette" />
-        <div className="intro-name">
-          <div className="intro-logo">{t.home.hero.title}</div>
-          <div className="intro-byline name-byline">{t.home.hero.sub}</div>
+      // The hero's own pieces: the shot 1 still, its vignette, the name over its
+      // dark hush. Only the name's place and size differ (BrandAssetPage.css).
+      <div className="hero-pin brand-og" aria-hidden="true">
+        <div className="hero-still" />
+        <div className="hero-vignette" />
+        <div className="hero-float">
+          <div className="hero-content">
+            <div className="hero-title">{t.home.hero.title}</div>
+            <div className="hero-sub name-byline">{t.home.hero.sub}</div>
+          </div>
         </div>
-        <span className="intro-line" />
-        <PocketWatch className="intro-watch" size={124} progress={0} doubleRim />
       </div>
     );
   }

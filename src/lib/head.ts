@@ -11,8 +11,12 @@ import type { Lang } from '../i18n';
 /** The production origin: canonical and Open Graph URLs are absolute. */
 export const SITE_URL = 'https://insomnia-js.onrender.com';
 export const SITE_NAME = 'Insomnia by Joel Soto';
-/** 1200 x 630 share image (public/og.png; source route /og-image). */
-export const OG_IMAGE = `${SITE_URL}/og.png`;
+/**
+ * 1200 x 630 share image (public/og.png; source route /brand-assets/og). The
+ * version in the query makes link previews that cached an earlier image fetch it
+ * again: raise it (here and in index.html) whenever og.png changes.
+ */
+export const OG_IMAGE = `${SITE_URL}/og.png?v=2`;
 
 const OG_LOCALE: Record<Lang, string> = { es: 'es_CR', en: 'en_US' };
 

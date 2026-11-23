@@ -1,9 +1,19 @@
 /*
- * Brand asset sources (share image, icons). The share image is the intro at a
- * fixed 1200 x 630, scaled up so it stays legible as a small link preview; its
- * lines scale with the drawing (no fixed-pixel strokes) for the same reason.
+ * Brand asset sources (share image, icons). The share image is the hero's shot 1
+ * at a fixed 1200 x 630 with the name set at 132 px and the by-line at 52 px
+ * (about 22 and 11 px tall in a 300 px wide preview) and moved up above the hole.
  */
-.brand-og .intro-logo {
+.brand-og.hero-pin {
+  position: relative;
+  height: 100vh;
+  min-height: 0;
+}
+
+.brand-og .hero-float {
+  top: 5%;
+}
+
+.brand-og .hero-title {
   font-size: 132px;
 }
 
@@ -12,17 +22,6 @@
   font-size: 52px;
 }
 
-.brand-og .intro-line {
-  width: 320px;
-  margin-top: 1.4rem;
-}
-
-.brand-og .intro-watch {
-  height: 124px;
-  margin-top: 1.4rem;
-}
-
-.brand-og .motif *,
 .brand-icon .motif * {
   vector-effect: none;
 }

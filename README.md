@@ -27,7 +27,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **Readings with a title morph.** An editorial index of three articles on the home page; each opens on its own page, its title morphing into the heading through same-document View Transitions, with a reading-progress hairline and a pocket watch that follow the text from 6:00 PM to 6:00 AM.
 - **T-shirt prints generated in code.** Ten typographic compositions, one per word (a crowd of strangers, a frame too tight, a letter out of place, a plot that knots), laid out from measured font metrics and kept print-safe (one colour, flat tints, no gradients). They render on a flat SVG tee that follows every configurator choice live: colour, print language, placement and the side shown.
 - **A living style guide.** An internal `/lab` page renders the palette with live WCAG contrast measurements, the type scale, the pocket watch at several times, the line-art motifs, the nine links, all ten T-shirt prints on both colours and in both languages, a flipping playing card and the atmosphere layers.
-- **Ready to share and fast to load.** Per-route titles, descriptions, canonical links, Open Graph and Twitter cards, JSON-LD, a sitemap, a share image rendered from the intro itself, a pocket-watch favicon that follows light and dark themes, self-hosted fonts with metric-matched fallbacks, a still of the scene as the first paint (AVIF, about 20 kB) that crossfades into the live 3D scene, and error boundaries so one failing part never blanks the page.
+- **Ready to share and fast to load.** Per-route titles, descriptions, canonical links, Open Graph and Twitter cards, JSON-LD, a sitemap, a share image rendered from the opening itself, a pocket-watch favicon that follows light and dark themes, self-hosted fonts with metric-matched fallbacks, a still of the scene as the first paint (AVIF, about 20 kB) that crossfades into the live 3D scene, and error boundaries so one failing part never blanks the page.
 - **Three.js pinned to 0.183.0**, the version the original chain was tuned on, so the port matches it exactly.
 
 ## Tech stack
@@ -103,7 +103,11 @@ The share image and the icons are rendered by the site itself, from the hidden r
 msedge --headless=new --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=6000 --screenshot=og.png http://localhost:4173/brand-assets/og
 ```
 
-The icons use `/brand-assets/icon?stroke=<line width in drawing units>` at `--window-size=512,512` (0.75 for the 512 icon, 0.95 for 192 and the 180 Apple touch icon, 2.4 and 3.2 for the 32 and 16 favicon), downscaled from 512 (headless browsers will not size a window below about 500 px). `og.png` is stored as a palette PNG to keep it small. `favicon.svg` is drawn by hand from the watch and switches between ink and bone with the browser theme.
+The command can return before the file is written; a headless browser script that opens the same URL at 1200 x 630 and waits for the fonts works as well.
+
+The share image is the opening: shot 1 at the edge of the hole (the hero's still, its vignette and the name over its hush), with the name at 132 px and the by-line at 52 px so both read in a 300 px wide link preview. The screenshot is encoded as a 256-colour palette PNG (sharp: `png({ palette: true, quality: 90, colours: 256, dither: 1, effort: 10 })`, about 160 kB; messaging apps reject images much over 300 kB). Its URL carries a version (`og.png?v=2` in `index.html` and `OG_IMAGE` in `src/lib/head.ts`): raise it whenever the image changes, or link previews keep showing the cached one.
+
+The icons use `/brand-assets/icon?stroke=<line width in drawing units>` at `--window-size=512,512` (0.75 for the 512 icon, 0.95 for 192 and the 180 Apple touch icon, 2.4 and 3.2 for the 32 and 16 favicon), downscaled from 512 (headless browsers will not size a window below about 500 px). `favicon.svg` is drawn by hand from the watch and switches between ink and bone with the browser theme.
 
 ## Stills of the fall
 
