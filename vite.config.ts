@@ -39,9 +39,17 @@ function preloadTitleFont(): Plugin {
 export default defineConfig({
   plugins: [react(), preloadTitleFont()],
   build: {
-    // three.js alone is ~520 kB minified. It sits in its own chunk that
-    // <ChainStage /> loads on demand, so it never blocks first paint; the limit
-    // is raised just enough that this expected chunk does not warn.
+    // three.js alone is ~520 kB minified. It sits in its own chunk (three-*.js),
+    // shared by the page's scene and the jewelry preview and loaded only by
+    // them, so it never blocks first paint; the limit is raised just enough
+    // that this expected chunk does not warn.
     chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        advancedChunks: {
+          groups: [{ name: 'three', test: /node_modules[/\\]three[/\\]/ }],
+        },
+      },
+    },
   },
 });

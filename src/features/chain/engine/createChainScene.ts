@@ -390,12 +390,14 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   // ── LOOP ── only render while a window (the hero or a band) is on screen.
   const showing = new Set<Element>();
   let running = false;
+  /** A product dialog covers the page: no loop until it closes. */
+  let paused = false;
   let disposed = false;
   let contextLost = false;
 
   function updateLoop(): void {
     if (disposed || contextLost) return;
-    const shouldRun = showing.size > 0 && !document.hidden && !reducedMotion;
+    const shouldRun = showing.size > 0 && !document.hidden && !reducedMotion && !paused;
     if (shouldRun === running) return;
     running = shouldRun;
     if (running) {
@@ -670,6 +672,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
           cameraY: cam.y,
           landed: landT,
           bandYs: [...bandYs],
+          running,
+          paused,
         }),
         restoreNight: () => {
           appliedNight = -1;
@@ -687,6 +691,17 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       parallax = reduced ? 1 : PARALLAX;
       rebuild(); // the band stretches depend on the parallax factor
       updateLoop();
+    },
+
+    setPaused(on: boolean): void {
+      if (disposed || on === paused) return;
+      paused = on;
+      updateLoop();
+      // Back from a dialog: catch up with the page at once
+      if (!on && !running) {
+        syncScroll();
+        draw();
+      }
     },
 
     setTeeAtlas(atlas: TeeAtlas): void {

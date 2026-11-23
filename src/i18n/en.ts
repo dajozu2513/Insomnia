@@ -79,6 +79,22 @@ export const en: Dictionary = {
       size: 'Size',
       otherPrompt: 'What piece do you have in mind?',
       measureLabel: 'Measurement in cm (optional)',
+      preview: {
+        viewCard: 'View card',
+        viewPiece: 'View piece',
+        label: 'Preview: {form} with {link} link, {size}',
+        forms: {
+          necklace: 'necklace',
+          bracelet: 'bracelet',
+          anklet: 'anklet',
+          ring: 'ring',
+          head: 'head piece',
+          waist: 'waist chain',
+          other: 'length of chain',
+        },
+        standard: 'standard',
+        custom: 'made to measure',
+      },
       measureHelper: "Not sure of your size? We'll help you on WhatsApp.",
       whatsapp: {
         intro: "Hi, I'm interested in an Insomnia piece:",

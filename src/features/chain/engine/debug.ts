@@ -47,6 +47,9 @@ interface DebugTargets {
     cameraY: number;
     landed: number;
     bandYs: number[];
+    /** The render loop is running; paused while a product dialog is open. */
+    running: boolean;
+    paused: boolean;
   };
 }
 

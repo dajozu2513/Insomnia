@@ -1,13 +1,21 @@
 import { useId, useState } from 'react';
 
-import { CUSTOM_SIZE_ID, FORMS, OTHER_FORM_ID, SIZES } from '../../data/forms';
+import { CUSTOM_SIZE_ID, FORMS, OTHER_FORM_ID, pieceLength, SIZES } from '../../data/forms';
 import type { ChainLink } from '../../data/links';
 import { useI18n } from '../../i18n';
 import { ChipGroup } from '../product/ChipGroup';
 import { ProductDialog } from '../product/ProductDialog';
 import { WhatsAppButton } from '../product/WhatsAppButton';
-import { CardFront } from './CardFaces';
+import { PieceFlip } from './PieceFlip';
+import { canPreviewPiece } from './piecePreview';
 import { buildMessage, EMPTY_CONFIGURATION, type Configuration } from './whatsapp';
+
+/** A length in cm for the preview's accessible name: "18", "18,5". */
+function centimetres(value: number, lang: string): string {
+  return new Intl.NumberFormat(lang === 'es' ? 'es-CR' : 'en-US', {
+    maximumFractionDigits: 1,
+  }).format(value);
+}
 
 interface LinkDialogProps {
   link: ChainLink;
@@ -18,7 +26,9 @@ interface LinkDialogProps {
 
 /**
  * A card's dialog: the shared product dialog with the card large on the left
- * and the link's texts and configurator (form, size) on the right.
+ * and the link's texts and configurator (form, size) on the right. Choosing a
+ * form turns the card over: its back is a 3D preview of the piece (the link
+ * along the form, at the chosen length), and a button turns it back.
  */
 export function LinkDialog({ link, source, onClose }: LinkDialogProps) {
   const { t, lang } = useI18n();
@@ -26,6 +36,27 @@ export function LinkDialog({ link, source, onClose }: LinkDialogProps) {
   const [config, setConfig] = useState<Configuration>(EMPTY_CONFIGURATION);
   const titleId = useId();
   const measureHelpId = useId();
+  const [unavailable, setUnavailable] = useState(() => !canPreviewPiece());
+  const [showPiece, setShowPiece] = useState(false);
+
+  const custom = config.sizeId === CUSTOM_SIZE_ID;
+  const formId = unavailable ? null : config.formId;
+  const spec = formId
+    ? { link: link.id, form: formId, length: pieceLength(formId, custom ? config.measure : null) }
+    : null;
+  const preview = copy.preview;
+  const formName = formId
+    ? (preview.forms as Record<string, string | undefined>)[formId]
+    : undefined;
+  const label = spec
+    ? preview.label
+        .replace('{form}', formName ?? '')
+        .replace('{link}', link.name)
+        .replace(
+          '{size}',
+          custom ? `${preview.custom}, ${centimetres(spec.length, lang)} cm` : preview.standard,
+        )
+    : link.name;
 
   const message = buildMessage(link, config, lang, copy.whatsapp);
   const update = (patch: Partial<Configuration>) => {
@@ -38,7 +69,31 @@ export function LinkDialog({ link, source, onClose }: LinkDialogProps) {
       labelledBy={titleId}
       source={source}
       onClose={onClose}
-      media={<CardFront link={link} />}
+      media={
+        <PieceFlip
+          link={link}
+          spec={spec}
+          showPiece={showPiece && spec !== null}
+          label={label}
+          onUnavailable={() => {
+            setUnavailable(true);
+            setShowPiece(false);
+          }}
+        />
+      }
+      mediaFooter={
+        spec && (
+          <button
+            type="button"
+            className="piece-toggle"
+            onClick={() => {
+              setShowPiece((shown) => !shown);
+            }}
+          >
+            {showPiece ? preview.viewCard : preview.viewPiece}
+          </button>
+        )
+      }
     >
       <h2 id={titleId} className="product-dialog-name">
         {link.name}
@@ -58,8 +113,10 @@ export function LinkDialog({ link, source, onClose }: LinkDialogProps) {
           name="form"
           options={FORMS}
           value={config.formId}
-          onChange={(formId) => {
-            update({ formId });
+          onChange={(value) => {
+            update({ formId: value });
+            // Choosing a form turns the card over to show the piece
+            if (!unavailable) setShowPiece(true);
           }}
         >
           {config.formId === OTHER_FORM_ID && (

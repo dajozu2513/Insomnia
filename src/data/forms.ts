@@ -35,3 +35,36 @@ export const SIZES: readonly Choice[] = [
 
 /** The size whose id reveals the measurement field. */
 export const CUSTOM_SIZE_ID = 'custom';
+
+/**
+ * Lengths of the 3D preview, cm (the whole chain; a ring's is its
+ * circumference): the standard length of each form, and the range a made to
+ * measure length is held to.
+ */
+export interface PieceLength {
+  standard: number;
+  min: number;
+  max: number;
+}
+
+export const PIECE_LENGTHS: Readonly<Record<string, PieceLength>> = {
+  necklace: { standard: 45, min: 35, max: 90 },
+  bracelet: { standard: 18, min: 14, max: 24 },
+  anklet: { standard: 24, min: 20, max: 30 },
+  ring: { standard: 5.7, min: 4.4, max: 7.5 },
+  head: { standard: 55, min: 45, max: 70 },
+  waist: { standard: 80, min: 60, max: 130 },
+  other: { standard: 30, min: 5, max: 100 },
+};
+
+/**
+ * The length the preview shows for a form: the made to measure value (a cm
+ * string, "18" or "18,5") held to the form's range, or the standard length.
+ */
+export function pieceLength(formId: string, measure: string | null): number {
+  const range = PIECE_LENGTHS[formId] ?? PIECE_LENGTHS.other;
+  if (!range) return 30;
+  const value = measure === null ? NaN : Number(measure.trim().replace(',', '.'));
+  if (!measure?.trim() || !Number.isFinite(value) || value <= 0) return range.standard;
+  return Math.min(Math.max(value, range.min), range.max);
+}

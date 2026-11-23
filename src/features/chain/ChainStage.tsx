@@ -4,6 +4,7 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { TEES } from '../../data/tees';
 import { FALL_OVERRIDE, LAND_OVERRIDE, RACK_OVERRIDE, WORD_OVERRIDE } from '../fall/fall';
 import { loadFallObjects, teeAtlasCell } from '../fall/objectData';
+import { isDialogOpen, subscribeDialogs } from '../product/dialogPresence';
 import { rackHooks, resetRack } from '../rack/rackBridge';
 import { renderTeeAtlas } from '../rack/teeAtlas';
 import { useI18n } from '../../i18n';
@@ -65,6 +66,15 @@ export function ChainStage() {
   const labelsRef = useRef(labels);
   const langRef = useRef(lang);
   const [status, setStatus] = useState<Status>(() => (has3d() ? 'loading' : 'failed'));
+
+  // A product dialog covers the page: the scene waits (the jewelry preview renders instead)
+  useEffect(
+    () =>
+      subscribeDialogs(() => {
+        engineRef.current?.setPaused(isDialogOpen());
+      }),
+    [],
+  );
 
   useEffect(() => {
     reducedMotionRef.current = reducedMotion;
@@ -166,6 +176,7 @@ export function ChainStage() {
         return;
       }
       engineRef.current = engine;
+      engine.setPaused(isDialogOpen());
     };
 
     // Load three.js once the first paint is done (fonts in, main thread idle), so the

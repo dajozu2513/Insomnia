@@ -244,6 +244,92 @@
   color: var(--accent);
 }
 
+/*
+ * The card in the dialog turns over (the deck's slow flip) when a form is
+ * chosen: its back is a small 3D window onto the piece, on the card's paper,
+ * with a faint line-art guide for scale behind it (drawn by the preview).
+ */
+.piece-flip {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+}
+
+.piece-flip-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.piece-flip.is-piece .piece-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.piece-window {
+  transform: rotateY(180deg);
+  background: var(--bone-raised);
+  border: 1px solid var(--bone-deep);
+  box-shadow:
+    0 1px 2px rgb(var(--ink-rgb) / 0.08),
+    0 10px 24px rgb(var(--ink-rgb) / 0.1);
+}
+
+.piece-guide,
+.piece-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.piece-guide path {
+  fill: none;
+  stroke: var(--text-on-light-muted);
+  stroke-opacity: 0.3;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Horizontal drags turn the piece; vertical ones scroll the dialog */
+.piece-canvas {
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.piece-canvas:active {
+  cursor: grabbing;
+}
+
+.piece-toggle {
+  min-height: 44px;
+  padding: 0.55rem 1.2rem;
+  border: 1px solid rgb(var(--ink-rgb) / 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-on-light);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .piece-toggle:hover {
+    border-color: var(--text-on-light-muted);
+  }
+}
+
+.piece-toggle:focus-visible {
+  outline: 1px solid var(--text-on-light);
+  outline-offset: 3px;
+}
+
 @media (max-width: 760px) {
   .product-dialog--link .product-dialog-fly {
     width: min(170px, 60%);
@@ -251,8 +337,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Face up from the start; no lift */
-  .deck-card-inner {
+  /* Face up from the start; no lift; the dialog's card turns at once */
+  .deck-card-inner,
+  .piece-flip-inner,
+  .piece-toggle {
     transition: none;
   }
 

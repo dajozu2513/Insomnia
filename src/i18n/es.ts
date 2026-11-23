@@ -80,6 +80,24 @@ export const es = {
       otherPrompt: '¿Qué pieza tienes en mente?',
       measureLabel: 'Medida en cm (opcional)',
       measureHelper: 'Si no sabes tu medida, te ayudamos por WhatsApp.',
+      // The 3D preview of the piece on the back of the card, and the button that turns it
+      preview: {
+        viewCard: 'Ver carta',
+        viewPiece: 'Ver pieza',
+        /** The 3D window's accessible name; {form}, {link} and {size} are filled in. */
+        label: 'Vista previa: {form} con eslabón {link}, {size}',
+        forms: {
+          necklace: 'collar',
+          bracelet: 'pulsera',
+          anklet: 'tobillera',
+          ring: 'anillo',
+          head: 'cadena de cabeza',
+          waist: 'cadena de cintura',
+          other: 'tramo de cadena',
+        },
+        standard: 'estándar',
+        custom: 'a la medida',
+      },
       whatsapp: {
         intro: 'Hola, me interesa una pieza de Insomnia:',
         link: 'Eslabón',

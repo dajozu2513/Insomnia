@@ -2,6 +2,7 @@ import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from '
 
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { useI18n } from '../../i18n';
+import { holdDialog } from './dialogPresence';
 import './dialog.css';
 
 /** Legacy timings: the product flies in for 750 ms, the dialog fades out in 350 ms. */
@@ -57,12 +58,16 @@ export function ProductDialog({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const flyRef = useRef<HTMLDivElement>(null);
   const [closing, setClosing] = useState(false);
+  /** Releases the page's 3D loop (paused while the dialog is open). */
+  const releaseRef = useRef<(() => void) | null>(null);
 
   // Open as a modal, lock the page behind, and fly the product in from the grid.
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (!dialog.open) dialog.showModal();
+    const release = holdDialog();
+    releaseRef.current = release;
     const root = document.documentElement;
     const previousOverflow = root.style.overflow;
     root.style.overflow = 'hidden';
@@ -96,6 +101,7 @@ export function ProductDialog({
     }
 
     return () => {
+      release();
       animation?.cancel();
       root.style.overflow = previousOverflow;
       if (dialog.open) dialog.close();
@@ -107,6 +113,8 @@ export function ProductDialog({
   const requestClose = useCallback(() => {
     if (closing) return;
     setClosing(true);
+    // The page shows again as the dialog fades: its scene resumes now
+    releaseRef.current?.();
     window.setTimeout(onClose, reducedMotion ? 0 : CLOSE_MS);
   }, [closing, onClose, reducedMotion]);
 

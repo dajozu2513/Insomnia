@@ -145,6 +145,8 @@ export interface ChainScene {
   /** Re-measure the stage and anchors and rebuild the path. */
   rebuild: () => void;
   setReducedMotion: (reduced: boolean) => void;
+  /** A product dialog covers the page: stop the loop until it closes (the last frame stays). */
+  setPaused: (paused: boolean) => void;
   /** The site language changed: redraw the bottle's tag and the cake's currants. */
   setLabels: (labels: FallLabels) => void;
   /** The site language changed: new prints for the rack's tees (the old ones are disposed). */
