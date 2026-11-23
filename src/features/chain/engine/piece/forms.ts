@@ -329,8 +329,3 @@ export function buildForm(form: string, length: number, thickness: number): Form
     }
   }
 }
-
-/** Total length of a form's curve, cm. */
-export function formLength(form: FormCurve): number {
-  return curveLength(form.points, form.closed);
-}

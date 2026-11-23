@@ -69,7 +69,7 @@ The page is one night, from 6:00 PM at the top to 6:00 AM at the bottom. The clo
 
 ## Motion
 
-Calm and slow, as in Black & White. No pointer or device-orientation tracking. Nothing bouncy. No camera roll, except the landing's one slow half turn, driven only by scroll. Card flips and mist drift are slow. Every animation respects `prefers-reduced-motion`.
+Calm and slow, as in Black & White. No pointer or device-orientation tracking. Nothing bouncy. No camera roll, except the landing's one slow half turn, driven only by scroll. Card flips and mist drift are slow. Every animation respects `prefers-reduced-motion`. With reduced motion only the header watch and the progress hairline still follow the scroll: they show where the visitor is in the night, they never move on their own.
 
 ## Section map (home)
 

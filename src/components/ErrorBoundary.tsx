@@ -6,7 +6,7 @@ interface ErrorBoundaryProps {
   children: ReactNode;
   /** What to show instead; nothing by default (the rest of the page carries on). */
   fallback?: ReactNode;
-  /** Side effects of the failure, e.g. giving the hero its photo back. */
+  /** Side effects of the failure, e.g. giving the hero its still back. */
   onError?: (error: unknown) => void;
 }
 

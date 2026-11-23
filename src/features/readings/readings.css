@@ -165,4 +165,9 @@
   .reading-link:focus-visible .reading-title {
     transform: none;
   }
+
+  /* The underline appears at once instead of drawing */
+  .reading-read::after {
+    transition: none;
+  }
 }

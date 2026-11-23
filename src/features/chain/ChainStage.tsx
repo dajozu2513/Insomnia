@@ -22,9 +22,37 @@ type Status = 'loading' | 'ready' | 'failed';
 
 type CreateChainScene = (container: HTMLElement, options: ChainSceneOptions) => ChainScene;
 
-/** Resolves once fonts are ready and the browser is idle (or after a short wait). */
+/** While the first-visit intro covers the page (IntroSplash, set before first paint). */
+const INTRO_PENDING_CLASS = 'intro-pending';
+/** After the intro lifts, the hero title's letters start to paint within this long. */
+const TITLE_ENTRANCE_MS = 700;
+
+/**
+ * Resolves once the intro (if it shows) has lifted and the hero title has begun
+ * its entrance: the engine's start-up is the page's longest task, and it must
+ * not land on the title's first paint (the largest contentful paint).
+ */
+function afterIntro(): Promise<void> {
+  const root = document.documentElement;
+  if (!root.classList.contains(INTRO_PENDING_CLASS)) return Promise.resolve();
+  return new Promise((resolve) => {
+    const finish = () => {
+      observer.disconnect();
+      window.clearTimeout(safety);
+      window.setTimeout(resolve, TITLE_ENTRANCE_MS);
+    };
+    const observer = new MutationObserver(() => {
+      if (!root.classList.contains(INTRO_PENDING_CLASS)) finish();
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    // Never wait for ever (the intro holds about 2 s)
+    const safety = window.setTimeout(finish, 6000);
+  });
+}
+
+/** Resolves once fonts are ready, the intro is over and the browser is idle (or after a short wait). */
 function afterFirstPaint(): Promise<void> {
-  return document.fonts.ready.then(
+  return Promise.all([document.fonts.ready, afterIntro()]).then(
     () =>
       new Promise<void>((resolve) => {
         if ('requestIdleCallback' in window) {
@@ -41,7 +69,7 @@ function afterFirstPaint(): Promise<void> {
   );
 }
 
-/** Context losses survived before the chain gives way to the photos for this visit. */
+/** Context losses survived before the scene gives way to the stills for this visit. */
 const MAX_CONTEXT_LOSSES = 3;
 
 function has3d(): boolean {
@@ -53,7 +81,7 @@ function has3d(): boolean {
  * chain engine's lifecycle; the engine itself (and three.js) is loaded with a
  * dynamic import so it stays out of the main bundle. If the import or WebGL
  * fails, `has-3d` is removed from <html> and the stage unmounts, so the hero
- * and bands show their photos instead.
+ * and bands show their stills instead.
  */
 export function ChainStage() {
   const registry = useChainAnchorRegistry();
@@ -149,7 +177,7 @@ export function ChainStage() {
           },
           // The browser dropped the WebGL context (a phone backgrounding the tab, a GPU
           // reset): free the dead engine and build a new one on a fresh canvas once the
-          // tab is visible again. After MAX_CONTEXT_LOSSES the photos take over.
+          // tab is visible again. After MAX_CONTEXT_LOSSES the stills take over.
           onContextLost: () => {
             engine?.dispose();
             engine = null;

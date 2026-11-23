@@ -17,6 +17,36 @@
   margin-bottom: 0;
 }
 
+/*
+ * A soft hush of ink behind the text, as behind the hero's name: it keeps the
+ * text AA when a bright tee turns behind it (the pseudo-elements stay inside
+ * each block's own stacking context, above the scene).
+ */
+.rack-section .section-header,
+.rack-controls,
+.rack-names,
+.rack-credit {
+  position: relative;
+  isolation: isolate;
+}
+
+.rack-section .section-header::before,
+.rack-controls::before,
+.rack-names::before,
+.rack-credit::before {
+  content: '';
+  position: absolute;
+  inset: -30% -6%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgb(var(--ink-rgb) / 0.45) 0%,
+    rgb(var(--ink-rgb) / 0.3) 45%,
+    rgb(var(--ink-rgb) / 0) 100%
+  );
+}
+
 .rack-stage {
   position: relative;
   height: clamp(420px, 76svh, 720px);

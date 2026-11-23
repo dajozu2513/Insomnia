@@ -13,16 +13,30 @@ const SHAPES = 'circle, ellipse, line, path, polygon, polyline, rect';
  * gets `.draw` and its measured outline length as --len; solid shapes
  * (stroke="none") get `.fill` and fade in after the outlines.
  */
-function prepareIcon(icon: HTMLElement | null): void {
-  if (!icon) return;
-  icon.querySelectorAll<SVGGeometryElement>(SHAPES).forEach((shape) => {
-    if (shape.getAttribute('stroke') === 'none') {
-      shape.classList.add('fill');
-    } else {
-      shape.style.setProperty('--len', String(Math.ceil(shape.getTotalLength()) + 1));
-      shape.classList.add('draw');
-    }
-  });
+function prepareIcon(icon: HTMLElement | null): (() => void) | undefined {
+  if (!icon) return undefined;
+  const prepare = () => {
+    icon.querySelectorAll<SVGGeometryElement>(SHAPES).forEach((shape) => {
+      if (shape.getAttribute('stroke') === 'none') {
+        shape.classList.add('fill');
+      } else {
+        shape.style.setProperty('--len', String(Math.ceil(shape.getTotalLength()) + 1));
+        shape.classList.add('draw');
+      }
+    });
+  };
+  // Measured once the page has been laid out and painted: during React's commit the
+  // lengths forced a layout of the whole page. The pillars sit far below the hero.
+  if ('requestIdleCallback' in window) {
+    const id = window.requestIdleCallback(prepare, { timeout: 1000 });
+    return () => {
+      window.cancelIdleCallback(id);
+    };
+  }
+  const timer = setTimeout(prepare, 200);
+  return () => {
+    clearTimeout(timer);
+  };
 }
 
 /** Pillars (reality, bone): Steel, Words, Vigil. */

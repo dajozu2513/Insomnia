@@ -12,6 +12,7 @@ import {
   SRGBColorSpace,
   Vector3,
   WebGLRenderer,
+  type WebGLRenderTarget,
 } from 'three';
 
 import type { ChainAnchors, ChainScene, ChainSceneOptions, FallLabels, TeeAtlas } from '../types';
@@ -118,12 +119,17 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   // ── REFLECTIONS ── a studio built in code, baked into an environment map once.
   // The night cycle never re-bakes it: it is what keeps the steel neutral silver.
-  const pmrem = new PMREMGenerator(renderer);
-  const studio = createStudioEnvironment();
-  const envTarget = pmrem.fromScene(studio.scene, ENV_BLUR);
-  scene.environment = envTarget.texture;
-  pmrem.dispose();
-  studio.dispose();
+  // Baked in a task of its own just before the shaders compile (below): it is the
+  // longest part of the start-up, and nothing is drawn before the shaders are ready.
+  let envTarget: WebGLRenderTarget | null = null;
+  const bakeEnvironment = (): void => {
+    const pmrem = new PMREMGenerator(renderer);
+    const studio = createStudioEnvironment();
+    envTarget = pmrem.fromScene(studio.scene, ENV_BLUR);
+    scene.environment = envTarget.texture;
+    pmrem.dispose();
+    studio.dispose();
+  };
 
   const key = new DirectionalLight(KEY_LIGHT_COLOR, KEY_LIGHT_INTENSITY);
   key.position.set(...KEY_LIGHT_POSITION);
@@ -276,6 +282,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
 
   /** `dt` advances the motes, the veils and the glint; 0 (reduced motion) keeps them still. */
   function draw(dt = 0): void {
+    // Nothing is drawn until the shaders are ready (the still shows meanwhile)
+    if (!compiled) return;
     cameraForScroll(smoothScroll, map, view.wide, fallOverride, cam, landOverride);
     landT = landingAt(smoothScroll, map, landOverride) ?? -1;
     camera.position.set(0, cam.y, cam.z);
@@ -390,6 +398,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   // ── LOOP ── only render while a window (the hero or a band) is on screen.
   const showing = new Set<Element>();
   let running = false;
+  /** The scene's shaders are compiled (asynchronously, before the first frame). */
+  let compiled = false;
   /** A product dialog covers the page: no loop until it closes. */
   let paused = false;
   let disposed = false;
@@ -584,7 +594,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
   // never delay the first paint or the hero's entrance; their code loads only then.
   let idle: number | undefined;
   let idleTimer: ReturnType<typeof setTimeout> | undefined;
-  const readyFrame = requestAnimationFrame(() => {
+  let readyFrame = 0;
+  const onFirstFrame = (): void => {
     options.onReady?.();
     const load = options.objects;
     if (!load) return;
@@ -597,6 +608,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
             hold: options.rackHold ?? null,
           }),
         )
+        // Their shaders too, before they join the scene
+        .then((built) => renderer.compileAsync(built.group, camera, scene).then(() => built))
         .then((built) => {
           if (disposed) {
             built.dispose();
@@ -631,7 +644,26 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
     if ('requestIdleCallback' in window)
       idle = window.requestIdleCallback(build, { timeout: 1500 });
     else idleTimer = setTimeout(build, 300);
-  });
+  };
+
+  // Compile every shader of the scene without blocking the main thread
+  // (KHR_parallel_shader_compile): waiting for programs to link at the first
+  // render was the longest task of the page's load. Then draw, then report ready.
+  const begin = (): void => {
+    if (disposed || compiled) return;
+    compiled = true;
+    if (!running) {
+      syncScroll();
+      draw();
+    }
+    readyFrame = requestAnimationFrame(onFirstFrame);
+  };
+  // The materials compile with the environment in place (it changes their programs)
+  const bakeTimer = setTimeout(() => {
+    if (disposed) return;
+    bakeEnvironment();
+    renderer.compileAsync(scene, camera).then(begin, begin);
+  }, 0);
 
   // Development only: steel colour measurement and frame timing (see debug.ts).
   const removeDebugHook = import.meta.env.DEV
@@ -740,7 +772,8 @@ export function createChainScene(container: HTMLElement, options: ChainSceneOpti
       canvas.removeEventListener('webglcontextlost', onContextLost);
 
       scene.environment = null;
-      envTarget.dispose();
+      clearTimeout(bakeTimer);
+      envTarget?.dispose();
       chain.dispose();
       linkGeometry.dispose();
       steel.dispose();

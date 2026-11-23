@@ -14,7 +14,7 @@ export const SHOW_SCROLL_CLOCK = true as boolean;
 /**
  * Review hook: `?night=0..1` in the URL freezes the night at that progress (3D
  * lighting and header watch), so screenshots of each keyframe are reproducible.
- * Read once at load; without the parameter it does nothing.
+ * Read once at load, in development only; without the parameter it does nothing.
  */
 function readOverride(): number | null {
   try {
@@ -27,14 +27,10 @@ function readOverride(): number | null {
   }
 }
 
-const override = readOverride();
+// Development only, like the other review hooks: production builds never read it
+const override = import.meta.env.DEV ? readOverride() : null;
 
 let current = override ?? 0;
-
-/** True when `?night=` froze the night for review. */
-export function isNightFrozen(): boolean {
-  return override !== null;
-}
 
 /** Latest night progress, 0..1 (updated while anything is subscribed). */
 export function getNightProgress(): number {

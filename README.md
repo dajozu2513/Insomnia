@@ -6,7 +6,7 @@ Website for **Insomnia by Joel Soto**, a brand that brings together two lines by
 
 The site continues the visual language of the earlier Black & White site (a black and white palette, editorial typography and a 3D steel chain that runs behind the home page) and adds a quiet dream layer on top: the page is one night, from dusk at the top to dawn at the bottom.
 
-> Status: in progress. The entrance and the fall (a first-person 3D descent into a hole in the earth) and the objects that float down it, the landing at the bottom of the page, the 3D chain and its night atmosphere, the intro, hero, pillars, three text-free bands, the analog scroll clock, the jewelry deck and the printed T-shirts (each with its configurator), the Readings index and the three article pages are built.
+> Status: launch-ready (final review in step 16). The intro, the entrance and the fall (a first-person 3D descent into a hole in the earth) with the objects that float down it, the 3D chain and its night atmosphere, the pillars, three text-free bands, the jewelry deck with a 3D preview of each piece, the printed T-shirts on a floating clothing rack, the Readings and their three article pages, the landing at the bottom of the page, the analog scroll clock and the 404 are built.
 
 ## Highlights
 
@@ -22,7 +22,7 @@ The site continues the visual language of the earlier Black & White site (a blac
 - **A 3D steel chain in the first window.** Three.js runs in an imperative engine outside React, loaded on demand in its own chunk; scrolling eases the camera and pulls the links along the chain without a single React re-render. Without WebGL the page shows stills rendered from the scene itself.
 - **A night atmosphere in 3D.** Glowing motes drift through the hole and every window and streak while falling fast, a rose light rises from far below, and the fog, exposure and rim light follow the night from dusk to dawn while the steel stays measurably neutral silver.
 - **A night that follows the scroll.** A line-art pocket watch, the emblem beside the name in the header, turns from 6:00 PM at the top of the page to 6:00 AM at the bottom; its hands follow the scroll continuously, driven outside React. The intro opens on the full name over a slow red mist.
-- **One scroll frame.** Every scroll-driven effect (progress hairline, watch hands, photo parallax) shares a single requestAnimationFrame and writes to the DOM through refs.
+- **One scroll frame.** Every scroll-driven effect in the DOM (progress hairline, watch hands, the hero's name) shares a single requestAnimationFrame and writes to the DOM through refs.
 - **A jewelry deck instead of a product grid.** The nine chain links are drawn in code as playing cards that deal themselves face up; choosing one opens an accessible dialog (FLIP animation, focus management, deep links) with a configurator that composes the WhatsApp inquiry live. Choosing a form turns the card over to a small 3D preview of the piece: the chosen link, modelled in code, repeated along the chosen form (necklace, bracelet, anklet, ring, head piece, waist chain or a hanging length) at the chosen length, in the same steel and studio light as the chain, with a faint line-art guide for scale; the links slide into each new shape. Its renderer and code load only then, and the page's scene pauses while the dialog is open.
 - **Readings with a title morph.** An editorial index of three articles on the home page; each opens on its own page, its title morphing into the heading through same-document View Transitions, with a reading-progress hairline and a pocket watch that follow the text from 6:00 PM to 6:00 AM.
 - **T-shirt prints generated in code.** Ten typographic compositions, one per word (a crowd of strangers, a frame too tight, a letter out of place, a plot that knots), laid out from measured font metrics and kept print-safe (one colour, flat tints, no gradients). They render on a flat SVG tee that follows every configurator choice live: colour, print language, placement and the side shown.
@@ -42,6 +42,14 @@ The site continues the visual language of the earlier Black & White site (a blac
 | Fonts     | Cormorant Garamond, EB Garamond, Montserrat              |
 | Quality   | ESLint (typescript-eslint strict type-checked), Prettier |
 | Hosting   | Render static site (`render.yaml`)                       |
+
+## Architecture at a glance
+
+- **An engine outside React.** The 3D scene (the fall, its objects, the chain, the clothing rack and the landing) is an imperative Three.js engine in `src/features/chain/engine/`, drawn on one fixed canvas behind the page. React only mounts it (`<ChainStage />`) and tells it where the windows are: sections register their elements in a small registry outside React, and the engine reads their positions on resize. Scrolling never re-renders React; the camera follows the scroll inside the engine's own loop, which runs only while a window onto the scene is on screen.
+- **Code that arrives when it is needed.** The main bundle is the React app (about 133 kB gzipped). Three.js is a shared chunk (about 143 kB gzipped) loaded only by the 3D code. The engine's chunk is fetched after the fonts are in, the intro has lifted and the browser is idle; its shaders compile without blocking the page, and a still rendered from the scene covers the wait. The objects of the fall and the rack load in a chunk of their own on an idle callback after the first frame, and the jewelry preview's chunk is fetched when a jewelry dialog first opens.
+- **Two dialogs, one component.** Both product dialogs are a native `<dialog>` (focus trap, inert page, Escape) with a FLIP flight from the card or the 3D tee, deep links (`?link=`, `?tee=`), a configurator built from typed chip groups and a WhatsApp message composed live. The jewelry dialog turns its card over to a 3D preview with its own small renderer, created on first use and freed on close; the page's 3D loop pauses while any dialog is open.
+- **A data model, not pages.** The nine links, the forms and sizes, the ten T-shirt designs and the three articles are typed data in `src/data/`; the deck, the rack, the configurators, the 3D preview, the WhatsApp messages and the routes are all generated from it. A piece of jewelry is link x form x size. All copy is in two typed dictionaries, Spanish being the schema, so a missing translation fails the build.
+- **Fallbacks at every level.** Without WebGL the page shows stills rendered from the scene itself, the T-shirts become a grid and the jewelry card does not turn; with reduced motion nothing moves (the scene redraws only on scroll, the fall becomes a single still frame); a lost WebGL context is rebuilt up to three times before the stills take over; and error boundaries keep any failing part from blanking the page.
 
 ## Getting started
 
@@ -70,15 +78,15 @@ src/
   app/                 App and router
   components/          Error boundary; layout/: Header, Footer, language toggle, page layout
   pages/               Route-level pages (home, article, 404, /lab, /brand-assets)
-  features/            Feature modules (chain, home, intro, night clock, motifs, cards, jewelry deck, T-shirts, shared product dialog)
+  features/            Feature modules (the 3D engine, the fall, home sections, intro, night clock, motifs, cards, jewelry deck and its 3D preview, T-shirts and the clothing rack, Readings, shared product dialog)
   i18n/                Language provider, hook and ES/EN dictionaries
   hooks/               Shared hooks (reduced motion, in-view reveals, head tags)
   lib/                 Shared scroll frame, head tags
-  data/                Typed data: the nine links, forms and sizes; the ten T-shirt designs and options; the three articles
+  data/                Typed data: the nine links, forms, sizes and the preview's lengths; the ten T-shirt designs and options; the three articles
   assets/fonts/        Self-hosted fonts (woff2) and their licences
   styles/              Fonts, design tokens and global styles
 public/                Share image, favicons and icons, manifest, robots.txt, sitemap.xml
-public/images/fall/    Stills rendered from the 3D scene: the edge (first paint, no-WebGL hero) and the shaft (no-WebGL bands), wide and tall, as AVIF, WebP and JPEG
+public/images/fall/    Stills rendered from the 3D scene: the edge (first paint, no-WebGL hero), the shaft (no-WebGL bands) and the landing's last frame, wide and tall, as AVIF, WebP and JPEG
 docs/brand/            Brand documents
 docs/content/          Approved copy (articles.md, the source of src/data/articles.ts)
 ```
@@ -131,7 +139,7 @@ After saving, check a response (`curl -I https://insomnia-js.onrender.com/assets
 - [ ] Add the site to Google Search Console, submit `https://insomnia-js.onrender.com/sitemap.xml` and inspect the home page and one article.
 - [ ] Run Lighthouse on the live site (mobile and desktop, home and one article).
 - [ ] Test on a real iPhone (Safari) and Android phone (Chrome): the entrance and the fall (slow and fast scrolling), the landing's turn and the Fall again door, the 3D chain, the intro, both dialogs and WhatsApp links, an article and its title morph, the language toggle, and the tab in the background and back.
-- [ ] Test in Firefox (not covered by the automated checks).
+- [ ] Test in Firefox, desktop and a phone-sized window (Firefox is not installed on the build machine, so no automated check covers it): the intro and the fall while scrolling slowly and fast, the chain in band 1, the letters in band 2, the rack (drag, arrows, keyboard, the names, a tee opening its dialog), the jewelry dialog (choose a form, the card turns over, drag the piece, View card and View piece, change form and size), the landing and the Fall again door, an article and Back, the 404, the language toggle, and the browser console for errors.
 - [ ] Remaining placeholders: none in the site copy; see the step 9 report for internal ones.
 
 ## Author

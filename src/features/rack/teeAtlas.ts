@@ -110,7 +110,7 @@ function teeStyles(): string {
   return `:root{${tokens}}${rules}`;
 }
 
-/** One mockup as SVG markup, placed in its atlas cell. */
+/** One mockup as SVG markup, the size of its cell. */
 function mockupMarkup(index: number, lang: Lang): string {
   const tee = TEES[index];
   if (!tee) return '';
@@ -129,11 +129,9 @@ function mockupMarkup(index: number, lang: Lang): string {
   });
   const markup = host.innerHTML;
   root.unmount();
-  const x = (index % COLUMNS) * TEE_FRAME.width;
-  const y = Math.floor(index / COLUMNS) * TEE_FRAME.height;
   return markup.replace(
     '<svg ',
-    `<svg x="${String(x)}" y="${String(y)}" width="${String(TEE_FRAME.width)}" height="${String(TEE_FRAME.height)}" `,
+    `<svg x="0" y="0" width="${String(TEE_FRAME.width)}" height="${String(TEE_FRAME.height)}" `,
   );
 }
 
@@ -144,17 +142,17 @@ const nextFrame = () =>
     });
   });
 
-/**
- * The ten tees in one canvas, 5 x 2 cells (each the whole 300 x 330 mockup).
- * `cell` is a cell's width in pixels (smaller on small screens).
- */
-export async function renderTeeAtlas(lang: Lang, cell: number): Promise<TeeAtlas> {
-  const width = COLUMNS * TEE_FRAME.width;
-  const height = ROWS * TEE_FRAME.height;
-  const style = `${await fontFaces()}${teeStyles()}`;
-  const cells = TEES.map((_, i) => mockupMarkup(i, lang)).join('');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${String(width)}" height="${String(height)}" viewBox="0 0 ${String(width)} ${String(height)}"><style>${style}</style>${cells}</svg>`;
-
+/** One cell's SVG drawn as an image (with the embedded styles and fonts). */
+async function drawCell(
+  ctx: CanvasRenderingContext2D,
+  index: number,
+  lang: Lang,
+  style: string,
+  cellWidth: number,
+  cellHeight: number,
+): Promise<void> {
+  const { width, height } = TEE_FRAME;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${String(width)}" height="${String(height)}" viewBox="0 0 ${String(width)} ${String(height)}"><style>${style}</style>${mockupMarkup(index, lang)}</svg>`;
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   try {
     const image = new Image();
@@ -163,23 +161,39 @@ export async function renderTeeAtlas(lang: Lang, cell: number): Promise<TeeAtlas
     // Give the embedded fonts a frame to settle before drawing
     await nextFrame();
     await nextFrame();
-    const canvas = document.createElement('canvas');
-    canvas.width = COLUMNS * cell;
-    canvas.height = Math.round(ROWS * cell * (TEE_FRAME.height / TEE_FRAME.width));
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('2D canvas unavailable');
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    const tees: RackTee[] = TEES.map((tee, i) => ({
-      id: tee.id,
-      word: tee.word,
-      colour: rackColour(i),
-      u: (i % COLUMNS) / COLUMNS,
-      v: 1 - (Math.floor(i / COLUMNS) + 1) / ROWS,
-      w: 1 / COLUMNS,
-      h: 1 / ROWS,
-    }));
-    return { canvas, tees };
+    const x = (index % COLUMNS) * cellWidth;
+    const y = Math.floor(index / COLUMNS) * cellHeight;
+    ctx.drawImage(image, x, y, cellWidth, cellHeight);
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+/**
+ * The ten tees in one canvas, 5 x 2 cells (each the whole 300 x 330 mockup).
+ * `cell` is a cell's width in pixels (smaller on small screens). Drawn one cell
+ * at a time: rasterising all ten at once was one of the longest tasks of the
+ * page's load on slow phones.
+ */
+export async function renderTeeAtlas(lang: Lang, cell: number): Promise<TeeAtlas> {
+  const style = `${await fontFaces()}${teeStyles()}`;
+  const cellHeight = Math.round(cell * (TEE_FRAME.height / TEE_FRAME.width));
+  const canvas = document.createElement('canvas');
+  canvas.width = COLUMNS * cell;
+  canvas.height = ROWS * cellHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('2D canvas unavailable');
+  for (let i = 0; i < TEES.length; i++) {
+    await drawCell(ctx, i, lang, style, cell, cellHeight);
+  }
+  const tees: RackTee[] = TEES.map((tee, i) => ({
+    id: tee.id,
+    word: tee.word,
+    colour: rackColour(i),
+    u: (i % COLUMNS) / COLUMNS,
+    v: 1 - (Math.floor(i / COLUMNS) + 1) / ROWS,
+    w: 1 / COLUMNS,
+    h: 1 / ROWS,
+  }));
+  return { canvas, tees };
 }

@@ -17,7 +17,7 @@ export const MAX_PIXEL_RATIO = 1.5;
 export const TONE_MAPPING_EXPOSURE = 1.15;
 
 // ── FOG ──
-// Links far behind the necklace fade into the page's ink colour.
+// Links far behind the chain fade into the page's ink colour.
 export const FOG_COLOR = 0x0e0e0d;
 export const FOG_NEAR = DIST - 8;
 export const FOG_FAR = DIST + 16;
@@ -90,14 +90,11 @@ export const RESIZE_DEBOUNCE_MS = 120;
 // docs/brand/design-direction.md, "Atmosphere" and "The night cycle". Every
 // value here is subordinate to one rule: the chain must read as silver steel.
 
-/** Chessboard floor (kept for the landing in step 12; not in the scene since step 11): plane size (world units). */
+/** The chessboard (the hall's floor at the landing): the default texture repeat's plane size (world units). */
 export const FLOOR_WIDTH = 140;
 export const FLOOR_DEPTH = 110;
 /** World size of one chessboard square. */
 export const FLOOR_SQUARE = 1.8;
-/** Floor height as a fraction of the viewport's world height below the centre: tall screens lower. */
-export const FLOOR_DROP_PORTRAIT = 0.66;
-export const FLOOR_DROP_WIDE = 0.54;
 /** Square colours: muted ink and dimmed bone, far below the steel's contrast. */
 export const FLOOR_DARK = '#0f0e11';
 export const FLOOR_LIGHT = '#3e3a35';
@@ -140,12 +137,6 @@ export const RIM_LIGHT_POSITION = [0, 6, -12] as const;
  * drapes centred in their band, for the text-free bands.
  */
 export const DRAPE_STYLE = 'centred' as 'legacy' | 'centred';
-
-/**
- * Anisotropic filtering for the floor texture. The far squares sit in the fog,
- * so a modest level costs less and looks the same.
- */
-export const FLOOR_ANISOTROPY = 4;
 
 // ── THE ENTRANCE AND THE FALL (step 11) ──
 // docs/brand/design-direction.md, "The entrance and the fall". World units; the

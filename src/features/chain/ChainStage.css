@@ -1,7 +1,7 @@
 /*
- * 3D CHAIN STAGE, ported from the legacy css/styles.css.
+ * 3D STAGE (the fall and the chain), ported from the legacy css/styles.css.
  * One fixed canvas behind the whole page. With `has-3d` on <html>, the hero and
- * the bands drop their photos and backgrounds and become windows onto it; every
+ * the bands drop their stills and backgrounds and become windows onto it; every
  * other section keeps its own opaque background and covers it.
  */
 .chain-stage {

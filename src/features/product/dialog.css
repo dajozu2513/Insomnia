@@ -378,4 +378,14 @@
   .product-dialog-body > * {
     animation-name: dialogFade;
   }
+
+  /* The arrow stays put */
+  .product-dialog-cta::after {
+    transition: none;
+  }
+
+  .product-dialog-cta:hover::after,
+  .product-dialog-cta:focus-visible::after {
+    transform: none;
+  }
 }

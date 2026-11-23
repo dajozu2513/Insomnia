@@ -139,6 +139,15 @@ interface CellParams {
   face: number;
 }
 
+/**
+ * Lets the browser run other work between two parts of the build: built in one
+ * go, the objects were one of the longest tasks of the page's load on slow phones.
+ */
+const nextTask = () =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
 export async function createFallObjects(
   steel: Material,
   linkGeometry: BufferGeometry,
@@ -175,6 +184,8 @@ export async function createFallObjects(
     disposers.push(watch.dispose);
     return watch;
   };
+
+  await nextTask();
 
   // ── LATTICES ──
   interface Lattice {
@@ -276,6 +287,8 @@ export async function createFallObjects(
   const cards = createCards((cardLattice?.pool ?? 0) + heroCardSlots.length, cardAtlas);
   group.add(cards.mesh);
 
+  await nextTask();
+
   // ── PAPER ── loose pages for band 3, then three turning pages per open book
   const loosePages = small ? 9 : 16;
   const bandBooks = 2;
@@ -295,6 +308,8 @@ export async function createFallObjects(
       size: 0.7 + r() * 0.35,
     };
   });
+
+  await nextTask();
 
   // ── HERO END ── the piano and the first scattered objects
   const piano = kit.makePiano();
@@ -363,10 +378,14 @@ export async function createFallObjects(
     group.add(book);
   });
 
+  await nextTask();
+
   // ── THE LANDING ── the hall at the bottom of the page
   const hall = createHall(kit, steel, small);
   hall.group.visible = false;
   group.add(hall.group);
+
+  await nextTask();
 
   // ── THE CLOTHING RACK ── in the T-shirt section's window (step 14)
   const rack = data.tees
@@ -376,6 +395,8 @@ export async function createFallObjects(
     rack.group.visible = false;
     group.add(rack.group);
   }
+
+  await nextTask();
 
   // ── BAND 2 LETTERS ──
   const letters = createLetters(data.word, small);
